@@ -1,4 +1,10 @@
 import React from 'react'
+
+import { almoniNeue } from '@/fonts/almoni-neue'
+
+import { SiteFooter } from './SiteFooter'
+import { SiteHeader } from './SiteHeader'
+import { SmoothScroll } from './SmoothScroll'
 import './styles.css'
 
 export const metadata = {
@@ -10,9 +16,12 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   const { children } = props
 
   return (
-    <html lang="en">
-      <body>
+    <html dir="rtl" lang="he">
+      <body className={almoniNeue.className}>
+        <SmoothScroll />
+        <SiteHeader />
         <main>{children}</main>
+        <SiteFooter />
       </body>
     </html>
   )

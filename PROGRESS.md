@@ -1,6 +1,6 @@
 # PROGRESS
 
-סיכום מצב הפרויקט — עדכון אחרון: הקמת סביבה, מודל תוכן, עמוד חטיבה, אנימציות, האדר ופוטר.
+סיכום מצב הפרויקט — עדכון אחרון: 7.7.2026
 
 ## מה בנינו
 
@@ -14,55 +14,60 @@
 - Collection יחיד: **Divisions** (`src/collections/Divisions.ts`) — חטיבה.
   שדות: `bannerImage`, `logo`, `title`, `subtitle`, `tertiaryTitle`, `description`, `featuredImage`, `externalUrl`, `statsByNumbers` (array: title/number/image), `goodToKnow` (array: icon/title/text), `slug` (נוצר אוטומטית מ-`title`, עם hook `beforeValidate` + פונקציית `formatSlug` שתומכת גם בעברית).
   כל ה-labels בפאנל בעברית.
-- שאר עמודי האתר (בית, אודות, אחריות חברתית, צור קשר) **לא** קיבלו Collections/Globals — יוקשחו בקוד בהמשך, לפי החלטה מוקדמת.
+- שאר עמודי האתר (בית, אודות, אחריות חברתית, צור קשר) **לא** קיבלו Collections/Globals — מוקשחים בקוד.
+
+### עמוד הבית — `/`
+- 6 סקשנים: Hero (וידאו + לוגו), DivisionsSplit (7 סרטוני חטיבות עם sticky scroll + snap + crossfade), Umbrella (קורת גג אחת), AboutTeaser (שותפים אסטרטגיים — word reveal + scrub highlight), PartnersGrid (לוגואים + hover glow), Ticker.
+- אנימציות: GSAP + ScrollTrigger (pin, scrub, snap) לסקשנים מורכבים. CSS transitions + IntersectionObserver (useReveal hook) לכותרות word-reveal (דפוס Terminal Industries).
+- לוגו Hero: `clamp(260px, 28.6vw, 468px)`, ממוקם ב-top: 25%.
+
+### עמוד לובי חטיבות — `/divisions`
+- 4 אזורים: הירו וידאו (55vh), כותרות ("פתרונות מקיפים לכל צורכי התחבורה"), רשת חטיבות דינמית מ-Payload (3 עמודות, גבולות מקווקוים, כפתורי CTA), טיקר מרקיז ("מערכת אחת. שפה אחת. סטנדרט אחד.").
 
 ### עמוד חטיבה — `/divisions/[slug]`
-- Server Component (`page.tsx`) שמביא חטיבה בודדת מ-Payload Local API לפי `slug` (`decodeURIComponent` על הפרמטר — תוקן באג ידוע ב-Next 16/Turbopack שבו params של page components מגיעים לא-מפוענחים, בשונה מ-route handlers).
-- מבנה מלמעלה למטה: באנר מלא → אזור כותרות ממורכז (לוגו, title כ-h1, subtitle כ-h2, tertiaryTitle כ-h3) → אזור דו-טורי (תיאור+כפתור מול תמונה) → "פעילות במספרים" (רשת 5, מספרים רצים) → "כדאי לדעת" (קוביות ריבועיות).
-- `export const dynamic = 'force-dynamic'` — מונע ניסיון static-optimization על עמוד תלוי-DB.
-- 404 אמיתי (`notFound()`) לסלאג לא קיים.
+- Server Component שמביא חטיבה בודדת מ-Payload Local API לפי `slug`.
+- מבנה: באנר → כותרות (DivisionHeading) → דו-טורי (תיאור+כפתור מול תמונה) → "פעילות במספרים" (StatsCounter — מספרים רצים) → "כדאי לדעת" (קוביות).
+- `export const dynamic = 'force-dynamic'`, 404 עם `notFound()`.
 
-### אנימציות (GSAP + ScrollTrigger)
-- **StatsCounter.tsx** (client) — מספרים "רצים" מ-0 לערך הסופי בגלילה לאזור (once, ~2s), עם פסיק לאלפים ותמיכה בסיומת טקסטואלית ("52 מיליון" — רק ה-52 רץ).
-- **DivisionHeading.tsx** (client) — fade-in ל-h1, חשיפת מילים ברצף (stagger, מימין לשמאל) ל-h2, fade-up מושהה ל-h3.
-- דפוס אחיד לשני הרכיבים: `'use client'` + `useEffect` עם `gsap.context(fn, scopeRef)` ו-cleanup דרך `ctx.revert()`. `ScrollTrigger.create({ once: true, onEnter })`.
-- אנימציית hover על כפתור "בקרו באתר" — **CSS טהור** (לא GSAP): מילוי רקע מימין לשמאל עם `::before` + `transform: scaleX()`, כי זה effect שמספיק לו CSS transition.
+### עמוד צור קשר — `/contact`
+- הירו וידאו מלא מסך עם שכבת overlay (#2A3950E5).
+- קונטיינר RTL (max-width: 1200px): כותרת + סאבטייטל + separator.
+- שני טורים: כרטיס מידע ירוק (טלפון, מייל, כתובת) + טופס (שם, טלפון, מייל, הודעה, כפתור שליחה).
+- Client component עם state לניהול שליחה (idle/sending/sent).
 
-### האדר ופוטר (ב-`layout.tsx`, גלובליים לכל עמוד)
-- **SiteHeader.tsx** — "כרית זכוכית" צפה (`position: fixed`, `backdrop-filter: blur`), ממורכזת, עד 770px, לוגו מימין (קישור לבית), ניווט מיושר לשמאל (5 קישורים, כולל דפים שלא נבנו עדיין).
-- **SiteFooter.tsx** — Server Component אסינכרוני, 4 עמודות (ניווט מהיר / תחומי פעילות **דינמי** משאילתת Divisions / צור קשר סטטי / מיתוג+סושיאל), אלמנט גרפי דקורטיבי (`tree-footer.png`) בפינה שמאל-תחתית.
-- אייקוני סושיאל (פייסבוק/אינסטגרם/יוטיוב) הם **placeholder** שיצרתי (SVG פשוטים, לבנים) — הקבצים האמיתיים עדיין לא סופקו.
+### עמוד אחריות חברתית — `/social-responsibility`
+- 5 אזורים: הירו וידאו (55vh), כותרות ("אחריות חברתית" + סאבטייטל), 3 קוביות ירוקות (#9CEE8C) עם אייקון/כותרת/טקסט/רשימה, סקשן CTA (כותרת + סאבטייטל + כפתור ליצירת קשר), קרוסלת תמונות (שתי שורות נעות בכיוונים מנוגדים, 8 תמונות).
 
-## החלטות עיצוב מרכזיות
+### האדר ופוטר (גלובליים)
+- **SiteHeader.tsx** — "כרית זכוכית" צפה (fixed, backdrop-filter: blur), לוגו + ניווט.
+- **SiteFooter.tsx** — 4 עמודות (ניווט / חטיבות דינמי / צור קשר / מיתוג+סושיאל), אלמנט גרפי tree-footer.png.
+- SmoothScroll — GSAP Lenis integration.
 
-**צבעים** (`src/app/(frontend)/styles.css`, ב-`:root`):
+### אנימציות
+- **useReveal.ts** — hook אחיד: IntersectionObserver + immediate viewport check, threshold: 0, rootMargin.
+- **Word reveal** — CSS transitions (translate3d) עם stagger, מיושם על: AboutTeaser, Umbrella, PartnersGrid.
+- **DivisionsSplit** — sticky scroll עם כל 7 הסליידים ב-DOM, crossfade + translateY, snap: 1/(STEP_COUNT-1), anticipatePin: 1.
+- **StatsCounter** — מספרים רצים עם GSAP ScrollTrigger.
+- **DivisionHeading** — fade-in + stagger words.
+- **Partners hover glow** — ellipse positioned at bottom with blur.
+
+## החלטות עיצוב
+
+**צבעים** (`styles.css`, `:root`):
 ```css
---bg: #2a3950;      /* רקע כל האתר */
---text: #ffffff;    /* טקסט ברירת מחדל */
---brand: #9cee8c;   /* ירוק בהיר — קוביות, כפתורים */
---brand-2: #60d3aa; /* טורקיז — בורדרים, ניווט, כותרות עמודות בפוטר */
+--bg: #2a3950;      /* רקע */
+--text: #ffffff;    /* טקסט */
+--brand: #9cee8c;   /* ירוק בהיר */
+--brand-2: #60d3aa; /* טורקיז */
 ```
 
-**טיפוגרפיה** — סולם רספונסיבי עם `clamp()`, עוגן עליון = ערכי Figma:
-```css
---h1: clamp(20px, 2.1vw, 30px);
---h2: clamp(34px, 4.2vw, 60px);
---h3: clamp(18px, 1.7vw, 24px);
---body: clamp(17px, 1.5vw, 22px);
-```
-כל שדה טיפוגרפי חדש (למשל בתוך "פעילות במספרים" או "כדאי לדעת") מקבל את ה-`clamp()` הספציפי שלו לפי מפרט Figma, לא בהכרח את אחד מארבעת המשתנים הגלובליים.
+**טיפוגרפיה** — סולם רספונסיבי עם `clamp()`.
 
-**עקרון עבודה שחזר הרבה**: איפה שערך גולמי (hex/rgba) זהה למשתנה גלובלי קיים — משתמשים במשתנה (`var(--brand-2)` וכו') ולא בערך הגולמי, כדי שעדכון עתידי של הצבע יתפשט אוטומטית לכל מקום.
+**RTL** — כל "פריט ראשון ב-DOM" מוצג בצד ימין אוטומטית. לא היה צורך בהיפוך ידני.
 
-**RTL**: הדפוס העקבי — כל "פריט ראשון ב-DOM" מוצג בצד ימין אוטומטית (flex/grid מודעים לכיוון). לא היה צורך בהיפוך ידני של סדר בשום מקום, כולל ב-stagger של מילים.
+## מה נשאר
 
-## מה נשאר לדייק
-
-- **עמוד הבית** — עדיין לא נבנה בכלל (מתחילים בו מחר).
-- עמודי אודות / אחריות חברתית / צור קשר — לא קיימים (רק קישורים אליהם בהאדר/פוטר).
-- עמוד רשימת חטיבות (`/divisions`) — יש קישורים אליו מהאדר והפוטר, אבל אין עמוד בפועל (404 כרגע).
-- לוגו האדר/פוטר — כבר הוחלף בקובץ האמיתי (`main-logo-alectra.png`).
-- אייקוני סושיאל בפוטר — placeholder, מחכים לקבצים אמיתיים + כתובות URL אמיתיות (כרגע `href="#"`).
-- טלפון בפוטר כתוב `6686*` בדיוק כפי שסופק — לא אומת אם זה `*6686` (קוד מקוצר בפורמט הישראלי הרגיל).
-- אלמנט גרפי דקורטיבי בפוטר — גודל/מיקום מוערכים (`min(480px, 45vw)`, שמאל-תחתית) בלי גישה לעיצוב מדויק.
-- כל העיצוב שנבנה הוא **בלי אנימציות scroll נוספות** מעבר לשלוש שכבר יושמו (מספרים, כותרות, hover כפתור) — אם ירצו עוד, לחזור על דפוס `gsap.context` + `ScrollTrigger.create({ once: true })`.
+- **עמוד אודות** (`/about`) — עדיין לא נבנה.
+- **התאמה למובייל** — כל העמודים דורשים responsive tuning.
+- **דיוקים אחרונים** — אייקוני סושיאל (placeholder), כתובות URL אמיתיות, עיצוב סופי.
+- **טופס צור קשר** — wire up ל-API אמיתי (כרגע setTimeout mock).

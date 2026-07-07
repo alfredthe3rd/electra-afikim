@@ -56,7 +56,7 @@ export async function SiteFooter() {
           </ul>
         </div>
 
-        <div className="site-footer-column">
+        <div className="site-footer-column site-footer-contact">
           <h3>צור קשר</h3>
           <p>6686*</p>
           <p>

@@ -1,6 +1,10 @@
+import { SocialAnimations } from './SocialAnimations'
+
 export default function SocialResponsibilityPage() {
   return (
     <>
+      <SocialAnimations />
+
       {/* אזור 1 - הירו וידאו */}
       <section className="social-hero">
         <video

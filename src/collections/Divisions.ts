@@ -1,4 +1,10 @@
 import type { CollectionConfig, FieldHook } from 'payload'
+import {
+  lexicalEditor,
+  FixedToolbarFeature,
+  UnorderedListFeature,
+  OrderedListFeature,
+} from '@payloadcms/richtext-lexical'
 
 const HEBREW_AND_ALPHANUMERIC = new RegExp('[^\\u0590-\\u05FFa-z0-9]+', 'g')
 
@@ -119,10 +125,29 @@ export const Divisions: CollectionConfig = {
         },
         {
           name: 'text',
-          type: 'textarea',
+          type: 'richText',
           label: 'טקסט',
+          editor: lexicalEditor({
+            features: ({ defaultFeatures }) => [
+              ...defaultFeatures,
+              UnorderedListFeature(),
+              OrderedListFeature(),
+              FixedToolbarFeature(),
+            ],
+          }),
         },
       ],
+    },
+    {
+      name: 'goodToKnowHeading',
+      type: 'text',
+      label: 'כותרת מסכמת (בתחתית העמוד)',
+      defaultValue: 'כדאי לדעת עלינו',
+    },
+    {
+      name: 'goodToKnowText',
+      type: 'textarea',
+      label: 'טקסט מתחת לכותרת המסכמת',
     },
     {
       name: 'slug',

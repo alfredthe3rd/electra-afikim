@@ -1,10 +1,17 @@
 import Link from 'next/link'
 import { getPayload } from 'payload'
+import { Fragment } from 'react'
 
 import config from '@/payload.config'
-import type { Media } from '@/payload-types'
+import type { Division, Media } from '@/payload-types'
+
+import { LobbyAnimations } from './LobbyAnimations'
 
 const isMedia = (value: unknown): value is Media => typeof value === 'object' && value !== null
+
+// 3 content columns, framed by a spacer column on each side (5 total) — the
+// same spacer-grid mechanism as PartnersGrid on the homepage.
+const COLS = 3
 
 export default async function DivisionsLobbyPage() {
   const payloadConfig = await config
@@ -17,8 +24,17 @@ export default async function DivisionsLobbyPage() {
     sort: 'title',
   })
 
+  const rows: (Division | null)[][] = []
+  for (let i = 0; i < divisions.length; i += COLS) {
+    const row: (Division | null)[] = divisions.slice(i, i + COLS)
+    while (row.length < COLS) row.push(null)
+    rows.push(row)
+  }
+
   return (
     <>
+      <LobbyAnimations />
+
       {/* אזור 1 - הירו וידאו */}
       <section className="divisions-lobby-hero">
         <video
@@ -43,28 +59,48 @@ export default async function DivisionsLobbyPage() {
       {/* אזור 3 - רשת החטיבות */}
       <section className="divisions-lobby-grid-section">
         <div className="divisions-lobby-grid">
-          {divisions.map((division) => {
-            const logo = isMedia(division.logo) ? division.logo : null
-            return (
-              <article className="divisions-lobby-card" key={division.id}>
-                {logo?.url && (
-                  <img
-                    alt={logo.alt ?? division.title}
-                    className="divisions-lobby-card-logo"
-                    src={logo.url}
-                  />
-                )}
-                {division.description && (
-                  <p className="divisions-lobby-card-desc">{division.description}</p>
-                )}
-                {division.slug && (
-                  <Link className="division-cta" href={`/divisions/${division.slug}`}>
-                    למידע מורחב
-                  </Link>
-                )}
-              </article>
-            )
-          })}
+          {/* Top spacer row */}
+          {Array.from({ length: COLS + 2 }).map((_, i) => (
+            <div className="divisions-lobby-spacer-row" key={`top-${i}`} />
+          ))}
+
+          {/* Content rows: side spacer + 3 cards + side spacer */}
+          {rows.map((row, ri) => (
+            <Fragment key={`row-${ri}`}>
+              <div className="divisions-lobby-spacer-side" />
+              {row.map((division, ci) => {
+                if (!division) {
+                  return <div className="divisions-lobby-card" key={`empty-${ri}-${ci}`} />
+                }
+                const logo = isMedia(division.logo) ? division.logo : null
+                return (
+                  <article className="divisions-lobby-card" key={division.id}>
+                    {logo?.url && (
+                      <img
+                        alt={logo.alt ?? division.title}
+                        className="divisions-lobby-card-logo"
+                        src={logo.url}
+                      />
+                    )}
+                    {division.description && (
+                      <p className="divisions-lobby-card-desc">{division.description}</p>
+                    )}
+                    {division.slug && (
+                      <Link className="division-cta" href={`/divisions/${division.slug}`}>
+                        למידע מורחב
+                      </Link>
+                    )}
+                  </article>
+                )
+              })}
+              <div className="divisions-lobby-spacer-side" />
+            </Fragment>
+          ))}
+
+          {/* Bottom spacer row */}
+          {Array.from({ length: COLS + 2 }).map((_, i) => (
+            <div className="divisions-lobby-spacer-row" key={`bottom-${i}`} />
+          ))}
         </div>
       </section>
 

@@ -8,32 +8,39 @@ gsap.registerPlugin(ScrollTrigger)
 
 type Step = {
   id: number
+  title?: string
   text: string
 }
 
 const STEPS: Step[] = [
   {
     id: 0,
+    title: 'יבוא',
     text: 'כחברה המפעילה כ-280 קווי שירות ומסיעה כ-52 מיליון נוסעים בשנה, אנו מהווים עורק חיים מרכזי במשק הישראלי. הפעילות שלנו מתאפיינת בניהול מבוסס נתונים, הקפדה על דיוק במבצעי ושיפור מתמיד של חוויית הנוסע.',
   },
   {
     id: 1,
+    title: 'הפעלה',
     text: 'הפעלה וניהול של מערכי תחבורה ציבורית בפריסה ארצית, תוך עמידה בסטנדרטים מתקדמים של שירות ובטיחות.',
   },
   {
     id: 2,
+    title: 'תחזוקה',
     text: 'מערכי תחזוקה מתקדמים, מוסכים ותשתיות טעינה - המבטיחים רציפות תפעולית וזמינות גבוהה לציי הרכב.',
   },
   {
     id: 3,
+    title: 'הכשרה והסמכה',
     text: 'הכשרת דור העתיד של אנשי התחבורה בישראל, במכללה ייעודית לפיתוח מקצועי ואיכות השירות.',
   },
   {
     id: 4,
+    title: 'תשתיות',
     text: 'פיתוח ותחזוקה של תשתיות תחבורה מתקדמות, כחלק ממחויבותנו לצמיחה ארוכת טווח של ענף התחבורה.',
   },
   {
     id: 5,
+    title: 'יבוא',
     text: 'ייבוא ושילוב של אוטובוסים ופתרונות תחבורה חדשניים, בהתאמה לדרישות הרגולציה ולצרכי השוק הישראלי.',
   },
 ]
@@ -43,26 +50,26 @@ const STEP_COUNT = STEPS.length
 export function AboutCircle() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const ringRef = useRef<HTMLImageElement>(null)
-  const textsRef = useRef<(HTMLParagraphElement | null)[]>([])
+  const itemsRef = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
     if (!sectionRef.current || !ringRef.current) return
 
-    const texts = textsRef.current.filter(Boolean) as HTMLParagraphElement[]
-    if (texts.length !== STEP_COUNT) return
+    const items = itemsRef.current.filter(Boolean) as HTMLDivElement[]
+    if (items.length !== STEP_COUNT) return
 
-    gsap.set(texts[0], { opacity: 1, y: 0 })
+    gsap.set(items[0], { opacity: 1, y: 0 })
     for (let i = 1; i < STEP_COUNT; i++) {
-      gsap.set(texts[i], { opacity: 0, y: 30 })
+      gsap.set(items[i], { opacity: 0, y: 30 })
     }
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline()
 
       for (let i = 0; i < STEP_COUNT - 1; i++) {
-        tl.to(texts[i], { opacity: 0, y: -20, duration: 0.5, ease: 'power2.in' }, `step${i}`)
+        tl.to(items[i], { opacity: 0, y: -20, duration: 0.5, ease: 'power2.in' }, `step${i}`)
         tl.fromTo(
-          texts[i + 1],
+          items[i + 1],
           { opacity: 0, y: 30 },
           { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
           `step${i}+=0.25`,
@@ -101,16 +108,6 @@ export function AboutCircle() {
 
   return (
     <section className="about-circle-section" ref={sectionRef}>
-      <video
-        autoPlay
-        className="about-circle-video"
-        loop
-        muted
-        playsInline
-        src="/about%20page/about%20hero%20movie.mp4"
-      />
-      <div className="about-circle-overlay" />
-
       <div className="about-circle-stage">
         <img
           alt=""
@@ -120,13 +117,14 @@ export function AboutCircle() {
         />
         <div className="about-circle-text-stack">
           {STEPS.map((step, i) => (
-            <p
-              className="about-circle-text"
+            <div
+              className="about-circle-item"
               key={step.id}
-              ref={(el) => { textsRef.current[i] = el }}
+              ref={(el) => { itemsRef.current[i] = el }}
             >
-              {step.text}
-            </p>
+              {step.title && <h3 className="about-circle-title">{step.title}</h3>}
+              <p className="about-circle-text">{step.text}</p>
+            </div>
           ))}
         </div>
       </div>

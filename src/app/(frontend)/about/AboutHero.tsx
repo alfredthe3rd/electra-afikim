@@ -1,7 +1,10 @@
 'use client'
 
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Fragment, useEffect, useRef } from 'react'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const TITLE_WORDS = 'חוד החנית של ענף התחבורה בישראל'.split(' ')
 
@@ -25,6 +28,18 @@ export function AboutHero() {
         .timeline({ defaults: { ease: 'power2.out' } })
         .to(titleWords ?? [], { autoAlpha: 1, duration: 0.7, stagger: 0.08, y: 0 }, 0.3)
         .to(subWords ?? [], { autoAlpha: 1, duration: 0.4, stagger: 0.012, y: 0 }, '-=0.3')
+
+      // Pin the hero in place so the next section (AboutCircle) scrolls up and
+      // covers it like a replacing layer, instead of the hero being pushed out
+      // in classic flow. pinSpacing:false adds no scroll distance — the circle's
+      // own 100vh of scroll-in is exactly what reveals it over the fixed hero.
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: 'top top',
+        end: '+=100%',
+        pin: true,
+        pinSpacing: false,
+      })
     }, containerRef)
 
     return () => ctx.revert()

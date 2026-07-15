@@ -131,7 +131,7 @@ svg {
   top: 25%;
   left: 50%;
   z-index: 1;
-  width: clamp(260px, 28.6vw, 468px);
+  width: clamp(260px, 46.3vw, 700px);
   height: auto;
 }
 
@@ -154,17 +154,31 @@ svg {
 }
 
 .hero-end-title {
+  position: relative;
+  display: inline-block;
   margin: 0;
   font-weight: 900;
   font-style: normal;
   line-height: normal;
   text-align: center;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: clamp(36px, 7.756vw, 148.924px);
+}
+
+.hero-end-title-text {
+  display: block;
+}
+
+/* Base layer: plain white letters that the gradient fills in over. */
+.hero-end-title-base {
+  color: var(--text);
+}
+
+/* Overlay layer: brand gradient clipped to the text, revealed by a clip-path
+   wipe so it "paints" the white base with colour. */
+.hero-end-title-fill {
+  position: absolute;
+  inset: 0;
   background-image: linear-gradient(
     to right,
     #60d3aa 0%,
@@ -174,8 +188,6 @@ svg {
     #9cee8c 66.666%,
     #9cee8c 100%
   );
-  background-size: 300% 100%;
-  background-position: 0% 0%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -589,39 +601,88 @@ svg {
   padding: 4vw 5vw;
 }
 
+/* Spacer-grid: 3 content columns framed by a spacer column each side (5 total)
+   + top/bottom spacer rows — 1:1 with PartnersGrid on the homepage. */
 .divisions-lobby-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  max-width: 1200px;
-  margin: 0 auto;
+  grid-template-columns: repeat(5, minmax(0, 340px));
+  justify-content: center;
+}
+
+/* All cells: bottom dashed border */
+.divisions-lobby-grid > * {
+  border-bottom: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
+}
+
+/* Columns 2-4 (card columns): left border for vertical lines */
+.divisions-lobby-grid > :not(:nth-child(5n + 1)):not(:nth-child(5n)) {
+  border-left: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
+}
+
+/* Column 2 (first card column): right border for outer right edge */
+.divisions-lobby-grid > :nth-child(5n + 2) {
+  border-right: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
+}
+
+.divisions-lobby-spacer-row {
+  height: 75px;
+}
+
+/* Bottom spacer row: no bottom border */
+.divisions-lobby-grid > :nth-last-child(-n + 5) {
+  border-bottom: none;
 }
 
 .divisions-lobby-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   text-align: center;
-  padding: 40px 32px;
-  border-bottom: 1px dashed rgba(96, 211, 170, 0.2);
-  border-left: 1px dashed rgba(96, 211, 170, 0.2);
+  gap: 20px;
+  padding: 40px 28px;
+  overflow: hidden;
 }
 
-.divisions-lobby-card:nth-child(3n + 1) {
-  border-left: none;
+/* Green glow blob behind the card on hover (mirrors PartnersGrid) */
+.divisions-lobby-card::before {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 0;
+  width: 180px;
+  height: 100px;
+  border-radius: 50%;
+  background: transparent;
+  filter: blur(40px);
+  pointer-events: none;
+  transition:
+    background 0.3s ease-in-out,
+    filter 0.3s ease-in-out;
 }
 
-.divisions-lobby-grid > .divisions-lobby-card:nth-last-child(-n + 3) {
-  border-bottom: none;
+.divisions-lobby-card:hover::before {
+  background: #9cee8c;
+  filter: blur(50px);
+}
+
+/* Card content sits above the glow */
+.divisions-lobby-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .divisions-lobby-card-logo {
   height: 60px;
   width: auto;
-  margin-bottom: 20px;
+  margin: 0;
 }
 
 .divisions-lobby-card-desc {
-  margin: 0 0 24px;
+  margin: 0;
   color: var(--text);
   font-weight: 400;
   font-size: clamp(14px, 1vw, 18px);
@@ -632,13 +693,26 @@ svg {
   overflow: hidden;
 }
 
+/* CTA buttons on this page: 35px horizontal inner padding */
+.divisions-lobby-card .division-cta {
+  padding-left: 35px;
+  padding-right: 35px;
+}
+
+/* Mobile: collapse to a single column, drop the spacer framing */
 @media (max-width: 768px) {
   .divisions-lobby-grid {
     grid-template-columns: 1fr;
   }
 
+  .divisions-lobby-spacer-row,
+  .divisions-lobby-spacer-side {
+    display: none;
+  }
+
   .divisions-lobby-card {
-    border-left: none;
+    border-left: none !important;
+    border-right: none !important;
   }
 
   .divisions-lobby-card:last-child {
@@ -711,6 +785,10 @@ svg {
   padding: 6vw 5vw;
   background: var(--bg);
   text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 32px 20px;
+  }
 }
 
 .social-title {
@@ -733,6 +811,10 @@ svg {
 .social-cards-section {
   background: var(--bg);
   padding: 0 5vw 6vw;
+
+  @media (max-width: 768px) {
+    padding: 0 20px 40px;
+  }
 }
 
 .social-cards {
@@ -752,6 +834,10 @@ svg {
   flex-direction: column;
   align-items: flex-start;
   color: #2A3950;
+
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
 }
 
 .social-card-icon {
@@ -800,6 +886,10 @@ svg {
   text-align: center;
   padding: 80px 24px;
   background: var(--bg);
+
+  @media (max-width: 768px) {
+    padding: 48px 20px;
+  }
 }
 
 .social-cta-title {
@@ -869,6 +959,16 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 768px) {
+    /* Top-align instead of vertically centering, so the content's own
+       padding-top (clearing the fixed header) is what determines its
+       position — centering would otherwise still place tall content up
+       under the header regardless of that padding. */
+    align-items: flex-start;
+    height: auto;
+    min-height: 100vh;
+  }
 }
 
 .contact-hero-video {
@@ -898,6 +998,15 @@ svg {
   display: flex;
   flex-direction: column;
   gap: 48px;
+
+  @media (max-width: 768px) {
+    gap: 32px;
+    /* .contact-hero vertically centers this container; when the fixed
+       .site-header (~91px tall on mobile) overlaps that centered content,
+       nothing below pushes it clear. Top-align + explicit clearance fixes it
+       regardless of how tall the content is. */
+    padding-top: 130px;
+  }
 }
 
 .contact-top {
@@ -913,6 +1022,10 @@ svg {
   font-weight: 700;
   font-size: 4vw;
   line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
 }
 
 .contact-subtitle {
@@ -922,6 +1035,10 @@ svg {
   font-size: 1.2vw;
   line-height: 1.6;
   max-width: 650px;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 }
 
 .contact-separator {
@@ -935,6 +1052,16 @@ svg {
   display: flex;
   gap: 32px;
   align-items: flex-start;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    /* Base align-items:flex-start sizes children to their own content width
+       (correct for the desktop row layout). Once stacked into a column for
+       mobile, that same value shrink-wraps the info-card and form instead of
+       letting them fill the container — override to stretch so both go
+       full-width. */
+    align-items: stretch;
+  }
 }
 
 .contact-info-card {
@@ -948,6 +1075,11 @@ svg {
   justify-content: center;
   gap: 16px;
   padding: 32px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+  }
 }
 
 .contact-info-item {
@@ -955,6 +1087,10 @@ svg {
   color: var(--bg);
   font-weight: 600;
   font-size: 1.1vw;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 }
 
 .contact-info-item a {
@@ -977,6 +1113,10 @@ svg {
 .contact-form-row {
   display: flex;
   gap: 12px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 }
 
 .contact-form-row .contact-input {
@@ -995,6 +1135,12 @@ svg {
   direction: rtl;
   outline: none;
   transition: border-color 0.3s ease;
+
+  @media (max-width: 768px) {
+    /* 16px, not smaller — anything under 16px triggers an unwanted
+       auto-zoom on focus in Safari on iOS. */
+    font-size: 16px;
+  }
 }
 
 .contact-input::placeholder {
@@ -1015,6 +1161,10 @@ svg {
   font-family: inherit;
   font-size: 1vw;
   padding: 10px 32px;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 }
 
 .site-header {
@@ -1088,6 +1238,17 @@ svg {
   max-width: 1300px;
   margin-inline: auto;
 
+  @media (max-width: 768px) {
+    gap: 12px;
+    /* Bottom padding trimmed to 20px so the gap to the description text
+       below (in .division-columns) is exactly 20px — top/sides unchanged. */
+    padding: 40px 20px 20px;
+    /* Same RTL flex-column quirk as .good-to-know-card: flex-start (not
+       flex-end) is what lands on the right. */
+    align-items: flex-start;
+    text-align: right;
+  }
+
   h1,
   h2,
   h3 {
@@ -1116,25 +1277,39 @@ svg {
 }
 
 .division-logo {
-  height: 64px;
-  width: auto;
+  width: 405.6px;
+  height: 95.0832px;
+  object-fit: contain;
+
+  @media (max-width: 768px) {
+    width: 260px;
+    height: 61.1px;
+  }
 }
 
 .division-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 48px;
-  padding: 56px 5vw;
+  padding: 56px 11vw;
   align-items: center;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    gap: 32px;
+    /* Top padding removed — .division-heading already contributes the 20px
+       gap above (its bottom padding) so the two don't stack. */
+    padding: 0 20px 40px;
   }
 }
 
 .division-text {
   text-align: right;
   padding: 5vw 0 5vw 5vw;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 }
 
 .division-description {
@@ -1180,6 +1355,24 @@ svg {
       transform: scaleX(1);
     }
   }
+}
+
+/* "בקרו באתר" CTA on the division template page */
+.division-text .division-cta {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+/* "ליצירת קשר" CTA on the social-responsibility page */
+.social-cta-section .division-cta {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+/* "צרו קשר" submit button on the contact page */
+.contact-form .contact-submit {
+  padding-left: 40px;
+  padding-right: 40px;
 }
 
 .division-featured-image {
@@ -1259,13 +1452,23 @@ svg {
 
 .good-to-know {
   padding: 56px 8vw;
+
+  @media (max-width: 768px) {
+    padding: 40px 20px;
+  }
 }
 
 .good-to-know-heading {
   text-align: center;
-  font-size: clamp(32px, 4.2vw, 60px);
+  color: var(--text);
+  font-size: 5vw;
   font-weight: 700;
-  margin: 0 0 40px;
+  margin: 0 0 4vw;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    margin: 0 0 24px;
+  }
 }
 
 .good-to-know-grid {
@@ -1276,24 +1479,37 @@ svg {
 
   @media (max-width: 768px) {
     grid-template-columns: minmax(0, 400px);
+    gap: 24px;
   }
 }
 
 .good-to-know-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  /* Cross-axis start/end for a column flex container follows inline-start/end,
+     which is the *opposite* of what's intuitive in RTL: flex-start (not
+     flex-end) is what lands on the right. */
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: right;
   gap: 16px;
   padding: 48px 32px;
   width: 100%;
+  height: 100%;
   max-width: 400px;
-  aspect-ratio: 1 / 1;
+  min-height: 400px;
   margin-inline: auto;
   background: var(--brand);
   color: var(--bg);
   border-radius: 14px;
+
+  @media (max-width: 768px) {
+    /* Equal-height across a row only matters when cards actually share a row
+       (3-column desktop grid); mobile stacks them 1-per-row, so a forced
+       400px minimum just wastes space here. */
+    min-height: auto;
+    padding: 32px 24px;
+  }
 }
 
 .good-to-know-icon {
@@ -1302,14 +1518,22 @@ svg {
 }
 
 .good-to-know-title {
-  font-size: clamp(28px, 3.4vw, 48px);
+  font-size: 1.5vw;
   font-weight: 500;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
 }
 
 .good-to-know-text {
-  font-size: clamp(15px, 1.3vw, 18px);
+  font-size: 1vw;
   font-weight: 400;
   margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 15px;
+  }
 }
 
 .site-footer {
@@ -1473,22 +1697,7 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.about-circle-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-}
-
-.about-circle-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: #2A3950CC;
+  background: var(--bg);
 }
 
 .about-circle-stage {
@@ -1513,18 +1722,31 @@ svg {
   width: 56%;
 }
 
-.about-circle-text {
+.about-circle-item {
   position: absolute;
   inset: 0;
-  margin: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.8vw;
+  text-align: center;
+}
+
+.about-circle-title {
+  margin: 0;
+  color: var(--text);
+  font-weight: 900;
+  font-size: 1.8vw;
+  line-height: 1.2;
+}
+
+.about-circle-text {
+  margin: 0;
   color: var(--text);
   font-weight: 400;
   font-size: 1vw;
   line-height: 1.4;
-  text-align: center;
 }
 
 .about-icons-section {
@@ -1855,4 +2077,118 @@ svg {
   font-weight: 400;
   font-size: 1vw;
   line-height: 1.2;
+}
+
+/* ── About: Our Story (road timeline) ── */
+
+.about-story {
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.about-story-head {
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 140px 5vw 40px;
+  text-align: center;
+}
+
+.about-story-title {
+  margin: 0;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 5vw;
+  line-height: 1.2em;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.about-story-subtitle {
+  margin: 0;
+  color: var(--text);
+  font-weight: 400;
+  font-size: 1.5vw;
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease 0.12s, transform 0.7s ease 0.12s;
+}
+
+.about-story-head.is-visible .about-story-title,
+.about-story-head.is-visible .about-story-subtitle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.about-story-viewport {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.about-story-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 260vw;
+  aspect-ratio: 3084 / 1602;
+  will-change: transform;
+}
+
+.about-story-road {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* The wrapper is positioned (left/top + transform) inline per orientation so the
+   30px road gaps are exact screen px (see AboutStory.tsx pinStyle/itemStyle);
+   the inner img is what GSAP scales on reveal, keeping the two transforms apart. */
+.about-story-pin-wrap {
+  position: absolute;
+}
+
+.about-story-pin {
+  display: block;
+  width: 91px;
+  height: 91px;
+  aspect-ratio: 1 / 1;
+}
+
+.about-story-item {
+  position: absolute;
+  width: 30vw;
+  text-align: right;
+}
+
+.about-story-year {
+  color: #65c7c5;
+  font-weight: 700;
+  font-size: 3vw;
+  line-height: 1;
+  margin-bottom: 0.6vw;
+}
+
+.about-story-desc {
+  margin: 0;
+  color: var(--text);
+  font-weight: 400;
+  font-size: 1.1vw;
+  line-height: 1.4;
+}
+
+.about-story-desc--bullets {
+  list-style: disc;
+  padding: 0;
+  padding-inline-start: 1.2em;
+}
+
+.about-story-desc--bullets li {
+  margin-bottom: 0.3em;
 }

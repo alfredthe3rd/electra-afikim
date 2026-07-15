@@ -189,10 +189,26 @@ export interface Division {
     | {
         icon?: (number | null) | Media;
         title?: string | null;
-        text?: string | null;
+        text?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         id?: string | null;
       }[]
     | null;
+  goodToKnowHeading?: string | null;
+  goodToKnowText?: string | null;
   /**
    * נוצר אוטומטית משם החטיבה. ניתן לערוך ידנית.
    */
@@ -347,6 +363,8 @@ export interface DivisionsSelect<T extends boolean = true> {
         text?: T;
         id?: T;
       };
+  goodToKnowHeading?: T;
+  goodToKnowText?: T;
   slug?: T;
   updatedAt?: T;
   createdAt?: T;

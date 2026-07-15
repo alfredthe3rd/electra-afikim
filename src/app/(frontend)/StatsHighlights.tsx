@@ -70,13 +70,32 @@ export function StatsHighlights() {
         { opacity: 0, y: 20 },
       )
 
-      countUp(0)
+      // stat 0 is driven by its own entrance ScrollTrigger below (it counts up
+      // as the section rises into view, while the number is centred), so the
+      // pinned-scroll logic here only handles stats 1..n. Starting at 0 keeps
+      // index 0 out of the catch-up loop.
       let activeIndex = 0
 
       const lastStep = STATS.length - 1
       const activeAt = STATS.map((_stat, i) => i / lastStep)
 
       gsap.set(track, { x: -(track.scrollWidth - window.innerWidth) })
+
+      // Count the first stat up *as the section rises into view* — while the
+      // number is horizontally centred and still. Scrubbing it to the entrance
+      // (top-bottom → top-top) means it reaches 1,200 exactly when the section
+      // pins, instead of a time-based burst that slides off-centre mid-count
+      // once the pinned track starts moving.
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: 'top bottom',
+        end: 'top top',
+        scrub: true,
+        onUpdate: (self) => {
+          const el = numberRefs[0].current
+          if (el) el.textContent = formatNumber(STATS[0].num * self.progress) + STATS[0].suffix
+        },
+      })
 
       ScrollTrigger.create({
         end: '+=400%',
@@ -94,7 +113,7 @@ export function StatsHighlights() {
             // one — otherwise a skipped step's counter stays stuck at 0.
             const step = index > activeIndex ? 1 : -1
             for (let i = activeIndex + step; ; i += step) {
-              countUp(i)
+              if (i !== 0) countUp(i) // stat 0 handled by the entrance trigger
               if (i === index) break
             }
             activeIndex = index
@@ -129,7 +148,7 @@ export function StatsHighlights() {
         {STATS.map((stat, i) => (
           <div className="stats-track-item" key={stat.legendText}>
             <div className="stats-hero-number" ref={numberRefs[i]}>
-              {i === 0 ? formatNumber(stat.num) + stat.suffix : '0'}
+              0
             </div>
             <div className="stats-hero-overlay">{stat.textOverlay}</div>
           </div>

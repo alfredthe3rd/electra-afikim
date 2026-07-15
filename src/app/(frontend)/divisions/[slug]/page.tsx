@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
+import { RichText } from '@payloadcms/richtext-lexical/react'
 
 import config from '@/payload.config'
 import type { Media } from '@/payload-types'
 
+import { DivisionAnimations } from './DivisionAnimations'
 import { DivisionHeading } from './DivisionHeading'
-import { StatsCounter } from './StatsCounter'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -43,12 +44,13 @@ export default async function DivisionPage({ params }: Props) {
     description,
     featuredImage,
     externalUrl,
-    statsByNumbers,
     goodToKnow,
   } = division
 
   return (
     <article className="division">
+      <DivisionAnimations />
+
       {isMedia(bannerImage) && bannerImage.url && (
         <div className="division-banner">
           <img alt={bannerImage.alt} src={bannerImage.url} />
@@ -83,18 +85,6 @@ export default async function DivisionPage({ params }: Props) {
         </div>
       </div>
 
-      {statsByNumbers && statsByNumbers.length > 0 && (
-        <StatsCounter
-          items={statsByNumbers.map((stat, index) => ({
-            id: stat.id ?? String(index),
-            imageAlt: isMedia(stat.image) ? stat.image.alt : null,
-            imageUrl: isMedia(stat.image) ? (stat.image.url ?? null) : null,
-            number: stat.number ?? null,
-            title: stat.title ?? null,
-          }))}
-        />
-      )}
-
       {goodToKnow && goodToKnow.length > 0 && (
         <section className="good-to-know">
           <h2 className="good-to-know-heading">כדאי לדעת עלינו</h2>
@@ -105,7 +95,11 @@ export default async function DivisionPage({ params }: Props) {
                   <img alt={item.icon.alt} className="good-to-know-icon" src={item.icon.url} />
                 )}
                 {item.title && <div className="good-to-know-title">{item.title}</div>}
-                {item.text && <p className="good-to-know-text">{item.text}</p>}
+                {item.text && (
+                  <div className="good-to-know-text">
+                    <RichText data={item.text} />
+                  </div>
+                )}
               </div>
             ))}
           </div>

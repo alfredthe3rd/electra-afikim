@@ -9,13 +9,16 @@ gsap.registerPlugin(ScrollTrigger)
 
 const HEADER_REVEAL_END = 0.2
 const LOGO_CROSSFADE_START = 0.85
-const TITLES_START = 0.88
+// Progress at which the end-titles reveal — matched to the "inside the tunnel"
+// lottie frame the client picked. Nudge this to re-time the reveal to a frame.
+const TITLES_START = 0.66
 
 export function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const lottieRef = useRef<HTMLDivElement>(null)
   const logoRef = useRef<HTMLImageElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
+  const titleFillRef = useRef<HTMLSpanElement>(null)
   const subtitleRef = useRef<HTMLHeadingElement>(null)
 
   useEffect(() => {
@@ -30,6 +33,12 @@ export function Hero() {
 
     const measure = () => {
       if (!logoRef.current || !headerLogo) return
+      // Read both elements at their neutral transforms so the computed scale/
+      // offset never depend on whatever the scroll (or the header-reveal y:-16)
+      // happens to have applied when measure() runs — otherwise the logo docks
+      // ~16px too high and bleeds above the header pill.
+      if (header) gsap.set(header, { y: 0 })
+      gsap.set(logoRef.current, { scale: 1, x: 0, y: 0, xPercent: -50, yPercent: -50 })
       const big = logoRef.current.getBoundingClientRect()
       const small = headerLogo.getBoundingClientRect()
       logoScale = small.height / big.height
@@ -57,12 +66,26 @@ export function Hero() {
 
       const titlesTl = gsap.timeline({ paused: true })
       titlesTl
-        .fromTo(titleRef.current, { opacity: 0 }, { duration: 0.3, ease: 'power1.out', opacity: 1 })
+        // 1. Title rises in as plain white text.
+        .fromTo(
+          titleRef.current,
+          { autoAlpha: 0, y: 40 },
+          { duration: 0.6, ease: 'power3.out', autoAlpha: 1, y: 0 },
+        )
+        // 2. The brand gradient wipes across it (right→left, RTL), filling the
+        //    white letters with colour.
+        .fromTo(
+          titleFillRef.current,
+          { clipPath: 'inset(0 0 0 100%)' },
+          { duration: 0.9, ease: 'power2.inOut', clipPath: 'inset(0 0 0 0%)' },
+          '-=0.15',
+        )
+        // 3. Subtitle slides in from the side behind its mask.
         .fromTo(
           subtitleRef.current,
           { xPercent: 100 },
           { duration: 0.8, ease: 'power2.inOut', xPercent: 0 },
-          '-=0.1',
+          '-=0.6',
         )
 
       let titlesPlayed = false
@@ -109,12 +132,6 @@ export function Hero() {
             titlesPlayed = false
             titlesTl.reverse()
           }
-
-          const fillProgress = Math.max(
-            0,
-            Math.min((progress - TITLES_START) / (1 - TITLES_START), 1),
-          )
-          gsap.set(titleRef.current, { backgroundPosition: `${fillProgress * 100}% 0%` })
         },
         pin: true,
         scrub: true,
@@ -137,7 +154,14 @@ export function Hero() {
       <img alt="אלקטרה אפיקים" className="hero-logo" ref={logoRef} src="/main-logo-alectra.png" />
       <div className="hero-end-titles">
         <h1 className="hero-end-title" ref={titleRef}>
-          מעצמת התחבורה של ישראל
+          <span className="hero-end-title-text hero-end-title-base">מעצמת התחבורה של ישראל</span>
+          <span
+            aria-hidden="true"
+            className="hero-end-title-text hero-end-title-fill"
+            ref={titleFillRef}
+          >
+            מעצמת התחבורה של ישראל
+          </span>
         </h1>
         <div className="hero-end-subtitle-mask">
           <h2 className="hero-end-subtitle" ref={subtitleRef}>

@@ -48,3 +48,13 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+.env*
+
+# auto-installed by Vercel marketplace integrations (agent skills), not app code
+.agents/
+.claude/
+skills-lock.json
+
+# raw source video(s) for regenerating baked animations — large binaries, not
+# needed by the running site (kept locally only)
+/source-assets

@@ -72,6 +72,9 @@ export function AboutVision() {
         )
       }
 
+      // No `snap` — it fights Lenis smooth-scroll and traps the user in the
+      // pinned section (see AboutCircle for the full explanation). The card
+      // crossfade still plays via `scrub`.
       ScrollTrigger.create({
         animation: tl,
         anticipatePin: 1,
@@ -79,12 +82,6 @@ export function AboutVision() {
         pin: true,
         pinSpacing: true,
         scrub: 0.6,
-        snap: {
-          delay: 0,
-          duration: { min: 0.3, max: 0.5 },
-          ease: 'power1.inOut',
-          snapTo: 1 / (STEP_COUNT - 1),
-        },
         start: 'top top',
         trigger: pinRef.current,
       })

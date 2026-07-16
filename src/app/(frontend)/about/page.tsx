@@ -8,7 +8,7 @@ import { AboutVision } from './AboutVision'
 
 export default function AboutPage() {
   return (
-    <>
+    <div className="about-page">
       <AboutHero />
       <AboutCircle />
       <AboutIconsGrid />
@@ -16,6 +16,6 @@ export default function AboutPage() {
       <AboutValuesGrid />
       <AboutTeam />
       <AboutStory />
-    </>
+    </div>
   )
 }

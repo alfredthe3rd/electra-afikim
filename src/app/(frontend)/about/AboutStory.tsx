@@ -168,6 +168,15 @@ export function AboutStory() {
       const descs = gsap.utils.toArray<HTMLElement>('.about-story-desc')
       const revealDur = 0.2
       MILESTONES.forEach((m, i) => {
+        // The first milestone (2008) is already on screen the moment the
+        // section pins — it should just be there, not pop in. Every other
+        // milestone keeps its scroll-triggered pin/text reveal.
+        if (i === 0) {
+          gsap.set(pins[i], { autoAlpha: 1, scale: 1 })
+          gsap.set([years[i], descs[i]], { autoAlpha: 1, y: 0 })
+          return
+        }
+
         let t: number
         if (m.orient === 'v') {
           const targetY = REVEAL_SCREEN_Y * vh - (m.y / ROAD_H) * ch

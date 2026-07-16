@@ -14,6 +14,10 @@
   --body: clamp(17px, 1.5vw, 22px);
 }
 
+.about-page {
+  --bg: #2c3f59;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -423,7 +427,7 @@ svg {
 .stats-hero-number {
   color: var(--brand-2);
   font-weight: 700;
-  font-size: 37.76vw;
+  font-size: 30.21vw;
   line-height: 1;
 }
 
@@ -462,7 +466,7 @@ svg {
 .stats-legend-number {
   color: var(--brand-2);
   font-weight: 700;
-  font-size: clamp(22px, 3vw, 44px);
+  font-size: clamp(17.6px, 2.4vw, 35.2px);
 }
 
 .stats-legend-text {
@@ -893,19 +897,10 @@ svg {
 }
 
 .social-cta-title {
-  margin: 0 0 16px;
+  margin: 0 0 32px;
   font-size: clamp(22px, 2.5vw, 42px);
   font-weight: 700;
   color: var(--text);
-}
-
-.social-cta-subtitle {
-  margin: 0 0 32px;
-  font-size: clamp(14px, 1.2vw, 22px);
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.7);
-  max-width: 600px;
-  line-height: 1.6;
 }
 
 /* ── Social Carousel ── */
@@ -914,21 +909,22 @@ svg {
   padding: 60px 0;
   background: var(--bg);
   overflow: hidden;
+  /* The page is RTL, which would pin the max-content rows to the right and let
+     them overflow off-screen to the left. Force LTR here (the content is only
+     decorative images) so each row starts at the left edge and overflows to the
+     right — which the -50% slide relies on. */
+  direction: ltr;
 }
 
 .social-carousel-row {
   display: flex;
-  gap: 16px;
   width: max-content;
   padding: 8px 0;
-}
-
-.social-carousel-row--rtl {
-  animation: scroll-rtl 30s linear infinite;
-}
-
-.social-carousel-row--ltr {
-  animation: scroll-ltr 30s linear infinite;
+  /* Force LTR flow so the two identical copies lay out left-to-right and the
+     -50% slide lands the clone exactly over the original. The visual direction
+     of each row is set by the GSAP tween, not the flex direction. */
+  direction: ltr;
+  will-change: transform;
 }
 
 .social-carousel-img {
@@ -937,16 +933,11 @@ svg {
   object-fit: cover;
   border-radius: 12px;
   flex-shrink: 0;
-}
-
-@keyframes scroll-rtl {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes scroll-ltr {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
+  /* Per-image spacing via margin (not a flex `gap`) so the last image of the
+     first copy keeps its trailing 16px and the copy→copy seam matches every
+     other gap exactly — the flex `gap` would drop that trailing space and
+     nudge the seam (PROGRESS.md "lesson #5"). */
+  margin-inline-end: 16px;
 }
 
 /* ── Contact Page ── */
@@ -1210,7 +1201,7 @@ svg {
   flex-wrap: wrap;
 
   a {
-    font-size: clamp(13px, 1vw, 16px);
+    font-size: clamp(13px, 1.2vw, 16px);
     color: var(--brand-2);
     text-decoration: none;
   }
@@ -1359,6 +1350,12 @@ svg {
 
 /* "בקרו באתר" CTA on the division template page */
 .division-text .division-cta {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+/* "אודות אלקטרה אפיקים" CTA on the homepage */
+.about-teaser .about-teaser-cta {
   padding-left: 40px;
   padding-right: 40px;
 }
@@ -1894,7 +1891,7 @@ svg {
 }
 
 .about-vision-bottom {
-  height: 80vh;
+  height: 100vh;
   direction: ltr;
   display: flex;
   width: 100%;
@@ -1952,13 +1949,16 @@ svg {
   justify-content: center;
   width: 50%;
   height: 100%;
-  padding: 3vw;
+  padding: 1vw;
   background: var(--bg);
 }
 
 .about-vision-video {
   width: 100%;
   height: 100%;
+  /* The clip is portrait (2304×4096). `contain` shows the whole frame — the
+     full bus AND the road line beneath it — never cropped. The panel is a tall
+     (100vh) column so the whole portrait frame still renders large. */
   object-fit: contain;
 }
 

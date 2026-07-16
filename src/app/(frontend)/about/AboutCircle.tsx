@@ -85,6 +85,10 @@ export function AboutCircle() {
         0,
       )
 
+      // NOTE: no `snap` here. ScrollTrigger's snap sets the scroll position
+      // directly, which fights Lenis smooth-scroll (both try to own the scroll)
+      // and traps the user in this pinned section — gentle scrolls can't get
+      // past. The stepped crossfade still plays via `scrub` as you scroll.
       ScrollTrigger.create({
         animation: tl,
         anticipatePin: 1,
@@ -92,12 +96,6 @@ export function AboutCircle() {
         pin: true,
         pinSpacing: true,
         scrub: 0.3,
-        snap: {
-          delay: 0,
-          duration: { min: 0.2, max: 0.4 },
-          ease: 'power1.inOut',
-          snapTo: 1 / (STEP_COUNT - 1),
-        },
         start: 'top top',
         trigger: sectionRef.current,
       })

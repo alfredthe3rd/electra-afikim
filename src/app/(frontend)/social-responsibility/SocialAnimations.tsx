@@ -62,9 +62,9 @@ export function SocialAnimations() {
         })
       }
 
-      // 4. CTA section — title, subtitle and button fade up together.
+      // 4. CTA section — title and button fade up together.
       const ctaEls = gsap.utils.toArray<HTMLElement>(
-        '.social-cta-title, .social-cta-subtitle, .social-cta-section .division-cta',
+        '.social-cta-title, .social-cta-section .division-cta',
       )
       if (ctaEls.length) {
         gsap.set(ctaEls, { autoAlpha: 0, y: 30 })

@@ -2,7 +2,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Fragment, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -131,19 +131,7 @@ export function DivisionsSplit() {
       <div className="divisions-split-left">
         <div className="divisions-split-header">
           <h2 className="divisions-split-title" ref={titleRef}>
-            {TITLE_WORDS.map((word, i) => (
-              <Fragment key={i}>
-                <span className="word-mask">
-                  <span
-                    className="word-inner"
-                    style={{ transitionDelay: `${i * 0.1}s` }}
-                  >
-                    {word}
-                  </span>
-                </span>
-                {i < TITLE_WORDS.length - 1 && ' '}
-              </Fragment>
-            ))}
+            {TITLE_WORDS.join(' ')}
           </h2>
           <p className="divisions-split-subtitle" ref={subtitleRef}>
             אלקטרה אפיקים מרכזת תחתיה מגוון תחומי פעילות משלימים,

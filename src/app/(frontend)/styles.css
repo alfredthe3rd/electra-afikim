@@ -334,10 +334,9 @@ svg {
   margin: 0;
   color: var(--text);
   font-weight: 700;
-  font-size: 3.8vw;
-  line-height: 1.25em;
-  max-width: 100%;
-  word-wrap: break-word;
+  font-size: 2.8vw;
+  line-height: 1.1em;
+  white-space: nowrap;
 }
 
 .divisions-split-subtitle {
@@ -354,6 +353,8 @@ svg {
   width: 100%;
   max-width: 480px;
   height: 400px;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 .divisions-split-content {

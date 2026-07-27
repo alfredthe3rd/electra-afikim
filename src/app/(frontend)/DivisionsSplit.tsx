@@ -2,7 +2,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -12,6 +12,8 @@ type Step = {
   text: string
   video: string
 }
+
+const TITLE_WORDS = 'קורת גג אחת לעולם התחבורה'.split(' ')
 
 const STEPS: Step[] = [
   {
@@ -62,43 +64,43 @@ const STEP_COUNT = STEPS.length
 
 export function DivisionsSplit() {
   const sectionRef = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
+  const subtitleRef = useRef<HTMLParagraphElement>(null)
   const slidesRef = useRef<(HTMLDivElement | null)[]>([])
-  const videosRef = useRef<(HTMLVideoElement | null)[]>([])
+  const videosRef = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
     if (!sectionRef.current) return
 
     const slides = slidesRef.current.filter(Boolean) as HTMLDivElement[]
-    const videos = videosRef.current.filter(Boolean) as HTMLVideoElement[]
-    if (slides.length !== STEP_COUNT || videos.length !== STEP_COUNT) return
+    const videoContainers = videosRef.current.filter(Boolean) as HTMLDivElement[]
+    if (slides.length !== STEP_COUNT || videoContainers.length !== STEP_COUNT) return
 
-    // Set initial state: first slide visible, rest hidden
+    // Set initial state
+    gsap.set(titleRef.current, { opacity: 1, scale: 1 })
+    gsap.set(subtitleRef.current, { opacity: 1, scale: 1 })
     gsap.set(slides[0], { opacity: 1, y: 0 })
-    gsap.set(videos[0], { opacity: 1 })
+    gsap.set(videoContainers[0], { y: 0 })
     for (let i = 1; i < STEP_COUNT; i++) {
       gsap.set(slides[i], { opacity: 0, y: 30 })
-      gsap.set(videos[i], { opacity: 0 })
+      gsap.set(videoContainers[i], { y: '100%' })
     }
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline()
 
       for (let i = 0; i < STEP_COUNT - 1; i++) {
-        // Fade out current slide + video
+        // Fade out current slide
         tl.to(slides[i], { opacity: 0, y: -20, duration: 0.5, ease: 'power2.in' }, `step${i}`)
-        tl.to(videos[i], { opacity: 0, duration: 0.5, ease: 'power2.in' }, `step${i}`)
 
-        // Fade in next slide + video
+        // Slide up next video (from 100% to 0)
+        tl.to(videoContainers[i + 1], { y: 0, duration: 0.6, ease: 'power2.out' }, `step${i}+=0.15`)
+
+        // Fade in next slide
         tl.fromTo(
           slides[i + 1],
           { opacity: 0, y: 30 },
           { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
-          `step${i}+=0.25`,
-        )
-        tl.fromTo(
-          videos[i + 1],
-          { opacity: 0 },
-          { opacity: 1, duration: 0.5, ease: 'power2.out' },
           `step${i}+=0.25`,
         )
       }
@@ -127,6 +129,28 @@ export function DivisionsSplit() {
   return (
     <section className="divisions-split" ref={sectionRef}>
       <div className="divisions-split-left">
+        <div className="divisions-split-header">
+          <h2 className="divisions-split-title" ref={titleRef}>
+            {TITLE_WORDS.map((word, i) => (
+              <Fragment key={i}>
+                <span className="word-mask">
+                  <span
+                    className="word-inner"
+                    style={{ transitionDelay: `${i * 0.1}s` }}
+                  >
+                    {word}
+                  </span>
+                </span>
+                {i < TITLE_WORDS.length - 1 && ' '}
+              </Fragment>
+            ))}
+          </h2>
+          <p className="divisions-split-subtitle" ref={subtitleRef}>
+            אלקטרה אפיקים מרכזת תחתיה מגוון תחומי פעילות משלימים,
+            <br />
+            היוצרים מעטפת מלאה לכל אתגר במעגל החיים
+          </p>
+        </div>
         <div className="divisions-split-content-stack">
           {STEPS.map((step, i) => (
             <div
@@ -143,16 +167,20 @@ export function DivisionsSplit() {
       <div className="divisions-split-right">
         <div className="divisions-split-video-stack">
           {STEPS.map((step, i) => (
-            <video
-              autoPlay
-              className="divisions-split-video"
+            <div
+              className="divisions-split-video-container"
               key={step.id}
-              loop
-              muted
-              playsInline
               ref={(el) => { videosRef.current[i] = el }}
-              src={step.video}
-            />
+            >
+              <video
+                autoPlay
+                className="divisions-split-video"
+                loop
+                muted
+                playsInline
+                src={step.video}
+              />
+            </div>
           ))}
         </div>
       </div>

@@ -303,23 +303,55 @@ svg {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  background: var(--bg);
 }
 
 .divisions-split-left {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
   width: 50%;
   height: 100%;
-  padding: 5vw;
+  padding: 10vw 5vw;
   background: var(--bg);
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.divisions-split-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 16px;
+  direction: rtl;
+  text-align: right;
+  padding-top: 20px;
+}
+
+.divisions-split-title {
+  margin: 0;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 3.2vw;
+  line-height: 1.2em;
+}
+
+.divisions-split-subtitle {
+  margin: 0;
+  color: var(--text);
+  font-weight: 400;
+  font-size: 1.2vw;
+  max-width: 35vw;
+  line-height: 1.4em;
 }
 
 .divisions-split-content-stack {
   position: relative;
   width: 100%;
   max-width: 480px;
-  height: 100%;
+  height: 400px;
 }
 
 .divisions-split-content {
@@ -352,24 +384,37 @@ svg {
   align-items: center;
   justify-content: center;
   width: 50%;
-  height: 90%;
-  padding: 3vw;
+  height: 100%;
+  padding: 10vw 5vw;
   background: var(--bg);
+  box-sizing: border-box;
 }
 
 .divisions-split-video-stack {
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  border-radius: 24px;
 }
 
-.divisions-split-video {
+.divisions-split-video-container {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  transform: translateY(100%);
+  will-change: transform;
+}
+
+.divisions-split-video-container:first-child {
+  transform: translateY(0);
+}
+
+.divisions-split-video {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 24px;
 }
 
 .stats-section {

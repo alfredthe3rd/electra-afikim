@@ -1795,23 +1795,44 @@ svg {
 .about-hero-word,
 .about-hero-sub-word {
   display: inline-block;
+  /* Pre-hydration state: the GSAP entrance owns these. Hidden from the very
+     first paint so the page doesn't flash the full title before the effect
+     mounts and restarts it (perceived as a loading stutter). GSAP's inline
+     styles take over from here. */
+  opacity: 0;
+  visibility: hidden;
 }
 
-.about-circle-section {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
+/* The circle rides inside the hero (a single video-backed area): an
+   absolutely-centred layer that the pinned scrub crossfades in as the hero
+   titles leave — see AboutHero.tsx. */
+.about-hero-circle-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
+  /* Hidden from first paint — without this the ring renders stacked on the
+     titles until the GSAP effect mounts (load flash). GSAP takes over. */
+  opacity: 0;
+  visibility: hidden;
 }
 
 .about-circle-stage {
   position: relative;
   z-index: 2;
-  width: min(750px, 52vw);
+  /* The ring must never touch the floating header pill.
+     Term 1+2: 15% smaller than the original min(750px, 52vw).
+     Term 3 — the height guard: the stage is square and vertically centred in
+     the 100vh hero, so on a short window a width-only cap isn't enough (at
+     1688×772 the 15% circle still overlapped the menu by 49px). The header's
+     bottom edge is exactly `2vw + 83px` (.site-header margin-top +
+     .site-header-inner height), so clearing it by 16px requires
+     height ≤ 100vh − 2×(2vw + 83px + 16px) = 100vh − 4vw − 198px.
+     Calibrated so the guard is inert at 1440×900 and above — it only engages
+     on short windows. */
+  width: min(637.5px, 44.2vw, calc(100vh - 4vw - 198px));
   aspect-ratio: 1;
   display: flex;
   align-items: center;
@@ -1837,7 +1858,7 @@ svg {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.8vw;
+  gap: 0.68vw;
   text-align: center;
 }
 
@@ -1845,7 +1866,7 @@ svg {
   margin: 0;
   color: var(--text);
   font-weight: 900;
-  font-size: 1.8vw;
+  font-size: 2vw;
   line-height: 1.2;
 }
 

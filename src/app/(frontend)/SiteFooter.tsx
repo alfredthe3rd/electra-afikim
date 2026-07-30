@@ -76,6 +76,25 @@ export async function SiteFooter() {
           </div>
         </div>
       </div>
+
+      {/* Bottom strip — sits below the road line of the tree graphic. RTL, so
+          the legal links land on the right and the credit on the left. */}
+      <div className="site-footer-bottom">
+        <div className="site-footer-legal">
+          <Link href="/privacy-policy">מדיניות פרטיות</Link>
+          <span aria-hidden="true">|</span>
+          <Link href="/accessibility">הצהרת נגישות</Link>
+        </div>
+
+        <a
+          className="site-footer-credit"
+          href="https://sivan-group.net/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          קבוצת סיון – מיתוג I שיווק בדיגיטל I בניית אתרים
+        </a>
+      </div>
     </footer>
   )
 }

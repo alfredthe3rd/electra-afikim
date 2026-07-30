@@ -1733,6 +1733,112 @@ svg {
   }
 }
 
+/* The road line is the very bottom edge of tree-footer.png (verified: its last
+   pixel row is the line), and that graphic is pinned at `bottom: 5vw` — so the
+   strip *below* the road is exactly 5vw tall. Anchoring this bar to the same
+   reference keeps it inside that strip at every viewport width. */
+.site-footer-bottom {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 5vw;
+  z-index: 1;
+  height: 5vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* On a phone the two items have to stack, and 5vw (~38px) can't hold two
+     lines — so the graphic is lifted to 96px (below) and this strip matches it.
+     Stays anchored to the footer's bottom edge so it remains under the road. */
+  @media (max-width: 768px) {
+    height: 96px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .site-footer-graphic {
+    bottom: 96px;
+  }
+}
+
+.site-footer-legal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-size: 1vw;
+}
+
+.site-footer-credit {
+  font-size: 1vw;
+}
+
+@media (max-width: 768px) {
+  .site-footer-legal,
+  .site-footer-credit {
+    font-size: 15px;
+  }
+}
+
+/* ── Legal pages (privacy policy, accessibility statement) ──
+   Placeholders awaiting real content. Sizing follows the contact page pattern:
+   vw on desktop with an explicit px override under 768px. */
+.legal-page {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 1200px;
+  margin-inline: auto;
+  min-height: 60vh;
+  /* clears the floating header pill, whose bottom edge is 2vw + 83px */
+  padding: calc(4vw + 110px) 5vw 8vw;
+}
+
+.legal-page-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 4vw;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.legal-page-placeholder {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.2vw;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .legal-page {
+    padding: 130px 20px 48px;
+  }
+
+  .legal-page-title {
+    font-size: 32px;
+  }
+
+  .legal-page-placeholder {
+    font-size: 16px;
+  }
+}
+
 /* ── About Page ── */
 
 .about-hero {

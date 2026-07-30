@@ -58,3 +58,6 @@ skills-lock.json
 # raw source video(s) for regenerating baked animations — large binaries, not
 # needed by the running site (kept locally only)
 /source-assets
+
+# Working files from AI-assisted sessions (screenshots, measurement scripts)
+scratchpad/

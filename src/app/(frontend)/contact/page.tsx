@@ -28,9 +28,10 @@ export default function ContactPage() {
         <div className="contact-top">
           <h1 className="contact-title">דברו איתנו</h1>
           <p className="contact-subtitle">
-            כקבוצת תחבורה המניעה מיליוני אזרחים, אנו רואים בעצמנו שותף מרכזי
-            לעיצוב פני החברה והסביבה בישראל. המחויבות שלנו חורגת מעבר למדדים
-            העסקיים ונוגעת בלב האתגרים הלאומיים.
+            כקבוצת תחבורה המניעה מיליוני אזרחים, אנו רואים בעצמנו שותף מרכזי לעיצוב פני החברה
+            והסביבה בישראל.
+            <br className="contact-subtitle-break" />
+            המחויבות שלנו חורגת מעבר למדדים העסקיים ונוגעת בלב האתגרים הלאומיים.
           </p>
           <img alt="" className="contact-separator" src="/Vector%2018.svg" />
         </div>

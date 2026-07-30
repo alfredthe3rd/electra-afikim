@@ -2,7 +2,9 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
+
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -20,7 +22,6 @@ const STATS: Stat[] = [
   { legendText: 'חטיבות', num: 7, suffix: '', textOverlay: 'חטיבות' },
 ]
 
-const COUNT_DURATION = 0.6
 const LEGEND_FADE_WINDOW = 0.12
 
 const formatNumber = (value: number): string => Math.round(value).toLocaleString('en-US')
@@ -29,12 +30,6 @@ export function StatsHighlights() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
 
-  const numberRefs = [
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-  ]
   const legendRefs = [
     useRef<HTMLDivElement>(null),
     useRef<HTMLDivElement>(null),
@@ -42,26 +37,13 @@ export function StatsHighlights() {
     useRef<HTMLDivElement>(null),
   ]
 
-  useEffect(() => {
+  // useIsomorphicLayoutEffect (not useEffect) — this effect pins with
+  // ScrollTrigger; see the hook's comment for why the cleanup must be
+  // synchronous.
+  useIsomorphicLayoutEffect(() => {
     if (!trackRef.current) return
 
     const track = trackRef.current
-    const counters = STATS.map(() => ({ value: 0 }))
-
-    const countUp = (index: number) => {
-      const stat = STATS[index]
-      const el = numberRefs[index].current
-      counters[index].value = 0
-      gsap.to(counters[index], {
-        duration: COUNT_DURATION,
-        ease: 'power1.out',
-        onUpdate: () => {
-          if (el) el.textContent = formatNumber(counters[index].value) + stat.suffix
-        },
-        snap: { value: 1 },
-        value: stat.num,
-      })
-    }
 
     const ctx = gsap.context(() => {
       gsap.set(legendRefs[0].current, { opacity: 1, y: 0 })
@@ -70,54 +52,19 @@ export function StatsHighlights() {
         { opacity: 0, y: 20 },
       )
 
-      // stat 0 is driven by its own entrance ScrollTrigger below (it counts up
-      // as the section rises into view, while the number is centred), so the
-      // pinned-scroll logic here only handles stats 1..n. Starting at 0 keeps
-      // index 0 out of the catch-up loop.
-      let activeIndex = 0
-
       const lastStep = STATS.length - 1
       const activeAt = STATS.map((_stat, i) => i / lastStep)
-
-      gsap.set(track, { x: -(track.scrollWidth - window.innerWidth) })
-
-      // Count the first stat up *as the section rises into view* — while the
-      // number is horizontally centred and still. Scrubbing it to the entrance
-      // (top-bottom → top-top) means it reaches 1,200 exactly when the section
-      // pins, instead of a time-based burst that slides off-centre mid-count
-      // once the pinned track starts moving.
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: 'top bottom',
-        end: 'top top',
-        scrub: true,
-        onUpdate: (self) => {
-          const el = numberRefs[0].current
-          if (el) el.textContent = formatNumber(STATS[0].num * self.progress) + STATS[0].suffix
-        },
-      })
 
       ScrollTrigger.create({
         end: '+=400%',
         onUpdate: (self) => {
           const { progress } = self
 
+          // Track slides leftward (x: 0 → -distance): each next stat enters
+          // from the right — the natural RTL reading direction. The track is
+          // direction:ltr so stat 0 sits at the left end, on-screen at rest.
           const distance = track.scrollWidth - window.innerWidth
-          gsap.set(track, { x: (progress - 1) * distance })
-
-          const index = Math.round(progress * lastStep)
-          if (index !== activeIndex) {
-            // A single onUpdate tick can span more than one step if the
-            // user scrolls fast enough (or jumps via anchor/keyboard), so
-            // catch up every index in between rather than only the final
-            // one — otherwise a skipped step's counter stays stuck at 0.
-            const step = index > activeIndex ? 1 : -1
-            for (let i = activeIndex + step; ; i += step) {
-              if (i !== 0) countUp(i) // stat 0 handled by the entrance trigger
-              if (i === index) break
-            }
-            activeIndex = index
-          }
+          gsap.set(track, { x: -progress * distance })
 
           legendRefs.forEach((ref, i) => {
             if (i === 0) return
@@ -145,11 +92,9 @@ export function StatsHighlights() {
       </header>
 
       <div className="stats-track" ref={trackRef}>
-        {STATS.map((stat, i) => (
+        {STATS.map((stat) => (
           <div className="stats-track-item" key={stat.legendText}>
-            <div className="stats-hero-number" ref={numberRefs[i]}>
-              0
-            </div>
+            <div className="stats-hero-number">{formatNumber(stat.num) + stat.suffix}</div>
             <div className="stats-hero-overlay">{stat.textOverlay}</div>
           </div>
         ))}

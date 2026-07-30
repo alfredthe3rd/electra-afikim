@@ -2,8 +2,9 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { type CSSProperties, Fragment, useEffect, useRef } from 'react'
+import { type CSSProperties, Fragment, useRef } from 'react'
 
+import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect'
 import { useReveal } from '../useReveal'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -132,7 +133,10 @@ export function AboutStory() {
   const viewportRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  // useIsomorphicLayoutEffect (not useEffect) — this effect pins with
+  // ScrollTrigger; see the hook's comment for why the cleanup must be
+  // synchronous.
+  useIsomorphicLayoutEffect(() => {
     if (!viewportRef.current || !canvasRef.current) return
 
     const ctx = gsap.context(() => {

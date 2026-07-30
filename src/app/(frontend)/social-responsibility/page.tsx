@@ -78,6 +78,10 @@ export default function SocialResponsibilityPage() {
       {/* אזור 4 - כותרות + כפתור */}
       <section className="social-cta-section">
         <h2 className="social-cta-title">לפניות, שאלות והצעות בנושא אחריות חברתית</h2>
+        <p className="social-cta-subtitle">
+          אנחנו מזמינים אתכם לכתוב לנו כיצד אנחנו יכולים לפעול טוב יותר למען החברה והסביבה
+          בישראל.
+        </p>
         <a className="division-cta" href="/contact">ליצירת קשר</a>
       </section>
 

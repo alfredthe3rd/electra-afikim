@@ -209,12 +209,39 @@ svg {
 }
 
 .about-teaser {
-  max-width: 1100px;
+  position: relative;
   width: 100%;
-  margin: 0 auto;
-  padding: 96px 24px;
-  background: var(--bg);
+  /* Locked to the road SVG's viewBox (1680×700) so the road's right-hand
+     descent ends exactly at the divisions (videos) section below. */
+  aspect-ratio: 1680 / 700;
+  /* Pulls the road up into the hero's empty lower half so it picks up right
+     after the hero titles. Transparent (html bg is the same --bg) so the
+     overlap never paints a hard edge over the hero's lottie. The 22vh keeps
+     ~13vh clearance below the hero subtitle at any viewport height. */
+  margin-top: -22vh;
   overflow: hidden;
+}
+
+/* The decorative road: emerges from the hero at top-left, crosses above the
+   title, descends along the right edge into the divisions section. */
+.about-teaser-road {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.about-teaser-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  /* Top padding tracks the road's horizontal band (bottom edge = 198.5/1680
+     of the viewport width) plus breathing room, so the title clears it at
+     every screen width. */
+  padding: calc(11.8vw + 54px) 24px 64px;
 }
 
 .about-teaser-title {
@@ -250,6 +277,15 @@ svg {
 
 .is-visible .word-inner {
   transform: translate3d(0, 0, 0);
+}
+
+/* The about-teaser title words are GSAP-driven (masked rise + settle via
+   ScrollTrigger) — neutralize the shared CSS reveal so its transition can't
+   fight GSAP's inline transforms. Extra .word-mask level outranks the
+   .is-visible rule above. */
+.about-teaser-title .word-mask .word-inner {
+  transform: none;
+  transition: none;
 }
 
 .about-teaser-cta {
@@ -309,7 +345,10 @@ svg {
 .divisions-split-left {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  /* flex-end (panel is LTR): title, subtitle, logo and paragraph all share
+     one right-hand start line — the RTL reading edge — matching the content
+     stack that is already pushed right via margin-left: auto. */
+  align-items: flex-end;
   justify-content: flex-start;
   width: 50%;
   height: 100%;
@@ -457,7 +496,10 @@ svg {
   left: 0;
   display: flex;
   flex-wrap: nowrap;
-  direction: rtl;
+  /* ltr: stat 0 sits at the track's left end (on-screen at rest, x: 0) and
+     the pinned scroll slides the track leftward, so each next stat enters
+     from the right — see StatsHighlights.tsx. */
+  direction: ltr;
   width: 400vw;
   height: 100%;
 }
@@ -945,9 +987,18 @@ svg {
 }
 
 .social-cta-title {
-  margin: 0 0 32px;
+  margin: 0 0 12px;
   font-size: clamp(22px, 2.5vw, 42px);
   font-weight: 700;
+  color: var(--text);
+}
+
+/* Half the title's size (2.5vw→1.25vw, 42→21px cap; 14px floor keeps it
+   readable on small screens), regular weight. */
+.social-cta-subtitle {
+  margin: 0 0 32px;
+  font-size: clamp(14px, 1.25vw, 21px);
+  font-weight: 400;
   color: var(--text);
 }
 
@@ -1073,10 +1124,22 @@ svg {
   font-weight: 400;
   font-size: 1.2vw;
   line-height: 1.6;
-  max-width: 650px;
+  /* Wide enough that each of the two sentences holds its own line (the
+     explicit <br> below sets the break); 650px forced a 4-line wrap. */
+  max-width: min(1150px, 90vw);
 
   @media (max-width: 768px) {
     font-size: 16px;
+    max-width: 100%;
+  }
+}
+
+/* The forced two-line split is a desktop layout choice — on narrow screens
+   the sentences wrap anyway, so the hard break would only strand a short
+   fragment. */
+@media (max-width: 768px) {
+  .contact-subtitle-break {
+    display: none;
   }
 }
 
@@ -2088,14 +2151,14 @@ svg {
 }
 
 .about-team-photo {
-  width: 231.974px;
-  /* Source photos are 3:4 portraits (150×200). A 1:1 square frame forced
-     ~25% vertical crop (heads or chests cut off), so the frame matches the
-     photos' 3:4 ratio instead — nothing is cropped. */
-  height: 309.3px;
+  /* 231×231 square per the Figma. Source photos are 3:4 portraits, so cover
+     crops ~25% of their height — anchored to the top edge the crop comes
+     entirely from the bottom (chest), never the head. */
+  width: 231px;
+  height: 231px;
   border-radius: 23.671px;
   object-fit: cover;
-  object-position: center;
+  object-position: center top;
   border: 1px solid transparent;
   transition: border-color 0.3s ease;
 }

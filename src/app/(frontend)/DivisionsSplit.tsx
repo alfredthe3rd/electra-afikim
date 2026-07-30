@@ -2,7 +2,9 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
+
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -69,7 +71,10 @@ export function DivisionsSplit() {
   const slidesRef = useRef<(HTMLDivElement | null)[]>([])
   const videosRef = useRef<(HTMLDivElement | null)[]>([])
 
-  useEffect(() => {
+  // useIsomorphicLayoutEffect (not useEffect) — this effect pins with
+  // ScrollTrigger; see the hook's comment for why the cleanup must be
+  // synchronous.
+  useIsomorphicLayoutEffect(() => {
     if (!sectionRef.current) return
 
     const slides = slidesRef.current.filter(Boolean) as HTMLDivElement[]

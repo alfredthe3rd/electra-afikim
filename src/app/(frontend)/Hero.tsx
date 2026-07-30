@@ -3,7 +3,9 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import lottie from 'lottie-web'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
+
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -21,7 +23,10 @@ export function Hero() {
   const titleFillRef = useRef<HTMLSpanElement>(null)
   const subtitleRef = useRef<HTMLHeadingElement>(null)
 
-  useEffect(() => {
+  // useIsomorphicLayoutEffect (not useEffect) — this effect pins with
+  // ScrollTrigger; see the hook's comment for why the cleanup must be
+  // synchronous.
+  useIsomorphicLayoutEffect(() => {
     if (!lottieRef.current || !logoRef.current) return
 
     const header = document.querySelector<HTMLElement>('.site-header')

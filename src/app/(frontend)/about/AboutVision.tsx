@@ -2,8 +2,9 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Fragment, useEffect, useRef } from 'react'
+import { Fragment, useRef } from 'react'
 
+import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect'
 import { useReveal } from '../useReveal'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -48,7 +49,10 @@ export function AboutVision() {
   const pinRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
 
-  useEffect(() => {
+  // useIsomorphicLayoutEffect (not useEffect) — this effect pins with
+  // ScrollTrigger; see the hook's comment for why the cleanup must be
+  // synchronous.
+  useIsomorphicLayoutEffect(() => {
     if (!pinRef.current) return
 
     const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[]

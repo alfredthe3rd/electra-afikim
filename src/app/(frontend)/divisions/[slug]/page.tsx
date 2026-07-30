@@ -7,6 +7,7 @@ import type { Media } from '@/payload-types'
 
 import { DivisionAnimations } from './DivisionAnimations'
 import { DivisionHeading } from './DivisionHeading'
+import { StatsCounter } from './StatsCounter'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -44,8 +45,22 @@ export default async function DivisionPage({ params }: Props) {
     description,
     featuredImage,
     externalUrl,
+    statsByNumbers,
     goodToKnow,
   } = division
+
+  // "פעילות במספרים" is optional per division — only 2 of the 6 have it filled
+  // in. Rows that were added in the admin but left blank are dropped too, so an
+  // empty row can't produce a heading with nothing under it.
+  const stats = (statsByNumbers ?? [])
+    .filter((stat) => stat.number || stat.title || isMedia(stat.image))
+    .map((stat, index) => ({
+      id: stat.id ?? String(index),
+      imageAlt: isMedia(stat.image) ? stat.image.alt : null,
+      imageUrl: isMedia(stat.image) ? (stat.image.url ?? null) : null,
+      number: stat.number ?? null,
+      title: stat.title ?? null,
+    }))
 
   return (
     <article className="division">
@@ -84,6 +99,8 @@ export default async function DivisionPage({ params }: Props) {
           )}
         </div>
       </div>
+
+      {stats.length > 0 && <StatsCounter items={stats} />}
 
       {goodToKnow && goodToKnow.length > 0 && (
         <section className="good-to-know">

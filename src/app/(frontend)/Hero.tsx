@@ -205,14 +205,24 @@ export function Hero() {
       <div className="hero-lottie" ref={lottieRef} />
       <img alt="אלקטרה אפיקים" className="hero-logo" ref={logoRef} src="/main-logo-alectra.png" />
       <div className="hero-end-titles">
+        {/* The break is explicit rather than left to wrapping so both layers
+            split at the same word at every width — the fill layer is absolutely
+            positioned over the base, and a different break in either one would
+            misregister the clip-path wipe. */}
         <h1 className="hero-end-title" ref={titleRef}>
-          <span className="hero-end-title-text hero-end-title-base">מעצמת התחבורה של ישראל</span>
+          <span className="hero-end-title-text hero-end-title-base">
+            מעצמת התחבורה
+            <br />
+            של ישראל
+          </span>
           <span
             aria-hidden="true"
             className="hero-end-title-text hero-end-title-fill"
             ref={titleFillRef}
           >
-            מעצמת התחבורה של ישראל
+            מעצמת התחבורה
+            <br />
+            של ישראל
           </span>
         </h1>
         <div className="hero-end-subtitle-mask">

@@ -28,8 +28,11 @@ export default function ContactPage() {
         <div className="contact-top">
           <h1 className="contact-title">דברו איתנו</h1>
           <p className="contact-subtitle">
+            {/* Explicit space before the break: mobile hides the <br> so the
+                copy can wrap on its own, and JSX strips the newline around it,
+                so without this the halves would join as "בישראל.המחויבות". */}
             כקבוצת תחבורה המניעה מיליוני אזרחים, אנו רואים בעצמנו שותף מרכזי לעיצוב פני החברה
-            והסביבה בישראל.
+            והסביבה בישראל.{' '}
             <br className="contact-subtitle-break" />
             המחויבות שלנו חורגת מעבר למדדים העסקיים ונוגעת בלב האתגרים הלאומיים.
           </p>

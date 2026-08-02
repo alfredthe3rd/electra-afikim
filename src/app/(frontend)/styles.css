@@ -218,9 +218,17 @@ svg {
   white-space: nowrap;
   font-size: clamp(36px, 7.756vw, 148.924px);
 
-  /* Mobile: fixed px + wrapping so the title sits on multiple lines */
+  /* Mobile: the explicit <br> in Hero.tsx puts "מעצמת התחבורה" on its own
+     line, but a hard 50px made that line wrap again on narrow screens and the
+     title rendered as three.
+
+     Measured: the line's width is 6.852 × the font size, and .hero-end-titles
+     leaves 90vw after its 5vw side padding — so the size must stay under
+     90/6.852 = 13.13vw. 12.9vw keeps ~10px of slack. The cap is inert from
+     ~388px up, so the requested 50px still holds on every mainstream phone
+     and only shrinks below that to protect the two-line break. */
   @media (max-width: 768px) {
-    font-size: 50px;
+    font-size: min(50px, 12.9vw);
     line-height: 1.3;
     white-space: normal;
   }
@@ -235,24 +243,14 @@ svg {
   color: var(--text);
 }
 
-/* Overlay layer: brand gradient clipped to the text, revealed by a clip-path
-   wipe so it "paints" the white base with colour. */
+/* Overlay layer: a solid brand-2 fill revealed by a clip-path wipe, so it
+   "paints" the white base with colour. Was a three-stop gradient across the
+   line; the client asked for flat #60d3aa, which needs no background-clip
+   trickery — a plain colour is the same result with fewer moving parts. */
 .hero-end-title-fill {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(
-    to right,
-    #60d3aa 0%,
-    #60d3aa 33.333%,
-    #9cee8cb2 33.333%,
-    #9cee8cb2 66.666%,
-    #9cee8c 66.666%,
-    #9cee8c 100%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  color: #60d3aa;
 }
 
 .hero-end-subtitle {
@@ -1142,10 +1140,17 @@ svg {
   padding-right: 35px;
 }
 
-/* Mobile: collapse to a single column, drop the spacer framing */
+/* Mobile: two cards per row, logo + CTA only.
+   The dashed lattice above is drawn with nth-child rules over a 5-column DOM
+   that includes spacer cells; once those are hidden the arithmetic no longer
+   maps to the visible cells, so each card gets one complete frame instead —
+   same treatment as .partners-grid and .about-icons-grid. Declared after (and
+   more specifically than) those rules on purpose: re-stating
+   `.divisions-lobby-grid > *` earlier in the file would lose on source order. */
 @media (max-width: 768px) {
   .divisions-lobby-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
   }
 
   .divisions-lobby-spacer-row,
@@ -1153,13 +1158,32 @@ svg {
     display: none;
   }
 
-  .divisions-lobby-card {
-    border-left: none !important;
-    border-right: none !important;
+  /* Rows are padded out with empty cards to fill three desktop columns. */
+  .divisions-lobby-card:empty {
+    display: none;
   }
 
-  .divisions-lobby-card:last-child {
-    border-bottom: none;
+  .divisions-lobby-grid > .divisions-lobby-card {
+    border: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
+    border-radius: 10px;
+    gap: 16px;
+    padding: 24px 12px;
+  }
+
+  /* Hidden on mobile per the client: at two-up the copy would clamp to an
+     uninformative line or two, and the logo plus CTA already say enough. */
+  .divisions-lobby-card-desc {
+    display: none;
+  }
+
+  .divisions-lobby-card-logo {
+    height: 44px;
+  }
+
+  .divisions-lobby-card .division-cta {
+    padding-left: 14px;
+    padding-right: 14px;
+    font-size: 15px;
   }
 }
 
@@ -1445,6 +1469,10 @@ svg {
        nothing below pushes it clear. Top-align + explicit clearance fixes it
        regardless of how tall the content is. */
     padding-top: 130px;
+    /* The submit button ended flush with the section's bottom edge (both at
+       912px), so .contact-hero's overflow:hidden clipped the 4px box-shadow
+       ring off the CTA and left it touching the footer. */
+    padding-bottom: 80px;
   }
 }
 
@@ -1540,7 +1568,7 @@ svg {
   font-size: 1.1vw;
 
   @media (max-width: 768px) {
-    font-size: 16px;
+    font-size: 20px;
   }
 }
 
@@ -2534,6 +2562,11 @@ html.menu-open {
   font-weight: 900;
   font-size: 5vw;
   line-height: 1.2em;
+
+  @media (max-width: 768px) {
+    font-size: 50px;
+    line-height: 1.3em;
+  }
 }
 
 .about-hero-subtitle {
@@ -2543,6 +2576,12 @@ html.menu-open {
   font-size: 1.1vw;
   line-height: 1.2em;
   max-width: 900px;
+
+  @media (max-width: 768px) {
+    /* 1.1vw computes to 4.3px on a phone — the paragraph was unreadable. */
+    font-size: 20px;
+    line-height: 1.3em;
+  }
 }
 
 .about-hero-word,
@@ -2590,6 +2629,21 @@ html.menu-open {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* Mobile: 44.2vw would give a 172px wheel — far too small to hold a
+     paragraph. The wheel is the signature element of this page, so it takes
+     the full viewport width; the SVG carries ~2.5% transparent padding, so
+     the coloured band still stops just short of both edges.
+
+     At 88vw the longest step ("יבוא", ~200 chars) pushed its corner to 36.8%
+     of the stage on a 320px screen, past the dashed ring at 34.1% — the wheel
+     has to be this big for the text to fit inside it.
+
+     Third term is the same header guard as desktop (inert in portrait,
+     engages in landscape where the viewport is short). */
+  @media (max-width: 768px) {
+    width: min(100vw, calc(100vh - 4vw - 198px));
+  }
 }
 
 .about-circle-ring {
@@ -2602,6 +2656,16 @@ html.menu-open {
 .about-circle-text-stack {
   position: relative;
   width: 56%;
+
+  /* Narrower on mobile, which is counter-intuitive but correct: the text box
+     is inscribed in a circle, so trading width for height buys room. The
+     dashed ring sits at 34.1% of the stage width from centre (r≈349 of the
+     SVG's 1022 box), and the box's far corner must stay inside it — at 56%
+     width only 38.9% of the stage is available vertically, at 48% it's
+     48.5%, which is what the longest step needs at a readable size. */
+  @media (max-width: 768px) {
+    width: 48%;
+  }
 }
 
 .about-circle-item {
@@ -2613,6 +2677,10 @@ html.menu-open {
   justify-content: center;
   gap: 0.68vw;
   text-align: center;
+
+  @media (max-width: 768px) {
+    gap: 6px;
+  }
 }
 
 .about-circle-title {
@@ -2621,6 +2689,10 @@ html.menu-open {
   font-weight: 900;
   font-size: 2vw;
   line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
 }
 
 .about-circle-text {
@@ -2629,6 +2701,11 @@ html.menu-open {
   font-weight: 400;
   font-size: 1vw;
   line-height: 1.4;
+
+  /* 12px is the floor the client signed off on for this text on desktop. */
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
 }
 
 .about-icons-section {
@@ -2640,6 +2717,13 @@ html.menu-open {
   align-items: center;
   justify-content: center;
   background: var(--bg);
+
+  /* The 100vh lock left a screenful of dead space below the grid once it
+     reflowed to two columns. */
+  @media (max-width: 768px) {
+    height: auto;
+    padding: 60px 20px;
+  }
 }
 
 .about-icons-title {
@@ -2649,12 +2733,29 @@ html.menu-open {
   text-align: center;
   font-size: 3.5vw;
   line-height: 1.2em;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    line-height: 1.3em;
+    margin-bottom: 32px;
+  }
 }
 
 .about-icons-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 285px));
   justify-content: center;
+
+  /* Two icons per row. Same reasoning as .partners-grid: the dashed lattice
+     below is drawn with nth-child rules over a 6-column DOM that includes
+     spacer cells, so once those are hidden the arithmetic stops mapping to
+     the visible cells. Replaced with a per-cell frame further down. */
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    justify-content: stretch;
+    width: 100%;
+  }
 }
 
 /* All cells: bottom dashed border */
@@ -2681,6 +2782,28 @@ html.menu-open {
   border-bottom: none;
 }
 
+/* Mobile: replace the lattice with one complete dashed frame per cell.
+   Declared after (and more specifically than) the three rules above on
+   purpose — an earlier `.about-icons-grid > *` would lose on source order
+   regardless of the media query. */
+@media (max-width: 768px) {
+  .about-icons-spacer-row,
+  .about-icons-spacer-side {
+    display: none;
+  }
+
+  /* The last row is padded out with empty .about-icon-item cells to fill four
+     desktop columns; :empty drops them so 7 icons flow as 7 cells. */
+  .about-icon-item:empty {
+    display: none;
+  }
+
+  .about-icons-grid > .about-icon-item {
+    border: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
+    border-radius: 10px;
+  }
+}
+
 .about-icon-item {
   position: relative;
   display: flex;
@@ -2691,6 +2814,14 @@ html.menu-open {
   height: 148px;
   padding: 16px;
   overflow: hidden;
+
+  /* Height grows with the label: at 17px the longer ones wrap to two lines. */
+  @media (max-width: 768px) {
+    height: auto;
+    min-height: 140px;
+    gap: 12px;
+    padding: 18px 12px;
+  }
 }
 
 .about-icon-item::before {
@@ -2736,6 +2867,11 @@ html.menu-open {
   font-weight: 400;
   font-size: 1.2vw;
   text-align: center;
+
+  @media (max-width: 768px) {
+    font-size: 17px;
+    line-height: 1.3em;
+  }
 }
 
 .about-vision-section {
@@ -2756,6 +2892,12 @@ html.menu-open {
   gap: 16px;
   padding: 140px 5vw 40px;
   text-align: center;
+
+  @media (max-width: 768px) {
+    min-height: 0;
+    gap: 10px;
+    padding: 5vh 20px 0;
+  }
 }
 
 .about-vision-title {
@@ -2764,6 +2906,11 @@ html.menu-open {
   font-weight: 700;
   font-size: 5vw;
   line-height: 1.2em;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    line-height: 1.3em;
+  }
 }
 
 .about-vision-subtitle {
@@ -2773,6 +2920,11 @@ html.menu-open {
   font-size: 1.5vw;
   line-height: 1.4;
   max-width: 900px;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+    line-height: 1.3em;
+  }
 }
 
 .about-vision-bottom {
@@ -2780,6 +2932,18 @@ html.menu-open {
   direction: ltr;
   display: flex;
   width: 100%;
+
+  /* Mobile: no pin, no 50/50. Stacks as video → cards, with the section
+     gaps held to the requested 5vh ceiling. */
+  @media (max-width: 768px) {
+    flex-direction: column;
+    direction: rtl;
+    height: auto;
+    gap: 5vh;
+    /* 5vh here + the values section's own 5vh top padding = the 10vh the
+       client asked for between the cards and "ערכים שמניעים אותנו". */
+    padding: 5vh 20px;
+  }
 }
 
 .about-vision-left {
@@ -2791,6 +2955,16 @@ html.menu-open {
   padding: 5vw;
   background: var(--bg);
   overflow: hidden;
+
+  /* order, not column-reverse: the video must come first regardless of how
+     many children this panel ends up with. */
+  @media (max-width: 768px) {
+    order: 1;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+  }
 }
 
 .about-vision-card-stack {
@@ -2798,6 +2972,16 @@ html.menu-open {
   width: 100%;
   max-width: 480px;
   height: 100%;
+
+  /* The crossfade stack becomes a plain two-up grid. */
+  @media (max-width: 768px) {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 26px 16px;
+    max-width: none;
+    height: auto;
+  }
 }
 
 .about-vision-card {
@@ -2810,6 +2994,15 @@ html.menu-open {
   gap: 20px;
   direction: rtl;
   text-align: right;
+
+  @media (max-width: 768px) {
+    position: static;
+    inset: auto;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    gap: 6px;
+  }
 }
 
 .about-vision-card-title {
@@ -2818,6 +3011,11 @@ html.menu-open {
   font-weight: 700;
   font-size: 2.5vw;
   line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 19px;
+    line-height: 1.3em;
+  }
 }
 
 .about-vision-card-text {
@@ -2826,6 +3024,11 @@ html.menu-open {
   font-weight: 400;
   font-size: 1.2vw;
   line-height: 1.5;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+    line-height: 1.3em;
+  }
 }
 
 .about-vision-right {
@@ -2836,6 +3039,13 @@ html.menu-open {
   height: 100%;
   padding: 1vw;
   background: var(--bg);
+
+  @media (max-width: 768px) {
+    order: 0;
+    width: 100%;
+    height: auto;
+    padding: 0;
+  }
 }
 
 .about-vision-video {
@@ -2845,12 +3055,26 @@ html.menu-open {
      full bus AND the road line beneath it — never cropped. The panel is a tall
      (100vh) column so the whole portrait frame still renders large. */
   object-fit: contain;
+
+  /* Sized by height on mobile: at full column width this portrait clip would
+     stand 74vh tall. Height-first keeps the whole frame visible (the client
+     asked for the road line to stay in shot) at a sane size, centred. */
+  @media (max-width: 768px) {
+    width: auto;
+    height: 55vh;
+    max-width: 100%;
+    margin: 0 auto;
+  }
 }
 
 .about-values-section {
   padding: 6vw 7vw;
   background: var(--bg);
   text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 5vh 20px;
+  }
 }
 
 .about-values-title {
@@ -2860,6 +3084,12 @@ html.menu-open {
   text-align: center;
   font-size: 3.5vw;
   line-height: 1.2em;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    line-height: 1.3em;
+    margin-bottom: 4vh;
+  }
 }
 
 .about-values-grid {
@@ -2867,10 +3097,19 @@ html.menu-open {
   grid-template-columns: repeat(3, 1fr);
   gap: 4vw 3vw;
   direction: rtl;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 26px 16px;
+  }
 }
 
 .about-values-item {
   text-align: right;
+
+  @media (max-width: 768px) {
+    text-align: center;
+  }
 }
 
 .about-values-number {
@@ -2879,6 +3118,11 @@ html.menu-open {
   font-weight: 700;
   font-size: 5.5vw;
   line-height: 1;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    margin-bottom: 6px;
+  }
 }
 
 .about-values-item-title {
@@ -2887,12 +3131,21 @@ html.menu-open {
   font-weight: 400;
   font-size: 2.5vw;
   line-height: 1.15;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+    line-height: 1.3em;
+  }
 }
 
 .about-team-section {
   padding: 6vw 48px;
   background: var(--bg);
   text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 5vh 20px;
+  }
 }
 
 .about-team-title {
@@ -2901,12 +3154,24 @@ html.menu-open {
   font-weight: 700;
   font-size: 3.5vw;
   line-height: 1.2em;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    line-height: 1.3em;
+    margin-bottom: 4vh;
+  }
 }
 
 .about-team-rows {
   display: flex;
   flex-direction: column;
   gap: 48px;
+
+  @media (max-width: 768px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px 16px;
+  }
 }
 
 .about-team-row {
@@ -2915,6 +3180,14 @@ html.menu-open {
   flex-wrap: wrap;
   justify-content: center;
   gap: 36px;
+
+  /* display:contents dissolves the two row wrappers so all 11 members flow
+     into the grid above as one continuous 2-up sequence. Keeping them as grid
+     items instead would restart the columns per row, stranding a lone member
+     at the end of the first group. */
+  @media (max-width: 768px) {
+    display: contents;
+  }
 }
 
 .about-team-member {
@@ -2922,6 +3195,10 @@ html.menu-open {
   flex-direction: column;
   align-items: center;
   gap: 14px;
+
+  @media (max-width: 768px) {
+    gap: 10px;
+  }
 }
 
 .about-team-photo {
@@ -2935,6 +3212,15 @@ html.menu-open {
   object-position: center top;
   border: 1px solid transparent;
   transition: border-color 0.3s ease;
+
+  /* Fills the column; aspect-ratio keeps the square (and therefore the same
+     top-anchored crop) that the fixed 231×231 gave on desktop. */
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    border-radius: 14px;
+  }
 }
 
 .about-team-member:hover .about-team-photo {
@@ -2954,6 +3240,11 @@ html.menu-open {
   font-weight: 400;
   font-size: 1.2vw;
   line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 19px;
+    line-height: 1.3em;
+  }
 }
 
 .about-team-role {
@@ -2962,6 +3253,11 @@ html.menu-open {
   font-weight: 400;
   font-size: 1vw;
   line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+    line-height: 1.3em;
+  }
 }
 
 /* ── About: Our Story (road timeline) ── */
@@ -2980,6 +3276,12 @@ html.menu-open {
   gap: 16px;
   padding: 140px 5vw 40px;
   text-align: center;
+
+  @media (max-width: 768px) {
+    min-height: 0;
+    gap: 10px;
+    padding: 5vh 20px 4vh;
+  }
 }
 
 .about-story-title {
@@ -2991,6 +3293,11 @@ html.menu-open {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity 0.7s ease, transform 0.7s ease;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    line-height: 1.3em;
+  }
 }
 
 .about-story-subtitle {
@@ -3002,6 +3309,11 @@ html.menu-open {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity 0.7s ease 0.12s, transform 0.7s ease 0.12s;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+    line-height: 1.3em;
+  }
 }
 
 .about-story-head.is-visible .about-story-title,
@@ -3015,6 +3327,114 @@ html.menu-open {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+/* ---- Mobile: the road timeline turned vertical ----
+   The desktop version pans a 260vw canvas past a fixed viewport; on a phone
+   that canvas is a 1014px ribbon whose milestones sit off-screen entirely.
+   Here the same eight milestones stack down a vertical rail drawn in the
+   site's road language: two #60D3AA edges around a dashed #9CEE8C centreline,
+   matching `time road.svg` and the homepage's about-teaser road. */
+
+.about-story-mobile {
+  display: none;
+
+  @media (max-width: 768px) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+    margin: 0;
+    padding: 0 20px 6vh;
+    list-style: none;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Road edges. `right` places the rail under the icon column (20px page
+     padding + half of the 44px icon). */
+  .about-story-mobile::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    bottom: 12px;
+    right: 30px;
+    width: 24px;
+    background:
+      linear-gradient(#60d3aa, #60d3aa) left / 2px 100% no-repeat,
+      linear-gradient(#60d3aa, #60d3aa) right / 2px 100% no-repeat;
+  }
+
+  /* Dashed centreline between them. */
+  .about-story-mobile::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    bottom: 12px;
+    right: 41px;
+    width: 2px;
+    background: repeating-linear-gradient(
+      to bottom,
+      #9cee8c 0 12px,
+      transparent 12px 24px
+    );
+  }
+
+  .about-story-m-item {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    align-items: start;
+    gap: 14px;
+  }
+
+  .about-story-m-icon {
+    width: 44px;
+    height: 44px;
+    /* Sits on the rail rather than beside it — the rail passes behind. */
+    background: var(--bg);
+    border-radius: 50%;
+  }
+
+  .about-story-m-body {
+    padding-top: 2px;
+    text-align: right;
+  }
+
+  .about-story-m-year {
+    color: #65c7c5;
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.3em;
+    margin-bottom: 4px;
+  }
+
+  .about-story-m-desc {
+    margin: 0;
+    color: var(--text);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.3em;
+  }
+
+  .about-story-m-desc--bullets {
+    padding-inline-start: 0;
+    padding-inline-end: 18px;
+    list-style: disc;
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    li::marker {
+      color: var(--brand);
+    }
+  }
 }
 
 .about-story-canvas {

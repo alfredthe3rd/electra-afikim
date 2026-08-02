@@ -2,7 +2,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Fragment, useRef } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect'
 import { useReveal } from '../useReveal'
@@ -49,11 +49,26 @@ export function AboutVision() {
   const pinRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
 
+  // Mobile lays the four cards out as a static 2-up grid under the video
+  // instead of crossfading them in a pinned column, so the whole effect below
+  // is desktop-only. That guard also has to cover the gsap.set calls at the
+  // top of the effect: they run outside gsap.context, so ctx.revert() would
+  // not undo the autoAlpha:0 they leave on cards 2-4.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const onChange = () => setIsMobile(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
   // useIsomorphicLayoutEffect (not useEffect) — this effect pins with
   // ScrollTrigger; see the hook's comment for why the cleanup must be
   // synchronous.
   useIsomorphicLayoutEffect(() => {
-    if (!pinRef.current) return
+    if (isMobile || !pinRef.current) return
 
     const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[]
     if (cards.length !== STEP_COUNT) return
@@ -92,7 +107,7 @@ export function AboutVision() {
     }, pinRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [isMobile])
 
   return (
     <section className="about-vision-section">

@@ -2,7 +2,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { type CSSProperties, Fragment, useRef } from 'react'
+import { type CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
 
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect'
 import { useReveal } from '../useReveal'
@@ -132,12 +132,55 @@ export function AboutStory() {
   const { ref: headRef, visible } = useReveal<HTMLDivElement>()
   const viewportRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
+  const mobileRef = useRef<HTMLOListElement>(null)
+
+  // The panning "camera" needs a canvas 2.6 viewports wide; on a phone that is
+  // a 1014px ribbon whose milestones land entirely off-screen. Mobile gets a
+  // vertical timeline instead (markup below), so the whole camera effect is
+  // desktop-only.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const onChange = () => setIsMobile(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
+  // Mobile reveal: each milestone fades up as it scrolls in — the closest
+  // equivalent of the desktop "station arrives" beat, without the pin.
+  useEffect(() => {
+    if (!isMobile || !mobileRef.current) return
+
+    const ctx = gsap.context(() => {
+      const items = gsap.utils.toArray<HTMLElement>('.about-story-m-item')
+      items.forEach((item, i) => {
+        // The first milestone is visible immediately, matching the desktop
+        // rule that 2008 is simply there rather than popping in.
+        if (i === 0) return
+        gsap.fromTo(
+          item,
+          { autoAlpha: 0, y: 28 },
+          {
+            autoAlpha: 1,
+            duration: 0.6,
+            ease: 'power2.out',
+            scrollTrigger: { once: true, start: 'top 88%', trigger: item },
+            y: 0,
+          },
+        )
+      })
+    }, mobileRef)
+
+    return () => ctx.revert()
+  }, [isMobile])
 
   // useIsomorphicLayoutEffect (not useEffect) — this effect pins with
   // ScrollTrigger; see the hook's comment for why the cleanup must be
   // synchronous.
   useIsomorphicLayoutEffect(() => {
-    if (!viewportRef.current || !canvasRef.current) return
+    if (isMobile || !viewportRef.current || !canvasRef.current) return
 
     const ctx = gsap.context(() => {
       const canvas = canvasRef.current!
@@ -222,7 +265,7 @@ export function AboutStory() {
     }, viewportRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [isMobile])
 
   return (
     <section className="about-story">
@@ -267,6 +310,38 @@ export function AboutStory() {
           ))}
         </div>
       </div>
+
+      {/* Mobile timeline — the same eight milestones turned vertical, with a
+          rail drawn in the site's road language (two #60D3AA edges around a
+          dashed #9CEE8C centreline, see .about-story-mobile in styles.css).
+          Rendered alongside the desktop canvas rather than swapped in after
+          mount, so server and client HTML match; CSS picks which one shows. */}
+      <ol className="about-story-mobile" ref={mobileRef}>
+        {MILESTONES.map((m) => (
+          <li className="about-story-m-item" key={m.year}>
+            <img alt="" className="about-story-m-icon" src={iconSrc(m.icon)} />
+            <div className="about-story-m-body">
+              <div className="about-story-m-year">{m.year}</div>
+              {m.bullets ? (
+                <ul className="about-story-m-desc about-story-m-desc--bullets">
+                  {m.lines.map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="about-story-m-desc">
+                  {m.lines.map((line, i) => (
+                    <Fragment key={i}>
+                      {line}
+                      {i < m.lines.length - 1 && <br />}
+                    </Fragment>
+                  ))}
+                </p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
     </section>
   )
 }

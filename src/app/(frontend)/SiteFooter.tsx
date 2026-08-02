@@ -31,7 +31,7 @@ export async function SiteFooter() {
       <img alt="" className="site-footer-graphic" src="/tree-footer.png" />
 
       <div className="site-footer-columns">
-        <div className="site-footer-column">
+        <div className="site-footer-column site-footer-nav">
           <h3>ניווט מהיר</h3>
           <ul>
             {QUICK_LINKS.map((item) => (
@@ -42,7 +42,7 @@ export async function SiteFooter() {
           </ul>
         </div>
 
-        <div className="site-footer-column">
+        <div className="site-footer-column site-footer-divisions">
           <h3>תחומי פעילות</h3>
           <ul>
             {divisions.map(
@@ -57,7 +57,7 @@ export async function SiteFooter() {
         </div>
 
         <div className="site-footer-column site-footer-contact">
-          <h3>צור קשר</h3>
+          <h3>פרטי התקשרות</h3>
           <p>6686*</p>
           <p>
             <a href="mailto:info@electra-afikim.co.il">info@electra-afikim.co.il</a>

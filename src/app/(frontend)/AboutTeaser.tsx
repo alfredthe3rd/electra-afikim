@@ -132,6 +132,65 @@ export function AboutTeaser() {
           strokeWidth="3"
         />
       </svg>
+
+      {/* Mobile road — same shape and stroke language, re-authored for a
+          portrait section. The landscape viewBox above squashes to 162px at
+          390px wide, so its right-hand rail stopped a fifth of the way down
+          the section; this one is 390×1200.
+
+          Kept at its natural aspect ("meet", width:100% / height:auto) rather
+          than stretched to the section height: stretching gave up to 1:3.6
+          anisotropy across the mobile range, which flattens the corner arcs
+          and distorts the stroke weight. The viewBox is deliberately *taller*
+          than the section ever gets (3.08 × width vs. a section that peaks
+          around 2.7 × width), so the rail always runs past the bottom edge and
+          is clipped there — reading as a road that continues into the
+          divisions section, exactly like desktop, with no visible cut.
+
+          Lane width and corner radius are both 26 — the same "radius = lane
+          width" relationship as desktop. Shares the .about-road-draw class, so
+          the GSAP draw-on-scroll animation picks it up with no JS changes. */}
+      <svg
+        aria-hidden="true"
+        className="about-teaser-road-mobile"
+        fill="none"
+        preserveAspectRatio="xMidYMin meet"
+        viewBox="0 0 390 1200"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <mask id="about-road-draw-mask-mobile" maskUnits="userSpaceOnUse">
+            <path
+              className="about-road-draw"
+              d="M33 0 V87 A26 26 0 0 0 59 113 H343 A26 26 0 0 1 369 139 V1200"
+              pathLength={1}
+              stroke="#fff"
+              strokeWidth="8"
+            />
+          </mask>
+        </defs>
+        <path
+          className="about-road-draw"
+          d="M20 0 V100 A26 26 0 0 0 46 126 H330 A26 26 0 0 1 356 152 V1200"
+          pathLength={1}
+          stroke="#60D3AA"
+          strokeWidth="3"
+        />
+        <path
+          className="about-road-draw"
+          d="M46 0 V74 A26 26 0 0 0 72 100 H356 A26 26 0 0 1 382 126 V1200"
+          pathLength={1}
+          stroke="#60D3AA"
+          strokeWidth="3"
+        />
+        <path
+          d="M33 0 V87 A26 26 0 0 0 59 113 H343 A26 26 0 0 1 369 139 V1200"
+          mask="url(#about-road-draw-mask-mobile)"
+          stroke="#9CEE8C"
+          strokeDasharray="26 26"
+          strokeWidth="3"
+        />
+      </svg>
       <div className="about-teaser-inner">
         <h2 className="about-teaser-title">
           {TITLE_WORDS.map((word, i) => (

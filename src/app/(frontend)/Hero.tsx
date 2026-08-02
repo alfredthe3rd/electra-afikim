@@ -3,7 +3,7 @@
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import lottie from 'lottie-web'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 
@@ -14,6 +14,10 @@ const LOGO_CROSSFADE_START = 0.85
 // Progress at which the end-titles reveal — matched to the "inside the tunnel"
 // lottie frame the client picked. Nudge this to re-time the reveal to a frame.
 const TITLES_START = 0.66
+// The scroll cue rides along for the whole pinned sequence and lifts away as
+// it finishes, so the exit runs over the last stretch rather than popping at 1.
+const CUE_EXIT_START = 0.88
+const CUE_EXIT_RISE = 60
 
 export function Hero() {
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -22,6 +26,22 @@ export function Hero() {
   const titleRef = useRef<HTMLHeadingElement>(null)
   const titleFillRef = useRef<HTMLSpanElement>(null)
   const subtitleRef = useRef<HTMLHeadingElement>(null)
+  const scrollCueRef = useRef<HTMLDivElement>(null)
+  const cueArrowRef = useRef<HTMLDivElement>(null)
+
+  // Mobile drops the big-logo intro: the header stays visible from the first
+  // frame and the centered hero logo is display:none (.hero-logo media query),
+  // so all the header/logo choreography below is desktop-only. State (not a
+  // one-off read) so crossing the breakpoint re-runs the main effect.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const onChange = () => setIsMobile(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
 
   // useIsomorphicLayoutEffect (not useEffect) — this effect pins with
   // ScrollTrigger; see the hook's comment for why the cleanup must be
@@ -37,7 +57,7 @@ export function Hero() {
     let logoScale = 1
 
     const measure = () => {
-      if (!logoRef.current || !headerLogo) return
+      if (isMobile || !logoRef.current || !headerLogo) return
       // Read both elements at their neutral transforms so the computed scale/
       // offset never depend on whatever the scroll (or the header-reveal y:-16)
       // happens to have applied when measure() runs — otherwise the logo docks
@@ -64,10 +84,23 @@ export function Hero() {
       rendererSettings: { preserveAspectRatio: 'xMidYMid slice' },
     })
 
+    // Scroll cue — loops on its own clock (it's an idle prompt, not something
+    // scrubbed by scroll); only its opacity/offset are driven by progress.
+    const cueAnim = cueArrowRef.current
+      ? lottie.loadAnimation({
+          autoplay: true,
+          container: cueArrowRef.current,
+          loop: true,
+          path: '/scroll-arrow.json',
+          renderer: 'svg',
+        })
+      : null
+
     const ctx = gsap.context(() => {
       gsap.set(logoRef.current, { xPercent: -50, yPercent: -50 })
-      if (header) gsap.set(header, { autoAlpha: 0, y: -16 })
-      if (headerLogo) gsap.set(headerLogo, { opacity: 0 })
+      if (header && !isMobile) gsap.set(header, { autoAlpha: 0, y: -16 })
+      if (headerLogo && !isMobile) gsap.set(headerLogo, { opacity: 0 })
+      gsap.set(scrollCueRef.current, { autoAlpha: 1, y: 0 })
 
       const titlesTl = gsap.timeline({ paused: true })
       titlesTl
@@ -114,20 +147,33 @@ export function Hero() {
 
           if (animReady) anim.goToAndStop(progress * anim.totalFrames, true)
 
-          const flip = Math.min(progress / HEADER_REVEAL_END, 1)
-          const cross = Math.max(
+          if (!isMobile) {
+            const flip = Math.min(progress / HEADER_REVEAL_END, 1)
+            const cross = Math.max(
+              0,
+              Math.min((flip - LOGO_CROSSFADE_START) / (1 - LOGO_CROSSFADE_START), 1),
+            )
+
+            if (header) gsap.set(header, { autoAlpha: flip, y: (1 - flip) * -16 })
+            if (headerLogo) gsap.set(headerLogo, { opacity: cross })
+
+            gsap.set(logoRef.current, {
+              opacity: 1 - cross,
+              scale: 1 + (logoScale - 1) * flip,
+              x: deltaX * flip,
+              y: deltaY * flip,
+            })
+          }
+
+          // Applies on mobile too — the cue is the one bit of the hero
+          // choreography that isn't desktop-only.
+          const cueExit = Math.max(
             0,
-            Math.min((flip - LOGO_CROSSFADE_START) / (1 - LOGO_CROSSFADE_START), 1),
+            Math.min((progress - CUE_EXIT_START) / (1 - CUE_EXIT_START), 1),
           )
-
-          if (header) gsap.set(header, { autoAlpha: flip, y: (1 - flip) * -16 })
-          if (headerLogo) gsap.set(headerLogo, { opacity: cross })
-
-          gsap.set(logoRef.current, {
-            opacity: 1 - cross,
-            scale: 1 + (logoScale - 1) * flip,
-            x: deltaX * flip,
-            y: deltaY * flip,
+          gsap.set(scrollCueRef.current, {
+            autoAlpha: 1 - cueExit,
+            y: -cueExit * CUE_EXIT_RISE,
           })
 
           if (progress >= TITLES_START && !titlesPlayed) {
@@ -150,8 +196,9 @@ export function Hero() {
       window.removeEventListener('load', measure)
       ctx.revert()
       anim.destroy()
+      cueAnim?.destroy()
     }
-  }, [])
+  }, [isMobile])
 
   return (
     <section className="hero" ref={sectionRef}>
@@ -173,6 +220,13 @@ export function Hero() {
             מניעים אותך ואת התחבורה בישראל - קדימה
           </h2>
         </div>
+      </div>
+
+      {/* Scroll cue: looping chevrons over a "גללו מטה" label, pinned to the
+          bottom of the hero. Rises away as the hero sequence completes. */}
+      <div className="hero-scroll-cue" ref={scrollCueRef}>
+        <div aria-hidden="true" className="hero-scroll-cue-arrow" ref={cueArrowRef} />
+        <span className="hero-scroll-cue-label">גללו מטה</span>
       </div>
     </section>
   )

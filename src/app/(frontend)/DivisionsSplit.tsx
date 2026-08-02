@@ -2,7 +2,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 
@@ -70,12 +70,52 @@ export function DivisionsSplit() {
   const subtitleRef = useRef<HTMLParagraphElement>(null)
   const slidesRef = useRef<(HTMLDivElement | null)[]>([])
   const videosRef = useRef<(HTMLDivElement | null)[]>([])
+  const mobileVideosRef = useRef<(HTMLVideoElement | null)[]>([])
+
+  // Mobile replaces the pinned 50/50 split with a plain vertical stack
+  // (video → logo → text per division), so the whole ScrollTrigger timeline
+  // below is desktop-only. State, not a one-off read, so crossing the
+  // breakpoint tears the pin down / builds it back up.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const onChange = () => setIsMobile(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
+  // Seven autoplaying videos at once would be brutal on a phone's battery and
+  // data, and the desktop markup already ships its own copies — so the mobile
+  // set is preload="none" and only the one on screen plays.
+  useEffect(() => {
+    if (!isMobile) return
+    const videos = mobileVideosRef.current.filter(Boolean) as HTMLVideoElement[]
+    if (!videos.length) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const video = entry.target as HTMLVideoElement
+          if (entry.isIntersecting) {
+            video.play().catch(() => {})
+          } else {
+            video.pause()
+          }
+        }
+      },
+      { rootMargin: '100px 0px', threshold: 0.25 },
+    )
+    videos.forEach((video) => observer.observe(video))
+    return () => observer.disconnect()
+  }, [isMobile])
 
   // useIsomorphicLayoutEffect (not useEffect) — this effect pins with
   // ScrollTrigger; see the hook's comment for why the cleanup must be
   // synchronous.
   useIsomorphicLayoutEffect(() => {
-    if (!sectionRef.current) return
+    if (isMobile || !sectionRef.current) return
 
     const slides = slidesRef.current.filter(Boolean) as HTMLDivElement[]
     const videoContainers = videosRef.current.filter(Boolean) as HTMLDivElement[]
@@ -129,7 +169,7 @@ export function DivisionsSplit() {
     }, sectionRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [isMobile])
 
   return (
     <section className="divisions-split" ref={sectionRef}>
@@ -139,7 +179,10 @@ export function DivisionsSplit() {
             {TITLE_WORDS.join(' ')}
           </h2>
           <p className="divisions-split-subtitle" ref={subtitleRef}>
-            אלקטרה אפיקים מרכזת תחתיה מגוון תחומי פעילות משלימים,
+            {/* Explicit space before the break: mobile hides the <br>, and JSX
+                strips the newline around it, so without this the two halves
+                would run together as "משלימים,היוצרים". */}
+            אלקטרה אפיקים מרכזת תחתיה מגוון תחומי פעילות משלימים,{' '}
             <br />
             היוצרים מעטפת מלאה לכל אתגר במעגל החיים
           </p>
@@ -176,6 +219,31 @@ export function DivisionsSplit() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Mobile layout — the pinned crossfade doesn't survive a phone-width
+          column, so every division simply stacks: video → logo → text.
+          Rendered alongside the desktop markup (rather than swapped in after
+          mount) so server and client HTML match; CSS picks the one to show.
+          preload="none" keeps the desktop page from fetching all seven files
+          a second time — the effect above starts each one as it scrolls in. */}
+      <div className="divisions-split-mobile">
+        {STEPS.map((step, i) => (
+          <article className="divisions-mobile-step" key={step.id}>
+            <div className="divisions-mobile-video">
+              <video
+                loop
+                muted
+                playsInline
+                preload="none"
+                ref={(el) => { mobileVideosRef.current[i] = el }}
+                src={step.video}
+              />
+            </div>
+            <img alt="" className="divisions-mobile-logo" src={step.logo} />
+            <p className="divisions-mobile-text">{step.text}</p>
+          </article>
+        ))}
       </div>
     </section>
   )

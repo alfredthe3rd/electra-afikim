@@ -87,6 +87,9 @@ export function PartnersGrid() {
             {i < TITLE_LINE1.length - 1 && ' '}
           </Fragment>
         ))}
+        {/* Explicit space: mobile hides the <br> so the title can wrap to the
+            narrow column on its own, and without this the two lines would
+            join as "הגופיםשמובילים". */}{' '}
         <br />
         {TITLE_LINE2.map((word, i) => (
           <Fragment key={i}>

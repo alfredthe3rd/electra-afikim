@@ -2,7 +2,7 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 
@@ -37,11 +37,24 @@ export function StatsHighlights() {
     useRef<HTMLDivElement>(null),
   ]
 
+  // Mobile drops the pinned horizontal track entirely and lays the four stats
+  // out two-per-row, so the whole ScrollTrigger below is desktop-only. State,
+  // not a one-off read, so crossing the breakpoint rebuilds the pin.
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const onChange = () => setIsMobile(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
   // useIsomorphicLayoutEffect (not useEffect) — this effect pins with
   // ScrollTrigger; see the hook's comment for why the cleanup must be
   // synchronous.
   useIsomorphicLayoutEffect(() => {
-    if (!trackRef.current) return
+    if (isMobile || !trackRef.current) return
 
     const track = trackRef.current
 
@@ -80,7 +93,7 @@ export function StatsHighlights() {
     }, sectionRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [isMobile])
 
   return (
     <section className="stats-section" ref={sectionRef}>

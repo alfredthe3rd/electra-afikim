@@ -137,6 +137,56 @@ svg {
   z-index: 1;
   width: clamp(260px, 46.3vw, 700px);
   height: auto;
+
+  /* Mobile skips the logo intro entirely — the header (with its own logo)
+     is visible from the first frame instead (see Hero.tsx isMobile). */
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+/* Scroll cue at the foot of the hero. Centred via inset-inline + flex rather
+   than translateX(-50%), because GSAP drives `y` on this element and a CSS
+   transform would be overwritten. */
+.hero-scroll-cue {
+  position: absolute;
+  bottom: 4vh;
+  inset-inline: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+
+  @media (max-width: 768px) {
+    bottom: 3vh;
+  }
+}
+
+/* Both get a soft shadow: the cue sits over the lottie's brightest region
+   (the lit road), where flat white/green would wash out. */
+.hero-scroll-cue-arrow {
+  width: 42px;
+  height: 56px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+
+  @media (max-width: 768px) {
+    width: 34px;
+    height: 46px;
+  }
+}
+
+.hero-scroll-cue-label {
+  color: var(--text);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  font-size: clamp(14px, 1.1vw, 18px);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+
+  @media (max-width: 768px) {
+    font-size: 15px;
+  }
 }
 
 .hero-end-titles {
@@ -167,6 +217,13 @@ svg {
   text-align: center;
   white-space: nowrap;
   font-size: clamp(36px, 7.756vw, 148.924px);
+
+  /* Mobile: fixed px + wrapping so the title sits on multiple lines */
+  @media (max-width: 768px) {
+    font-size: 50px;
+    line-height: 1.3;
+    white-space: normal;
+  }
 }
 
 .hero-end-title-text {
@@ -206,6 +263,10 @@ svg {
   line-height: normal;
   text-align: center;
   font-size: clamp(16px, 1.5625vw, 30px);
+
+  @media (max-width: 768px) {
+    font-size: 30px;
+  }
 }
 
 .about-teaser {
@@ -220,6 +281,18 @@ svg {
      ~13vh clearance below the hero subtitle at any viewport height. */
   margin-top: -22vh;
   overflow: hidden;
+
+  /* Mobile drops the landscape aspect lock: at 390px wide it computes to a
+     162px-tall box, and with overflow:hidden that clipped the paragraph and
+     the CTA away entirely. Height is content-driven here instead, and the
+     mobile road SVG stretches to match it. */
+  @media (max-width: 768px) {
+    aspect-ratio: auto;
+    /* -12vh pulls the section into the hero's tail; the extra -30px lifts the
+       whole block (road included — the SVG is positioned inside the section,
+       so it travels with it) per client request. */
+    margin-top: calc(-12vh - 30px);
+  }
 }
 
 /* The decorative road: emerges from the hero at top-left, crosses above the
@@ -231,6 +304,28 @@ svg {
   width: 100%;
   height: auto;
   pointer-events: none;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+/* Portrait counterpart — see the SVG's comment in AboutTeaser.tsx. Natural
+   aspect (height:auto), intentionally taller than the section so the
+   right-hand rail is clipped by the section's overflow:hidden at the bottom
+   edge rather than ending in mid-air. */
+.about-teaser-road-mobile {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+  }
 }
 
 .about-teaser-inner {
@@ -242,6 +337,19 @@ svg {
      of the viewport width) plus breathing room, so the title clears it at
      every screen width. */
   padding: calc(11.8vw + 54px) 24px 64px;
+
+  /* Mobile clearances are derived from the road SVG, which scales uniformly
+     with width (viewBox 390 wide, preserveAspectRatio="meet"):
+       top   — the right corner arc bottoms out at y=152 → 152/390 = 38.97vw,
+               +28px of breathing room.
+       right — the right-hand rail's leftmost edge is x=356 → the strip it
+               occupies is (390-356)/390 = 8.72vw, +12px gap. Fixed px here
+               would let the right-aligned text run under the rail above
+               ~506px wide, where the rail has scaled outward but the padding
+               hasn't. */
+  @media (max-width: 768px) {
+    padding: calc(38.97vw + 28px) calc(8.72vw + 12px) 64px 24px;
+  }
 }
 
 .about-teaser-title {
@@ -251,6 +359,10 @@ svg {
   line-height: 1.15;
   text-align: right;
   font-size: 4vw;
+
+  @media (max-width: 768px) {
+    font-size: 60px;
+  }
 }
 
 .about-teaser-text {
@@ -260,6 +372,10 @@ svg {
   line-height: 1.5;
   text-align: right;
   font-size: 1.1vw;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
 }
 
 
@@ -340,6 +456,16 @@ svg {
   height: 100vh;
   overflow: hidden;
   background: var(--bg);
+
+  /* Mobile: no pin, no 100vh viewport lock — the section grows with the
+     stacked divisions below. */
+  @media (max-width: 768px) {
+    display: block;
+    direction: rtl;
+    height: auto;
+    overflow: visible;
+    padding: 0 20px 60px;
+  }
 }
 
 .divisions-split-left {
@@ -356,6 +482,15 @@ svg {
   background: var(--bg);
   gap: 20px;
   box-sizing: border-box;
+
+  /* Mobile: the left column stops being a column — it only carries the
+     header, which sits above the stacked divisions. */
+  @media (max-width: 768px) {
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 0;
+  }
 }
 
 .divisions-split-header {
@@ -367,6 +502,12 @@ svg {
   direction: rtl;
   text-align: right;
   padding-top: 20px;
+
+  @media (max-width: 768px) {
+    gap: 12px;
+    padding-top: 60px;
+    padding-bottom: 40px;
+  }
 }
 
 .divisions-split-title {
@@ -376,6 +517,13 @@ svg {
   font-size: 2.8vw;
   line-height: 1.1em;
   white-space: nowrap;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    line-height: 1.3em;
+    /* nowrap would overflow a phone-width column */
+    white-space: normal;
+  }
 }
 
 .divisions-split-subtitle {
@@ -385,6 +533,18 @@ svg {
   font-size: 1.2vw;
   max-width: 35vw;
   line-height: 1.4em;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+    line-height: 1.3em;
+    max-width: none;
+
+    /* The desktop copy hard-breaks mid-sentence with a <br>; on a narrow
+       column that lands in the wrong place, so let it wrap naturally. */
+    br {
+      display: none;
+    }
+  }
 }
 
 .divisions-split-content-stack {
@@ -394,6 +554,12 @@ svg {
   height: 400px;
   margin-left: auto;
   margin-right: 0;
+
+  /* Superseded by .divisions-split-mobile, which interleaves each division's
+     video with its logo and text. */
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .divisions-split-content {
@@ -430,6 +596,63 @@ svg {
   padding: 10vw 5vw;
   background: var(--bg);
   box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+/* ---- Mobile division stack: video → logo → text, per division ---- */
+
+.divisions-split-mobile {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+}
+
+.divisions-mobile-step {
+  display: flex;
+  flex-direction: column;
+  /* RTL + flex-column: flex-start is what lands on the right (lesson #1) */
+  align-items: flex-start;
+  gap: 20px;
+  text-align: right;
+}
+
+.divisions-mobile-video {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 16px;
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+/* Normalized by width, matching desktop's `width: 500px` — the seven PNGs
+   deliberately keep differing canvas heights so their relative sizes stay
+   correct, so capping by height instead would flatten that out. */
+.divisions-mobile-logo {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+}
+
+.divisions-mobile-text {
+  margin: 0;
+  color: var(--text);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.3em;
+  text-align: right;
 }
 
 .divisions-split-video-stack {
@@ -465,6 +688,16 @@ svg {
   height: 100vh;
   overflow: hidden;
   background: var(--bg);
+
+  /* Mobile: no pin, no 100vh lock, no sideways track — the section is just
+     a header plus a 2×2 grid of stats. width:100% (not 100vw) so a visible
+     scrollbar can't push it wider than the viewport. */
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    padding: 60px 20px;
+  }
 }
 
 .stats-header {
@@ -474,6 +707,11 @@ svg {
   z-index: 2;
   padding: 4vw 5vw 0;
   text-align: center;
+
+  @media (max-width: 768px) {
+    position: static;
+    padding: 0;
+  }
 }
 
 .stats-header-title {
@@ -481,6 +719,12 @@ svg {
   color: var(--text);
   font-weight: 700;
   font-size: clamp(22px, 3vw, 44px);
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    line-height: 1.3em;
+    margin-bottom: 12px;
+  }
 }
 
 .stats-header-subtitle {
@@ -488,6 +732,11 @@ svg {
   color: var(--text);
   font-weight: 400;
   font-size: clamp(14px, 1.3vw, 20px);
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+    line-height: 1.3em;
+  }
 }
 
 .stats-track {
@@ -502,6 +751,12 @@ svg {
   direction: ltr;
   width: 400vw;
   height: 100%;
+
+  /* The giant one-per-screen numbers are the sideways track's whole reason to
+     exist; mobile shows the legend grid instead. */
+  @media (max-width: 768px) {
+    display: none;
+  }
 }
 
 .stats-track-item {
@@ -543,6 +798,17 @@ svg {
   justify-content: center;
   gap: 4vw;
   padding: 0 5vw 4vw;
+
+  /* Mobile: two per row, stacked — this grid replaces the sideways track,
+     so the numbers carry the section on their own. */
+  @media (max-width: 768px) {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 36px 20px;
+    padding: 0;
+    margin-top: 44px;
+  }
 }
 
 .stats-legend-item {
@@ -551,23 +817,43 @@ svg {
   align-items: center;
   gap: 8px;
   text-align: center;
+
+  @media (max-width: 768px) {
+    gap: 6px;
+  }
 }
 
 .stats-legend-number {
   color: var(--brand-2);
   font-weight: 700;
   font-size: clamp(17.6px, 2.4vw, 35.2px);
+
+  /* Scaled up from the desktop legend size: with the hero track gone these
+     are the section's headline figures, not a caption strip under it. */
+  @media (max-width: 768px) {
+    font-size: 46px;
+    line-height: 1.1;
+  }
 }
 
 .stats-legend-text {
   color: var(--text);
   font-weight: 400;
   font-size: clamp(12px, 1vw, 16px);
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+    line-height: 1.3em;
+  }
 }
 
 .partners-section {
   padding: 6vw 5vw;
   background: var(--bg);
+
+  @media (max-width: 768px) {
+    padding: 60px 20px 72px;
+  }
 }
 
 .partners-title {
@@ -577,12 +863,47 @@ svg {
   text-align: center;
   font-size: 3.5vw;
   line-height: 1.2em;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+    line-height: 1.3em;
+    margin-bottom: 32px;
+
+    /* The desktop copy splits into two fixed lines; at 32px neither fits a
+       phone column, so let it find its own balanced wrap. */
+    br {
+      display: none;
+    }
+  }
 }
 
 .partners-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 285px));
   justify-content: center;
+
+  /* Mobile: two columns of real logos. The desktop lattice is drawn with
+     nth-child rules over a 7-column DOM that includes spacer cells; once
+     those are hidden the arithmetic no longer maps to the visible cells, so
+     mobile drops the dashed rules and separates with gap instead. */
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    justify-content: stretch;
+  }
+}
+
+@media (max-width: 768px) {
+  .partners-spacer-row,
+  .partners-spacer-side {
+    display: none;
+  }
+
+  /* The last grid row is padded out with empty .partners-logo-item cells to
+     fill 5 desktop columns; :empty drops them so 13 logos flow as 13 cells. */
+  .partners-logo-item:empty {
+    display: none;
+  }
 }
 
 /* All cells: bottom dashed border */
@@ -609,6 +930,20 @@ svg {
   border-bottom: none;
 }
 
+/* Mobile: the three lattice rules above are written for a 7-column DOM whose
+   spacer cells are hidden here, so they land on arbitrary sides of a 2-column
+   grid. Replace them with one complete dashed frame per cell — same stroke
+   language, consistent on every card.
+
+   Declared after (and more specifically than) the lattice rules on purpose:
+   re-stating `.partners-grid > *` earlier in the file loses on source order
+   no matter what the media query says. */
+@media (max-width: 768px) {
+  .partners-grid > .partners-logo-item {
+    border: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
+  }
+}
+
 .partners-logo-item {
   position: relative;
   display: flex;
@@ -617,6 +952,13 @@ svg {
   height: 148px;
   padding: 16px;
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    height: 92px;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+  }
 }
 
 .partners-logo-item::before {
@@ -652,6 +994,13 @@ svg {
   transition:
     filter 0.4s ease,
     opacity 0.4s ease;
+
+  /* Touch devices never fire the hover that un-greys these, so on mobile the
+     logos would sit permanently washed out. Show them at full colour. */
+  @media (max-width: 768px) {
+    filter: none;
+    opacity: 1;
+  }
 }
 
 .partners-logo-item:hover .partners-logo-img {
@@ -1287,6 +1636,11 @@ svg {
   width: min(770px, 100%);
   height: 83px;
   padding: 8px 2vw 6px 2vw;
+
+  /* Mobile: inset the pill 10px from each edge instead of running full-bleed */
+  @media (max-width: 768px) {
+    width: calc(100% - 20px);
+  }
   background: rgba(255, 255, 255, 0.2);
   border-radius: 6px;
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
@@ -1315,6 +1669,196 @@ svg {
     font-size: clamp(13px, 1.2vw, 16px);
     color: var(--brand-2);
     text-decoration: none;
+  }
+}
+
+/* ---- Mobile header: burger + slide-in drawer (inspired by
+   terminal-industries.com — right-side panel over a dimming overlay,
+   nav items on top, pinned CTAs at the bottom) ---- */
+
+.site-burger,
+.mobile-menu {
+  display: none;
+}
+
+/* Freeze background scroll while the drawer is open. Lenis scrolls the
+   window natively, so overflow:hidden on <html> stops it as well. */
+html.menu-open {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .site-nav {
+    display: none;
+  }
+
+  .site-burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+
+    span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--text);
+      transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
+    }
+
+    &.is-open {
+      span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+      span:nth-child(2) {
+        opacity: 0;
+      }
+      span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+      }
+    }
+  }
+
+  .mobile-menu {
+    display: block;
+    position: fixed;
+    inset: 0;
+    /* Body-level element (see SiteHeader.tsx) — must beat .site-header's
+       z-index: 50 so the overlay dims the header too */
+    z-index: 60;
+    pointer-events: none;
+    visibility: hidden;
+    transition: visibility 0s 0.45s;
+
+    &.is-open {
+      pointer-events: auto;
+      visibility: visible;
+      transition-delay: 0s;
+    }
+  }
+
+  .mobile-menu-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 16, 26, 0.55);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  .mobile-menu.is-open .mobile-menu-overlay {
+    opacity: 1;
+  }
+
+  .mobile-menu-panel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(320px, 84vw);
+    padding: 20px 24px calc(24px + env(safe-area-inset-bottom));
+    background: var(--bg);
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.35);
+    transform: translateX(100%);
+    transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .mobile-menu.is-open .mobile-menu-panel {
+    transform: translateX(0);
+  }
+
+  .mobile-menu-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+
+    img {
+      height: 38px;
+      width: auto;
+    }
+
+    /* Close (X) button */
+    button {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+
+      span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 22px;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--text);
+
+        &:nth-child(1) {
+          transform: translate(-50%, -50%) rotate(45deg);
+        }
+        &:nth-child(2) {
+          transform: translate(-50%, -50%) rotate(-45deg);
+        }
+      }
+    }
+  }
+
+  .mobile-menu-nav {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    a {
+      padding: 18px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--text);
+      font-size: 18px;
+      text-decoration: none;
+    }
+  }
+
+  .mobile-menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 24px;
+  }
+
+  .mobile-menu-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    border-radius: 62px;
+    font-size: 17px;
+    text-decoration: none;
+  }
+
+  .mobile-menu-cta-fill {
+    background: var(--brand);
+    border: 1px solid var(--brand);
+    color: var(--bg);
+  }
+
+  .mobile-menu-cta-outline {
+    background: transparent;
+    border: 1px solid var(--brand-2);
+    color: var(--brand-2);
   }
 }
 
@@ -1653,6 +2197,14 @@ svg {
   color: var(--text);
   padding: 80px 5vw 120px;
   min-height: 600px;
+
+  /* Bottom padding reserves the two absolutely-positioned strips below the
+     content: the tree graphic (~30.6vw tall, see .site-footer-graphic) sitting
+     on top of the 96px legal bar. */
+  @media (max-width: 768px) {
+    padding: 56px 20px calc(30.6vw + 116px);
+    min-height: 0;
+  }
 }
 
 .site-footer-graphic {
@@ -1663,6 +2215,22 @@ svg {
   width: 100%;
   height: auto;
   pointer-events: none;
+
+  /* The artwork is 1920×294 — a full-width road line with a small tree near
+     its left end. Scaled to a 390px viewport the whole thing collapses to
+     60px and the tree becomes an unreadable speck.
+
+     Fix: render it at 200% and let the footer's overflow:hidden crop the
+     right-hand end. The tree doubles in size (≈95px tall, a real accent
+     again) while the road line still crosses the full width, since the image
+     stays anchored at left:0 and is twice as wide as the viewport. */
+  @media (max-width: 768px) {
+    width: 200%;
+    /* The global `img { max-width: 100% }` would clamp that 200% straight
+       back to 100% — the same rule that squashed the logo. */
+    max-width: none;
+    bottom: 96px;
+  }
 }
 
 .site-footer-columns {
@@ -1675,8 +2243,18 @@ svg {
   margin: auto auto 100px;
   padding-inline-end: 100px;
 
+  /* Mobile structure: contact block full width on top, then the two link
+     columns side by side, then centred branding. */
   @media (max-width: 768px) {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'contact contact'
+      'nav divisions'
+      'branding branding';
+    gap: 44px 20px;
+    margin: 0;
+    padding-inline-end: 0;
   }
 }
 
@@ -1704,10 +2282,48 @@ svg {
     color: var(--text);
     text-decoration: none;
   }
+
+  /* 1vw computes to under 4px on a phone — the headings were effectively
+     invisible. Explicit px per block below. */
+  @media (max-width: 768px) {
+    font-size: 16px;
+    line-height: 1.4;
+
+    h3 {
+      font-size: 19px;
+      margin-bottom: 12px;
+    }
+
+    li,
+    p,
+    a {
+      font-size: 16px;
+    }
+  }
 }
 
 .site-footer-contact {
   margin-inline-start: 15px;
+
+  @media (max-width: 768px) {
+    grid-area: contact;
+    margin-inline-start: 0;
+
+    h3 {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .site-footer-nav {
+    grid-area: nav;
+  }
+
+  .site-footer-divisions {
+    grid-area: divisions;
+  }
 }
 
 .site-footer-branding {
@@ -1715,12 +2331,37 @@ svg {
   flex-direction: column;
   margin-inline-start: auto;
   padding-inline-start: 70px;
+
+  @media (max-width: 768px) {
+    grid-area: branding;
+    align-items: center;
+    /* Desktop's inline padding is what squeezed the logo: it left only 181px
+       of content width, and the global `img { max-width: 100% }` clamped the
+       logo to that while .site-footer-logo held height at 80px — so it
+       rendered 181×80 against a natural 734×144 (5.1:1). */
+    margin-inline-start: 0;
+    padding-inline-start: 0;
+    padding-top: 8px;
+  }
 }
 
 .site-footer-logo {
   height: 80px;
   width: auto;
+  /* Opt out of the global `img { max-width: 100% }`: the branding column's
+     inline padding leaves less width than 80px-tall needs, so the clamp was
+     squashing the logo horizontally (4.54:1 against a natural 5.1:1). */
+  max-width: none;
   margin-bottom: 16px;
+
+  /* Sized by width with height:auto, so the aspect ratio can't be clamped
+     out from under it again. 240px → ≈47px tall. */
+  @media (max-width: 768px) {
+    width: 240px;
+    height: auto;
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
 }
 
 .site-footer-social {
@@ -1730,6 +2371,16 @@ svg {
   img {
     height: 24px;
     width: 24px;
+  }
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    gap: 22px;
+
+    img {
+      height: 26px;
+      width: 26px;
+    }
   }
 }
 
@@ -1758,20 +2409,15 @@ svg {
   }
 
   /* On a phone the two items have to stack, and 5vw (~38px) can't hold two
-     lines — so the graphic is lifted to 96px (below) and this strip matches it.
+     lines — so the graphic is lifted to 96px and this strip matches it.
      Stays anchored to the footer's bottom edge so it remains under the road. */
   @media (max-width: 768px) {
     height: 96px;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
+    text-align: center;
     gap: 8px;
-  }
-}
-
-@media (max-width: 768px) {
-  .site-footer-graphic {
-    bottom: 96px;
   }
 }
 
@@ -1790,7 +2436,8 @@ svg {
 @media (max-width: 768px) {
   .site-footer-legal,
   .site-footer-credit {
-    font-size: 15px;
+    font-size: 16px;
+    text-align: center;
   }
 }
 

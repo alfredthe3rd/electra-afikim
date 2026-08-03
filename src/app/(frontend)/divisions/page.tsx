@@ -13,6 +13,15 @@ const isMedia = (value: unknown): value is Media => typeof value === 'object' &&
 // same spacer-grid mechanism as PartnersGrid on the homepage.
 const COLS = 3
 
+/**
+ * ⚠️ Required, not incidental. Without it Next prerenders this page at build
+ * time, so the grid freezes to whatever divisions existed during the last
+ * deploy: a division added in the admin never appears, and a logo swapped on
+ * an existing one keeps showing the old file. The [slug] template already
+ * declares this; the lobby was the one CMS-backed page still static.
+ */
+export const dynamic = 'force-dynamic'
+
 export default async function DivisionsLobbyPage() {
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
@@ -21,14 +30,49 @@ export default async function DivisionsLobbyPage() {
     collection: 'divisions',
     limit: 100,
     depth: 1,
-    sort: 'title',
+    // The order the editor sets by dragging in the admin list view
+    // (Divisions declares `orderable: true`). Was 'title', i.e. Hebrew
+    // alphabetical, which the editor had no way to influence.
+    sort: '_order',
   })
 
-  const rows: (Division | null)[][] = []
-  for (let i = 0; i < divisions.length; i += COLS) {
-    const row: (Division | null)[] = divisions.slice(i, i + COLS)
-    while (row.length < COLS) row.push(null)
-    rows.push(row)
+  const buildRows = (cols: number): (Division | null)[][] => {
+    const result: (Division | null)[][] = []
+    for (let i = 0; i < divisions.length; i += cols) {
+      const row: (Division | null)[] = divisions.slice(i, i + cols)
+      while (row.length < cols) row.push(null)
+      result.push(row)
+    }
+    return result
+  }
+
+  const rows = buildRows(COLS)
+  const mobileRows = buildRows(2)
+
+  const renderCard = (division: Division | null, key: string) => {
+    if (!division) {
+      return <div className="divisions-lobby-card" key={key} />
+    }
+    const logo = isMedia(division.logo) ? division.logo : null
+    return (
+      <article className="divisions-lobby-card" key={key}>
+        {logo?.url && (
+          <img
+            alt={logo.alt ?? division.title}
+            className="divisions-lobby-card-logo"
+            src={logo.url}
+          />
+        )}
+        {division.description && (
+          <p className="divisions-lobby-card-desc">{division.description}</p>
+        )}
+        {division.slug && (
+          <Link className="division-cta" href={`/divisions/${division.slug}`}>
+            למידע מורחב
+          </Link>
+        )}
+      </article>
+    )
   }
 
   return (
@@ -68,31 +112,9 @@ export default async function DivisionsLobbyPage() {
           {rows.map((row, ri) => (
             <Fragment key={`row-${ri}`}>
               <div className="divisions-lobby-spacer-side" />
-              {row.map((division, ci) => {
-                if (!division) {
-                  return <div className="divisions-lobby-card" key={`empty-${ri}-${ci}`} />
-                }
-                const logo = isMedia(division.logo) ? division.logo : null
-                return (
-                  <article className="divisions-lobby-card" key={division.id}>
-                    {logo?.url && (
-                      <img
-                        alt={logo.alt ?? division.title}
-                        className="divisions-lobby-card-logo"
-                        src={logo.url}
-                      />
-                    )}
-                    {division.description && (
-                      <p className="divisions-lobby-card-desc">{division.description}</p>
-                    )}
-                    {division.slug && (
-                      <Link className="division-cta" href={`/divisions/${division.slug}`}>
-                        למידע מורחב
-                      </Link>
-                    )}
-                  </article>
-                )
-              })}
+              {row.map((division, ci) =>
+                renderCard(division, division ? String(division.id) : `empty-${ri}-${ci}`),
+              )}
               <div className="divisions-lobby-spacer-side" />
             </Fragment>
           ))}
@@ -100,6 +122,29 @@ export default async function DivisionsLobbyPage() {
           {/* Bottom spacer row */}
           {Array.from({ length: COLS + 2 }).map((_, i) => (
             <div className="divisions-lobby-spacer-row" key={`bottom-${i}`} />
+          ))}
+        </div>
+
+        {/* Mobile twin: the same spacer-grid lattice at two columns (see
+            .lattice-m in styles.css). CSS shows exactly one grid per
+            breakpoint, so SSR and client always agree. */}
+        <div className="lattice-m">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div className="lattice-m-spacer-row" key={`m-top-${i}`} />
+          ))}
+
+          {mobileRows.map((row, ri) => (
+            <Fragment key={`m-row-${ri}`}>
+              <div />
+              {row.map((division, ci) =>
+                renderCard(division, division ? `m-${division.id}` : `m-empty-${ri}-${ci}`),
+              )}
+              <div />
+            </Fragment>
+          ))}
+
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div className="lattice-m-spacer-row" key={`m-bottom-${i}`} />
           ))}
         </div>
       </section>

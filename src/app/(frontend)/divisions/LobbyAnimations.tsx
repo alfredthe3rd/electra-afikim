@@ -44,11 +44,17 @@ export function LobbyAnimations() {
       }
 
       // 3. Grid cards — staggered reveal, mirroring PartnersGrid on the homepage.
-      const cards = gsap.utils.toArray<HTMLElement>('.divisions-lobby-card')
+      //    Only the visible grid's cards: the desktop grid and its .lattice-m
+      //    mobile twin both live in the DOM, and staggering the hidden set
+      //    would delay the visible one. The trigger is the section (always
+      //    displayed) rather than either grid.
+      const cards = gsap.utils
+        .toArray<HTMLElement>('.divisions-lobby-card')
+        .filter((el) => el.offsetParent !== null)
       if (cards.length) {
         gsap.set(cards, { opacity: 0, y: 30 })
         ScrollTrigger.create({
-          trigger: '.divisions-lobby-grid',
+          trigger: '.divisions-lobby-grid-section',
           start: 'top 80%',
           once: true,
           onEnter: () =>

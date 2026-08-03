@@ -43,8 +43,13 @@ export function PartnersGrid() {
     if (!gridRef.current || !sectionRef.current) return
 
     const ctx = gsap.context(() => {
-      const items = gridRef.current?.querySelectorAll('.partners-logo-item')
-      if (!items?.length) return
+      // Both the desktop grid and its .lattice-m mobile twin live in the DOM;
+      // animate only the visible set, or the stagger burns its first slots on
+      // display:none cells and the reveal starts seconds late.
+      const items = Array.from(
+        sectionRef.current?.querySelectorAll('.partners-logo-item') ?? [],
+      ).filter((el) => (el as HTMLElement).offsetParent !== null)
+      if (!items.length) return
 
       gsap.set(items, { opacity: 0, y: 30 })
 
@@ -61,12 +66,18 @@ export function PartnersGrid() {
     return () => ctx.revert()
   }, [])
 
-  const rows: (PartnerLogo | null)[][] = []
-  for (let i = 0; i < PARTNER_LOGOS.length; i += COLS) {
-    const row: (PartnerLogo | null)[] = PARTNER_LOGOS.slice(i, i + COLS)
-    while (row.length < COLS) row.push(null)
-    rows.push(row)
+  const buildRows = (cols: number): (PartnerLogo | null)[][] => {
+    const result: (PartnerLogo | null)[][] = []
+    for (let i = 0; i < PARTNER_LOGOS.length; i += cols) {
+      const row: (PartnerLogo | null)[] = PARTNER_LOGOS.slice(i, i + cols)
+      while (row.length < cols) row.push(null)
+      result.push(row)
+    }
+    return result
   }
+
+  const rows = buildRows(COLS)
+  const mobileRows = buildRows(2)
 
   // Offset for line2 stagger: continues after line1
   const line2Offset = TITLE_LINE1.length
@@ -132,6 +143,36 @@ export function PartnersGrid() {
         {/* Row 5: bottom spacer */}
         {Array.from({ length: 7 }).map((_, i) => (
           <div className="partners-spacer-row" key={`bottom-${i}`} />
+        ))}
+      </div>
+
+      {/* Mobile twin: the same spacer-grid lattice at two columns (see
+          .lattice-m in styles.css). CSS shows exactly one grid per
+          breakpoint, so SSR and client always agree. */}
+      <div className="lattice-m">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div className="lattice-m-spacer-row" key={`m-top-${i}`} />
+        ))}
+
+        {mobileRows.map((row, ri) => (
+          <Fragment key={`m-row-${ri}`}>
+            <div />
+            {row.map((logo, ci) => (
+              <div
+                className="partners-logo-item"
+                key={logo ? logo.file : `m-empty-${ri}-${ci}`}
+              >
+                {logo && (
+                  <img alt={logo.alt} className="partners-logo-img" src={logoSrc(logo.file)} />
+                )}
+              </div>
+            ))}
+            <div />
+          </Fragment>
+        ))}
+
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div className="lattice-m-spacer-row" key={`m-bottom-${i}`} />
         ))}
       </div>
     </section>

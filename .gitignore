@@ -61,3 +61,6 @@ skills-lock.json
 
 # Working files from AI-assisted sessions (screenshots, measurement scripts)
 scratchpad/
+
+# logo originals kept by scripts/trim-division-logos.mjs (local safety net)
+scripts/.logo-backup/

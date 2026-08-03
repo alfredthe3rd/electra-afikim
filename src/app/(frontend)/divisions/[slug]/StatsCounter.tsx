@@ -94,6 +94,9 @@ export function StatsCounter({ items }: Props) {
             )}
           </div>
         ))}
+        {/* Pad an odd item count so the mobile 2-column lattice always ends
+            on a complete row (hidden on desktop; see .stats-item-pad). */}
+        {items.length % 2 === 1 && <div aria-hidden className="stats-item stats-item-pad" />}
       </div>
     </section>
   )

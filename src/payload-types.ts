@@ -169,6 +169,7 @@ export interface Media {
  */
 export interface Division {
   id: number;
+  _order?: string | null;
   bannerImage: number | Media;
   logo?: (number | null) | Media;
   title: string;
@@ -339,6 +340,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "divisions_select".
  */
 export interface DivisionsSelect<T extends boolean = true> {
+  _order?: T;
   bannerImage?: T;
   logo?: T;
   title?: T;

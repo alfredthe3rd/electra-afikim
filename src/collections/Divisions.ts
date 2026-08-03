@@ -27,8 +27,23 @@ export const Divisions: CollectionConfig = {
     singular: 'חטיבה',
     plural: 'חטיבות',
   },
+  /**
+   * Drag-to-reorder in the admin list view. Payload injects a hidden `_order`
+   * text field holding a fractional index (so a reorder rewrites one row, not
+   * the whole table) and makes it the collection's defaultSort.
+   *
+   * The lobby grid must query `sort: '_order'` for this to have any effect —
+   * it lays out in DOM order, and being RTL the first document lands in the
+   * top-right cell and fills leftward, three per row.
+   *
+   * ⚠️ Payload marks `orderable` @experimental — the API may change across
+   * upgrades. If a future Payload bump breaks the drag handles, check this
+   * flag first.
+   */
+  orderable: true,
   admin: {
     useAsTitle: 'title',
+    defaultColumns: ['title', 'slug'],
   },
   fields: [
     {

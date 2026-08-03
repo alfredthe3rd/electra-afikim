@@ -36,8 +36,13 @@ export function AboutIconsGrid() {
     if (!gridRef.current || !sectionRef.current) return
 
     const ctx = gsap.context(() => {
-      const items = gridRef.current?.querySelectorAll('.about-icon-item')
-      if (!items?.length) return
+      // Both the desktop grid and its .lattice-m mobile twin live in the DOM;
+      // animate only the visible set, or the stagger burns its first slots on
+      // display:none cells and the reveal starts seconds late.
+      const items = Array.from(
+        sectionRef.current?.querySelectorAll('.about-icon-item') ?? [],
+      ).filter((el) => (el as HTMLElement).offsetParent !== null)
+      if (!items.length) return
 
       gsap.set(items, { opacity: 0, y: 30 })
 
@@ -54,12 +59,18 @@ export function AboutIconsGrid() {
     return () => ctx.revert()
   }, [])
 
-  const rows: (IconItem | null)[][] = []
-  for (let i = 0; i < ICONS.length; i += COLS) {
-    const row: (IconItem | null)[] = ICONS.slice(i, i + COLS)
-    while (row.length < COLS) row.push(null)
-    rows.push(row)
+  const buildRows = (cols: number): (IconItem | null)[][] => {
+    const result: (IconItem | null)[][] = []
+    for (let i = 0; i < ICONS.length; i += cols) {
+      const row: (IconItem | null)[] = ICONS.slice(i, i + cols)
+      while (row.length < cols) row.push(null)
+      result.push(row)
+    }
+    return result
   }
+
+  const rows = buildRows(COLS)
+  const mobileRows = buildRows(2)
 
   return (
     <section className={`about-icons-section${visible ? ' is-visible' : ''}`} ref={sectionRef}>
@@ -108,6 +119,39 @@ export function AboutIconsGrid() {
         {/* Bottom spacer row */}
         {Array.from({ length: COLS + 2 }).map((_, i) => (
           <div className="about-icons-spacer-row" key={`bottom-${i}`} />
+        ))}
+      </div>
+
+      {/* Mobile twin: the same spacer-grid lattice at two columns (see
+          .lattice-m in styles.css). CSS shows exactly one grid per
+          breakpoint, so SSR and client always agree. */}
+      <div className="lattice-m">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div className="lattice-m-spacer-row" key={`m-top-${i}`} />
+        ))}
+
+        {mobileRows.map((row, ri) => (
+          <Fragment key={`m-row-${ri}`}>
+            <div />
+            {row.map((icon, ci) => (
+              <div
+                className="about-icon-item"
+                key={icon ? icon.file : `m-empty-${ri}-${ci}`}
+              >
+                {icon && (
+                  <>
+                    <img alt="" className="about-icon-img" src={iconSrc(icon.file)} />
+                    <p className="about-icon-label">{icon.label}</p>
+                  </>
+                )}
+              </div>
+            ))}
+            <div />
+          </Fragment>
+        ))}
+
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div className="lattice-m-spacer-row" key={`m-bottom-${i}`} />
         ))}
       </div>
     </section>

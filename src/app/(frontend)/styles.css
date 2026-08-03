@@ -572,6 +572,12 @@ svg {
   text-align: right;
 }
 
+/* NOTE: this section draws `public/logo-1..7.png`, which are a different file
+   set from the Payload media the lobby and division template use. Those were
+   trimmed to their ink; these were deliberately left alone, so this rule
+   keeps its original canvas-normalized sizing. Don't port the boxed
+   `object-fit: contain` treatment here without trimming these files too — on
+   an untrimmed canvas a box shrinks the mark by ~16%. */
 .divisions-split-logo {
   width: 500px;
   height: auto;
@@ -637,7 +643,8 @@ svg {
 
 /* Normalized by width, matching desktop's `width: 500px` — the seven PNGs
    deliberately keep differing canvas heights so their relative sizes stay
-   correct, so capping by height instead would flatten that out. */
+   correct, so capping by height instead would flatten that out. (These are
+   the untrimmed `public/logo-*.png` set — see .divisions-split-logo.) */
 .divisions-mobile-logo {
   width: 100%;
   max-width: 280px;
@@ -875,31 +882,60 @@ svg {
   }
 }
 
+/* ===== Mobile dashed lattice (shared: PartnersGrid, AboutIconsGrid,
+   divisions lobby) =====
+   The desktop lattices are nth-child rules over spacer-grid DOMs of 7/6/5
+   columns; that arithmetic can't survive a reflow to two columns, and the
+   per-cell frames that replaced it were rejected by the client — the lattice
+   has to keep its desktop shape (continuous shared lines, overshooting the
+   content through the spacer cells). So each component renders a second,
+   mobile-only grid with the same spacer-grid structure at 2 content columns
+   (side + 2 cells + side = a 4-column DOM), and the rules below are the
+   desktop lattice rules with 4-column arithmetic. CSS shows exactly one of
+   the two grids per breakpoint. */
+.lattice-m {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .lattice-m {
+    display: grid;
+    grid-template-columns: 20px repeat(2, 1fr) 20px;
+  }
+
+  /* Top/bottom spacer rows: vertical overshoot (75px on desktop). */
+  .lattice-m-spacer-row {
+    height: 40px;
+  }
+
+  /* All cells: bottom dashed border */
+  .lattice-m > * {
+    border-bottom: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
+  }
+
+  /* Columns 2-3 (content columns): left border for vertical lines */
+  .lattice-m > :not(:nth-child(4n + 1)):not(:nth-child(4n)) {
+    border-left: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
+  }
+
+  /* Column 2 (first content column): right border for outer right edge */
+  .lattice-m > :nth-child(4n + 2) {
+    border-right: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
+  }
+
+  /* Bottom spacer row: no bottom border */
+  .lattice-m > :nth-last-child(-n + 4) {
+    border-bottom: none;
+  }
+}
+
 .partners-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 285px));
   justify-content: center;
 
-  /* Mobile: two columns of real logos. The desktop lattice is drawn with
-     nth-child rules over a 7-column DOM that includes spacer cells; once
-     those are hidden the arithmetic no longer maps to the visible cells, so
-     mobile drops the dashed rules and separates with gap instead. */
+  /* Mobile: the .lattice-m twin below it takes over (see above). */
   @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-    justify-content: stretch;
-  }
-}
-
-@media (max-width: 768px) {
-  .partners-spacer-row,
-  .partners-spacer-side {
-    display: none;
-  }
-
-  /* The last grid row is padded out with empty .partners-logo-item cells to
-     fill 5 desktop columns; :empty drops them so 13 logos flow as 13 cells. */
-  .partners-logo-item:empty {
     display: none;
   }
 }
@@ -928,20 +964,6 @@ svg {
   border-bottom: none;
 }
 
-/* Mobile: the three lattice rules above are written for a 7-column DOM whose
-   spacer cells are hidden here, so they land on arbitrary sides of a 2-column
-   grid. Replace them with one complete dashed frame per cell — same stroke
-   language, consistent on every card.
-
-   Declared after (and more specifically than) the lattice rules on purpose:
-   re-stating `.partners-grid > *` earlier in the file loses on source order
-   no matter what the media query says. */
-@media (max-width: 768px) {
-  .partners-grid > .partners-logo-item {
-    border: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
-  }
-}
-
 .partners-logo-item {
   position: relative;
   display: flex;
@@ -954,8 +976,6 @@ svg {
   @media (max-width: 768px) {
     height: 92px;
     padding: 10px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
   }
 }
 
@@ -1082,7 +1102,9 @@ svg {
   justify-content: flex-start;
   text-align: center;
   gap: 20px;
-  padding: 40px 28px;
+  /* 16px sides, not 28px: the cell is only ~259px wide, and every pixel of
+     side padding comes straight off the logo's render width. */
+  padding: 40px 16px;
   overflow: hidden;
 }
 
@@ -1116,9 +1138,21 @@ svg {
   z-index: 1;
 }
 
+/* ⚠️ This is where the logos read as "smeared". Two compounding causes:
+   1. The global `img { max-width: 100% }` clamped the width to the card's
+      content box (197px) while `height: 60px` held the height, and the
+      default `object-fit: fill` then squashed the mark 4.7–6.1% horizontally
+      — the same trap that flattened the footer logo.
+   2. Each PNG carried up to 15% dead width / 46% dead height of transparent
+      margin, so the actual ink only ever got ~167 of those 197px. The
+      tagline landed around 4px tall and dissolved.
+   Fixed by trimming the PNGs to their ink and boxing them here with
+   `contain`. With the slimmer card padding the ink now renders 27–40%
+   larger, and can no longer distort. */
 .divisions-lobby-card-logo {
-  height: 60px;
-  width: auto;
+  width: 100%;
+  height: 66px;
+  object-fit: contain;
   margin: 0;
 }
 
@@ -1140,32 +1174,15 @@ svg {
   padding-right: 35px;
 }
 
-/* Mobile: two cards per row, logo + CTA only.
-   The dashed lattice above is drawn with nth-child rules over a 5-column DOM
-   that includes spacer cells; once those are hidden the arithmetic no longer
-   maps to the visible cells, so each card gets one complete frame instead —
-   same treatment as .partners-grid and .about-icons-grid. Declared after (and
-   more specifically than) those rules on purpose: re-stating
-   `.divisions-lobby-grid > *` earlier in the file would lose on source order. */
+/* Mobile: two cards per row, logo + CTA only. The desktop grid hides and the
+   .lattice-m twin (see near .partners-grid) draws the same continuous
+   dashed lattice at two columns. */
 @media (max-width: 768px) {
   .divisions-lobby-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-
-  .divisions-lobby-spacer-row,
-  .divisions-lobby-spacer-side {
     display: none;
   }
 
-  /* Rows are padded out with empty cards to fill three desktop columns. */
-  .divisions-lobby-card:empty {
-    display: none;
-  }
-
-  .divisions-lobby-grid > .divisions-lobby-card {
-    border: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
-    border-radius: 10px;
+  .divisions-lobby-card {
     gap: 16px;
     padding: 24px 12px;
   }
@@ -1950,14 +1967,19 @@ html.menu-open {
   display: inline-block;
 }
 
+/* 300×80 (was 405.6×95.0832): the box shrank because the logos grew — the
+   trim removed the transparent margin the old box was partly framing, so
+   these values reproduce the previous *rendered* logo size (+0–18%) rather
+   than the previous canvas size. Also ends the 1.36× upscale that box forced
+   at DPR 2. */
 .division-logo {
-  width: 405.6px;
-  height: 95.0832px;
+  width: 300px;
+  height: 80px;
   object-fit: contain;
 
   @media (max-width: 768px) {
-    width: 260px;
-    height: 61.1px;
+    width: 200px;
+    height: 54px;
   }
 }
 
@@ -2111,6 +2133,27 @@ html.menu-open {
     &:nth-child(2n + 1) {
       border-inline-start: none;
     }
+
+    /* Row separators, so the two-column layout keeps the desktop lattice
+       shape (frame + full internal lines) instead of verticals only. The
+       last row leans on the container's border-bottom; StatsCounter pads an
+       odd item count with a mobile-only empty cell, so the last row is
+       always the last two children. */
+    border-bottom: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
+
+    &:nth-last-child(-n + 2) {
+      border-bottom: none;
+    }
+  }
+}
+
+/* Mobile-only pad cell: completes the final 2-column row when the CMS item
+   count is odd, exactly like the empty padding cells in the desktop grids. */
+.stats-item-pad {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
   }
 }
 
@@ -2524,6 +2567,11 @@ html.menu-open {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* The section was transparent, so the overlay's 20% pass-through landed on
+     the html canvas (#2a3950) and pulled the hero 2 points off the page blue
+     even after the overlay itself was corrected. Painting the page colour
+     here makes the hero's flat base exactly #2c3f59. */
+  background: var(--bg);
 }
 
 .about-hero-video {
@@ -2539,7 +2587,16 @@ html.menu-open {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: #2A3950CC;
+  /* 80% of the about page's own blue, resolved from .about-page's --bg
+     (#2c3f59) — NOT the hardcoded global #2A3950CC this used to be.
+     ⚠️ The old value left the hero tinted toward a different blue than every
+     section beneath it, so wherever the clip goes dark the hero composited to
+     ~#2a3950 and butted against #2c3f59, leaving a visible seam at the
+     section boundary. Desktop hid it: the landscape crop is bright enough
+     that imagery masks the edge. A portrait phone crops the same landscape
+     clip to its dark centre, so the near-flat dark area sat right next to the
+     page colour and the mismatch showed. */
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
 }
 
 .about-hero-content {
@@ -2746,15 +2803,10 @@ html.menu-open {
   grid-template-columns: repeat(6, minmax(0, 285px));
   justify-content: center;
 
-  /* Two icons per row. Same reasoning as .partners-grid: the dashed lattice
-     below is drawn with nth-child rules over a 6-column DOM that includes
-     spacer cells, so once those are hidden the arithmetic stops mapping to
-     the visible cells. Replaced with a per-cell frame further down. */
+  /* Mobile: the .lattice-m twin takes over (see .lattice-m near
+     .partners-grid). */
   @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-    justify-content: stretch;
-    width: 100%;
+    display: none;
   }
 }
 
@@ -2780,28 +2832,6 @@ html.menu-open {
 /* Bottom spacer row: no bottom border */
 .about-icons-grid > :nth-last-child(-n + 6) {
   border-bottom: none;
-}
-
-/* Mobile: replace the lattice with one complete dashed frame per cell.
-   Declared after (and more specifically than) the three rules above on
-   purpose — an earlier `.about-icons-grid > *` would lose on source order
-   regardless of the media query. */
-@media (max-width: 768px) {
-  .about-icons-spacer-row,
-  .about-icons-spacer-side {
-    display: none;
-  }
-
-  /* The last row is padded out with empty .about-icon-item cells to fill four
-     desktop columns; :empty drops them so 7 icons flow as 7 cells. */
-  .about-icon-item:empty {
-    display: none;
-  }
-
-  .about-icons-grid > .about-icon-item {
-    border: 3px dashed color-mix(in srgb, var(--brand-2) 20%, transparent);
-    border-radius: 10px;
-  }
 }
 
 .about-icon-item {

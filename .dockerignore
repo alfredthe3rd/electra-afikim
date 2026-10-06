@@ -1,0 +1,16 @@
+.git
+node_modules
+.next
+media
+.env
+.env.*
+!.env.example
+tests
+test-results
+playwright-report
+scratchpad
+source-assets
+scripts/.logo-backup
+.vercel
+.agents
+.claude

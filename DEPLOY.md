@@ -18,7 +18,8 @@
 
 ```bash
 cd ~/files
-git clone -b about-page https://github.com/alfredthe3rd/electra-afikim.git .
+# branch: deploy-docker (until it is merged into the main working branch)
+git clone -b deploy-docker https://github.com/alfredthe3rd/electra-afikim.git .
 cp .env.example .env
 nano .env          # למלא סיסמה ו-PAYLOAD_SECRET (הוראות בתוך הקובץ)
 mkdir -p media

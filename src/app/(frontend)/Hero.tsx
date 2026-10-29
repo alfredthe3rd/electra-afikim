@@ -203,7 +203,7 @@ export function Hero() {
   return (
     <section className="hero" ref={sectionRef}>
       <div className="hero-lottie" ref={lottieRef} />
-      <img alt="אלקטרה אפיקים" className="hero-logo" ref={logoRef} src="/main-logo-alectra.png" />
+      <img alt="אלקטרה אפיקים" className="hero-logo" ref={logoRef} src="/main-logo-electra.png" />
       <div className="hero-end-titles">
         {/* The break is explicit rather than left to wrapping so both layers
             split at the same word at every width — the fill layer is absolutely

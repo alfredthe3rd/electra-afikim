@@ -46,7 +46,7 @@ export function SiteHeader() {
       <header className="site-header">
         <div className="site-header-inner">
           <Link className="site-header-logo" href="/">
-            <img alt="אלקטרה אפיקים" src="/main-logo-alectra.png" />
+            <img alt="אלקטרה אפיקים" src="/main-logo-electra.png" />
           </Link>
 
           {/* Desktop nav — hidden on mobile in favor of the drawer */}
@@ -83,7 +83,7 @@ export function SiteHeader() {
         <div className="mobile-menu-overlay" onClick={closeMenu} />
         <aside className="mobile-menu-panel" data-lenis-prevent>
           <div className="mobile-menu-top">
-            <img alt="אלקטרה אפיקים" src="/main-logo-alectra.png" />
+            <img alt="אלקטרה אפיקים" src="/main-logo-electra.png" />
             <button aria-label="סגירת תפריט" onClick={closeMenu} type="button">
               <span />
               <span />

@@ -66,7 +66,7 @@ export async function SiteFooter() {
         </div>
 
         <div className="site-footer-column site-footer-branding">
-          <img alt="אלקטרה אפיקים" className="site-footer-logo" src="/main-logo-alectra.png" />
+          <img alt="אלקטרה אפיקים" className="site-footer-logo" src="/main-logo-electra.png" />
           <div className="site-footer-social">
             {SOCIAL_LINKS.map((item) => (
               <a aria-label={item.label} href={item.href} key={item.label}>

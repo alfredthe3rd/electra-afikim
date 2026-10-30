@@ -1,3 +1,4 @@
+import Script from 'next/script'
 import React from 'react'
 
 import { almoniNeue } from '@/fonts/almoni-neue'
@@ -27,6 +28,12 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
+        {/* UserWay accessibility widget */}
+        <Script
+          data-account="2XzfE4RPY8"
+          src="https://cdn.userway.org/widget.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   )

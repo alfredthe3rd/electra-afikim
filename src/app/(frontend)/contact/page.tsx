@@ -42,9 +42,6 @@ export default function ContactPage() {
         <div className="contact-bottom">
           <div className="contact-info-card">
             <p className="contact-info-item">*6686</p>
-            <p className="contact-info-item">
-              <a href="mailto:info@electra-afikim.co.il">info@electra-afikim.co.il</a>
-            </p>
             <p className="contact-info-item">הערבה 1 בנין SIV גבעת שמואל</p>
           </div>
 

@@ -59,10 +59,7 @@ export async function SiteFooter() {
         <div className="site-footer-column site-footer-contact">
           <h3>פרטי התקשרות</h3>
           <p>6686*</p>
-          <p>
-            <a href="mailto:info@electra-afikim.co.il">info@electra-afikim.co.il</a>
-          </p>
-          <p>הערבה 1 בניין SIV נבעת שמאל</p>
+          <p>הערבה 1 בניין SIV גבעת שמואל</p>
         </div>
 
         <div className="site-footer-column site-footer-branding">

@@ -89,8 +89,26 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-settings': SiteSetting;
+    home: Home;
+    about: About;
+    lobby: Lobby;
+    social: Social;
+    contact: Contact;
+    accessibility: Accessibility;
+    privacy: Privacy;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    home: HomeSelect<false> | HomeSelect<true>;
+    about: AboutSelect<false> | AboutSelect<true>;
+    lobby: LobbySelect<false> | LobbySelect<true>;
+    social: SocialSelect<false> | SocialSelect<true>;
+    contact: ContactSelect<false> | ContactSelect<true>;
+    accessibility: AccessibilitySelect<false> | AccessibilitySelect<true>;
+    privacy: PrivacySelect<false> | PrivacySelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -150,6 +168,9 @@ export interface User {
  */
 export interface Media {
   id: number;
+  /**
+   * תיאור קצר של התמונה, לנגישות ולמנועי חיפוש.
+   */
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -214,6 +235,15 @@ export interface Division {
    * נוצר אוטומטית משם החטיבה. ניתן לערוך ידנית.
    */
   slug?: string | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    noindex?: boolean | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -368,6 +398,14 @@ export interface DivisionsSelect<T extends boolean = true> {
   goodToKnowHeading?: T;
   goodToKnowText?: T;
   slug?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        noindex?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -410,6 +448,962 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  brand: {
+    siteName: string;
+    /**
+     * מוצג בפתיחת דף הבית, בהאדר, בתפריט המובייל ובפוטר.
+     */
+    logo: number | Media;
+    /**
+     * הכתובת הראשית בלי / בסוף. משמשת ל-Canonical, למפת האתר ולשיתוף ברשתות.
+     */
+    siteUrl: string;
+  };
+  contactDetails: {
+    phoneLabel: string;
+    address: string;
+    dialCtaLabel: string;
+    /**
+     * לדוגמה tel:*6686
+     */
+    dialHref: string;
+  };
+  header: {
+    nav?:
+      | {
+          label: string;
+          /**
+           * כתובת פנימית כמו /about, או כתובת מלאה שמתחילה ב-https://
+           */
+          href: string;
+          id?: string | null;
+        }[]
+      | null;
+    mobileCtaLabel: string;
+    /**
+     * כתובת פנימית כמו /about, או כתובת מלאה שמתחילה ב-https://
+     */
+    mobileCtaHref: string;
+  };
+  footer: {
+    graphic: number | Media;
+    navHeading: string;
+    nav?:
+      | {
+          label: string;
+          /**
+           * כתובת פנימית כמו /about, או כתובת מלאה שמתחילה ב-https://
+           */
+          href: string;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * רשימת החטיבות עצמה נמשכת מ"חטיבות".
+     */
+    divisionsHeading: string;
+    contactHeading: string;
+    social?:
+      | {
+          label: string;
+          /**
+           * כתובת מלאה של העמוד ברשת.
+           */
+          url: string;
+          icon: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+    legal?:
+      | {
+          label: string;
+          /**
+           * כתובת פנימית כמו /about, או כתובת מלאה שמתחילה ב-https://
+           */
+          href: string;
+          id?: string | null;
+        }[]
+      | null;
+    creditText?: string | null;
+    creditUrl?: string | null;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    noindex?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home".
+ */
+export interface Home {
+  id: number;
+  hero: {
+    /**
+     * כותרת קצרה: טקסט ארוך עלול לשבור את העימוד.
+     */
+    titleLine1: string;
+    titleLine2: string;
+    subtitle: string;
+    scrollCueLabel: string;
+  };
+  about: {
+    title: string;
+    text: string;
+    ctaLabel: string;
+    /**
+     * כתובת פנימית כמו /about, או כתובת מלאה שמתחילה ב-https://
+     */
+    ctaHref: string;
+  };
+  divisions: {
+    title: string;
+    /**
+     * כל שורה כאן מוצגת כשורה נפרדת באתר.
+     */
+    subtitle: string;
+    slides: {
+      logo: number | Media;
+      text: string;
+      /**
+       * אופציונלי. כל עוד השדה ריק מוצג הסרטון הקיים. מומלץ קובץ MP4 דחוס, עד כ-20MB, כדי לא להאט את האתר.
+       */
+      video?: (number | null) | Media;
+      defaultVideo?: string | null;
+      id?: string | null;
+    }[];
+  };
+  stats: {
+    title: string;
+    subtitle: string;
+    items: {
+      number: number;
+      /**
+       * לדוגמה M עבור מיליון.
+       */
+      suffix?: string | null;
+      overlayText: string;
+      legendText: string;
+      id?: string | null;
+    }[];
+  };
+  partners: {
+    titleLine1: string;
+    titleLine2: string;
+    logos?:
+      | {
+          /**
+           * הטקסט החלופי של התמונה משמש כשם השותף.
+           */
+          logo: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    noindex?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about".
+ */
+export interface About {
+  id: number;
+  hero: {
+    title: string;
+    subtitle: string;
+    /**
+     * אופציונלי. כל עוד השדה ריק מוצג הסרטון הקיים. מומלץ קובץ MP4 דחוס, עד כ-20MB, כדי לא להאט את האתר.
+     */
+    video?: (number | null) | Media;
+    steps: {
+      title?: string | null;
+      text: string;
+      id?: string | null;
+    }[];
+  };
+  icons: {
+    title: string;
+    items?:
+      | {
+          icon: number | Media;
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  vision: {
+    title: string;
+    /**
+     * כל שורה כאן מוצגת כשורה נפרדת באתר.
+     */
+    subtitle: string;
+    /**
+     * אופציונלי. כל עוד השדה ריק מוצג הסרטון הקיים. מומלץ קובץ MP4 דחוס, עד כ-20MB, כדי לא להאט את האתר.
+     */
+    video?: (number | null) | Media;
+    cards: {
+      title: string;
+      text: string;
+      id?: string | null;
+    }[];
+  };
+  values: {
+    title: string;
+    items?:
+      | {
+          number: string;
+          title: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  team: {
+    title: string;
+    topRow?:
+      | {
+          name: string;
+          role: string;
+          photo: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+    bottomRow?:
+      | {
+          name: string;
+          role: string;
+          photo: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  story: {
+    title: string;
+    subtitle: string;
+    /**
+     * בדיוק 8 תחנות, כי המיקום של כל אחת מחושב על גרפיקת הכביש. הוספת תחנה דורשת שינוי עיצוב.
+     */
+    milestones: {
+      year: string;
+      /**
+       * כל שורה כאן מוצגת כשורה נפרדת באתר.
+       */
+      lines: string;
+      bullets?: boolean | null;
+      id?: string | null;
+    }[];
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    noindex?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lobby".
+ */
+export interface Lobby {
+  id: number;
+  page: {
+    /**
+     * אופציונלי. כל עוד השדה ריק מוצג הסרטון הקיים. מומלץ קובץ MP4 דחוס, עד כ-20MB, כדי לא להאט את האתר.
+     */
+    video?: (number | null) | Media;
+    title: string;
+    subtitle: string;
+    ctaLabel: string;
+    tickerHighlight: string;
+    tickerMuted: string;
+  };
+  division: {
+    visitSiteLabel: string;
+    statsHeading: string;
+    goodToKnowHeading: string;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    noindex?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "social".
+ */
+export interface Social {
+  id: number;
+  hero: {
+    /**
+     * אופציונלי. כל עוד השדה ריק מוצג הסרטון הקיים. מומלץ קובץ MP4 דחוס, עד כ-20MB, כדי לא להאט את האתר.
+     */
+    video?: (number | null) | Media;
+    title: string;
+    subtitle: string;
+  };
+  cards?: {
+    items?:
+      | {
+          icon: number | Media;
+          title: string;
+          text: string;
+          /**
+           * כל שורה כאן מוצגת כשורה נפרדת באתר.
+           */
+          list: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  cta: {
+    title: string;
+    subtitle: string;
+    label: string;
+    /**
+     * כתובת פנימית כמו /about, או כתובת מלאה שמתחילה ב-https://
+     */
+    href: string;
+  };
+  carousel: {
+    row1: {
+      image: number | Media;
+      id?: string | null;
+    }[];
+    row2: {
+      image: number | Media;
+      id?: string | null;
+    }[];
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    noindex?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact".
+ */
+export interface Contact {
+  id: number;
+  page: {
+    /**
+     * אופציונלי. כל עוד השדה ריק מוצג הסרטון הקיים. מומלץ קובץ MP4 דחוס, עד כ-20MB, כדי לא להאט את האתר.
+     */
+    video?: (number | null) | Media;
+    title: string;
+    /**
+     * כל שורה כאן מוצגת כשורה נפרדת באתר.
+     */
+    subtitle: string;
+  };
+  form: {
+    namePlaceholder: string;
+    phonePlaceholder: string;
+    emailPlaceholder: string;
+    messagePlaceholder: string;
+    submitLabel: string;
+    sendingLabel: string;
+    sentLabel: string;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    noindex?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "accessibility".
+ */
+export interface Accessibility {
+  id: number;
+  page: {
+    title: string;
+    bodyTop: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    phoneLabel: string;
+    emailLabel: string;
+    addressLabel: string;
+    contacts?:
+      | {
+          name: string;
+          phone: string;
+          email: string;
+          address: string;
+          id?: string | null;
+        }[]
+      | null;
+    bodyBottom: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    noindex?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy".
+ */
+export interface Privacy {
+  id: number;
+  page: {
+    title: string;
+    body: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    updatedLabel?: string | null;
+  };
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    noindex?: boolean | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  brand?:
+    | T
+    | {
+        siteName?: T;
+        logo?: T;
+        siteUrl?: T;
+      };
+  contactDetails?:
+    | T
+    | {
+        phoneLabel?: T;
+        address?: T;
+        dialCtaLabel?: T;
+        dialHref?: T;
+      };
+  header?:
+    | T
+    | {
+        nav?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              id?: T;
+            };
+        mobileCtaLabel?: T;
+        mobileCtaHref?: T;
+      };
+  footer?:
+    | T
+    | {
+        graphic?: T;
+        navHeading?: T;
+        nav?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              id?: T;
+            };
+        divisionsHeading?: T;
+        contactHeading?: T;
+        social?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              icon?: T;
+              id?: T;
+            };
+        legal?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              id?: T;
+            };
+        creditText?: T;
+        creditUrl?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        noindex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home_select".
+ */
+export interface HomeSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        titleLine1?: T;
+        titleLine2?: T;
+        subtitle?: T;
+        scrollCueLabel?: T;
+      };
+  about?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        ctaLabel?: T;
+        ctaHref?: T;
+      };
+  divisions?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        slides?:
+          | T
+          | {
+              logo?: T;
+              text?: T;
+              video?: T;
+              defaultVideo?: T;
+              id?: T;
+            };
+      };
+  stats?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        items?:
+          | T
+          | {
+              number?: T;
+              suffix?: T;
+              overlayText?: T;
+              legendText?: T;
+              id?: T;
+            };
+      };
+  partners?:
+    | T
+    | {
+        titleLine1?: T;
+        titleLine2?: T;
+        logos?:
+          | T
+          | {
+              logo?: T;
+              id?: T;
+            };
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        noindex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about_select".
+ */
+export interface AboutSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        video?: T;
+        steps?:
+          | T
+          | {
+              title?: T;
+              text?: T;
+              id?: T;
+            };
+      };
+  icons?:
+    | T
+    | {
+        title?: T;
+        items?:
+          | T
+          | {
+              icon?: T;
+              label?: T;
+              id?: T;
+            };
+      };
+  vision?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        video?: T;
+        cards?:
+          | T
+          | {
+              title?: T;
+              text?: T;
+              id?: T;
+            };
+      };
+  values?:
+    | T
+    | {
+        title?: T;
+        items?:
+          | T
+          | {
+              number?: T;
+              title?: T;
+              id?: T;
+            };
+      };
+  team?:
+    | T
+    | {
+        title?: T;
+        topRow?:
+          | T
+          | {
+              name?: T;
+              role?: T;
+              photo?: T;
+              id?: T;
+            };
+        bottomRow?:
+          | T
+          | {
+              name?: T;
+              role?: T;
+              photo?: T;
+              id?: T;
+            };
+      };
+  story?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        milestones?:
+          | T
+          | {
+              year?: T;
+              lines?: T;
+              bullets?: T;
+              id?: T;
+            };
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        noindex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lobby_select".
+ */
+export interface LobbySelect<T extends boolean = true> {
+  page?:
+    | T
+    | {
+        video?: T;
+        title?: T;
+        subtitle?: T;
+        ctaLabel?: T;
+        tickerHighlight?: T;
+        tickerMuted?: T;
+      };
+  division?:
+    | T
+    | {
+        visitSiteLabel?: T;
+        statsHeading?: T;
+        goodToKnowHeading?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        noindex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "social_select".
+ */
+export interface SocialSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        video?: T;
+        title?: T;
+        subtitle?: T;
+      };
+  cards?:
+    | T
+    | {
+        items?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              text?: T;
+              list?: T;
+              id?: T;
+            };
+      };
+  cta?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        label?: T;
+        href?: T;
+      };
+  carousel?:
+    | T
+    | {
+        row1?:
+          | T
+          | {
+              image?: T;
+              id?: T;
+            };
+        row2?:
+          | T
+          | {
+              image?: T;
+              id?: T;
+            };
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        noindex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact_select".
+ */
+export interface ContactSelect<T extends boolean = true> {
+  page?:
+    | T
+    | {
+        video?: T;
+        title?: T;
+        subtitle?: T;
+      };
+  form?:
+    | T
+    | {
+        namePlaceholder?: T;
+        phonePlaceholder?: T;
+        emailPlaceholder?: T;
+        messagePlaceholder?: T;
+        submitLabel?: T;
+        sendingLabel?: T;
+        sentLabel?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        noindex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "accessibility_select".
+ */
+export interface AccessibilitySelect<T extends boolean = true> {
+  page?:
+    | T
+    | {
+        title?: T;
+        bodyTop?: T;
+        phoneLabel?: T;
+        emailLabel?: T;
+        addressLabel?: T;
+        contacts?:
+          | T
+          | {
+              name?: T;
+              phone?: T;
+              email?: T;
+              address?: T;
+              id?: T;
+            };
+        bodyBottom?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        noindex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy_select".
+ */
+export interface PrivacySelect<T extends boolean = true> {
+  page?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        updatedLabel?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        noindex?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

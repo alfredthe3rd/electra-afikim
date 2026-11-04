@@ -23,27 +23,20 @@ import { useEffect, useRef } from 'react'
  * Only `transform` is animated, and the track carries `will-change: transform`.
  */
 
-const ROW1 = [1, 2, 3, 4]
-const ROW2 = [5, 6, 7, 8]
-// 4 images × 4 = 16 × ~336px ≈ 5376px per copy — wider than any real monitor.
-const REPEAT = 4
+// Enough images per copy that one copy is wider than any real monitor:
+// 16 × ~336px ≈ 5376px, whatever number of images the editor has picked.
+const MIN_IMAGES_PER_COPY = 16
 // Marquee speed in pixels per second (duration is derived so speed is constant
 // regardless of how wide the strip ends up).
 const PIXELS_PER_SECOND = 50
 
-function srcFor(n: number) {
-  // image 2's asset file is misspelled "caruel"; every other file is "carusel".
-  const word = n === 2 ? 'caruel' : 'carusel'
-  return `/socail%20page/image%20${word}%20${n}.jpg`
-}
-
-function repeated(base: number[]) {
-  const out: number[] = []
-  for (let r = 0; r < REPEAT; r++) out.push(...base)
+function repeated(base: string[]) {
+  const out: string[] = []
+  for (let r = 0; r < Math.ceil(MIN_IMAGES_PER_COPY / Math.max(base.length, 1)); r++) out.push(...base)
   return out
 }
 
-export function SocialCarousel() {
+export function SocialCarousel({ row1, row2 }: { row1: string[]; row2: string[] }) {
   const row1Ref = useRef<HTMLDivElement>(null)
   const row2Ref = useRef<HTMLDivElement>(null)
 
@@ -71,14 +64,14 @@ export function SocialCarousel() {
     return () => ctx.revert()
   }, [])
 
-  const set1 = repeated(ROW1)
-  const set2 = repeated(ROW2)
+  const set1 = repeated(row1)
+  const set2 = repeated(row2)
 
   return (
     <section aria-hidden="true" className="social-carousel-section">
       <div className="social-carousel-row" ref={row1Ref}>
         {set1.map((n, i) => (
-          <img alt="" className="social-carousel-img" key={`r1a-${i}`} src={srcFor(n)} />
+          <img alt="" className="social-carousel-img" key={`r1a-${i}`} src={n} />
         ))}
         {set1.map((n, i) => (
           <img
@@ -86,13 +79,13 @@ export function SocialCarousel() {
             aria-hidden="true"
             className="social-carousel-img"
             key={`r1b-${i}`}
-            src={srcFor(n)}
+            src={n}
           />
         ))}
       </div>
       <div className="social-carousel-row" ref={row2Ref}>
         {set2.map((n, i) => (
-          <img alt="" className="social-carousel-img" key={`r2a-${i}`} src={srcFor(n)} />
+          <img alt="" className="social-carousel-img" key={`r2a-${i}`} src={n} />
         ))}
         {set2.map((n, i) => (
           <img
@@ -100,7 +93,7 @@ export function SocialCarousel() {
             aria-hidden="true"
             className="social-carousel-img"
             key={`r2b-${i}`}
-            src={srcFor(n)}
+            src={n}
           />
         ))}
       </div>

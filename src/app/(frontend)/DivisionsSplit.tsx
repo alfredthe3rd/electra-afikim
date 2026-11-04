@@ -2,69 +2,25 @@
 
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
+
+import { mediaUrl, splitLines } from '@/lib/media'
+import type { Home } from '@/payload-types'
 
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 
 gsap.registerPlugin(ScrollTrigger)
 
-type Step = {
-  id: number
-  logo: string
-  text: string
-  video: string
-}
+export function DivisionsSplit({ data }: { data: Home['divisions'] }) {
+  const STEPS = data.slides.map((slide) => ({
+    id: slide.id,
+    logo: mediaUrl(slide.logo),
+    text: slide.text,
+    video: mediaUrl(slide.video) ?? slide.defaultVideo ?? undefined,
+  }))
+  const STEP_COUNT = STEPS.length
+  const subtitleLines = splitLines(data.subtitle)
 
-const TITLE_WORDS = 'קורת גג אחת לעולם התחבורה'.split(' ')
-
-const STEPS: Step[] = [
-  {
-    id: 1,
-    logo: '/logo-1.png',
-    text: 'הפעלה וניהול של מערכי תחבורה ציבורית בהיקפים רחבים, בפריסה ארצית, תוך עמידה בסטנדרטים מתקדמים של שירות, בטיחות ויעילות תפעולית.',
-    video: '/movie-1.mp4',
-  },
-  {
-    id: 2,
-    logo: '/logo-2.png',
-    text: 'פתרונות הסעה מותאמים לארגונים, מוסדות וגופים ציבוריים - משירותים שוטפים ועד פרויקטים ייעודיים, בליווי מערך תפעולי מתקדם.',
-    video: '/movie-2.mp4',
-  },
-  {
-    id: 3,
-    logo: '/logo-3.png',
-    text: 'שותפות בפרויקטים לאומיים של רכבת קלה, כחלק מפיתוח תשתיות התחבורה של ישראל, תוך שילוב יכולות תפעול, תחזוקה וניהול מערכות מורכבות.',
-    video: '/movie-3.mp4',
-  },
-  {
-    id: 4,
-    logo: '/logo-4.png',
-    text: 'ייבוא, שיווק ושילוב של אוטובוסים ופתרונות תחבורה מתקדמים ובטכנולוגיות חשמליות חדשניות. הייבוא נעשה בהתאמה לדרישות הרגולציה ולצרכים התפעוליים של השוק הישראלי.',
-    video: '/movie-4.mp4',
-  },
-  {
-    id: 5,
-    logo: '/logo-5.png',
-    text: 'מערכי תחזוקה מתקדמים, מוסכים, חניונים ותשתיות טעינה ותפעול - המבטיחים רציפות תפעולית, בטיחות וזמינות גבוהה לציי רכב ולמערכות תחבורה מורכבות.',
-    video: '/movie-5.mp4',
-  },
-  {
-    id: 6,
-    logo: '/logo-6.png',
-    text: 'הכשרת דור העתיד של אנשי התחבורה וכוח האדם המקצועי בישראל, במכללה ייעודית למקצועות התחבורה. תוך פיתוח תכניות לימוד, קורסים, והכשרה מקצועית - כחלק מהשקעה ארוכת טווח בהון האנושי ובאיכות השירות.',
-    video: '/movie-6.mp4',
-  },
-  {
-    id: 7,
-    logo: '/logo-7.png',
-    text: 'שימוש בטכנולוגיה חדשנית, המאפשרת ללקוחות פרטיים ועסקיים להזמין הסעה בכל יעד ובכל מטרה - בקלות, בשקיפות ובזמינות מלאה.',
-    video: '/movie-7.mp4',
-  },
-]
-
-const STEP_COUNT = STEPS.length
-
-export function DivisionsSplit() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const subtitleRef = useRef<HTMLParagraphElement>(null)
@@ -176,15 +132,23 @@ export function DivisionsSplit() {
       <div className="divisions-split-left">
         <div className="divisions-split-header">
           <h2 className="divisions-split-title" ref={titleRef}>
-            {TITLE_WORDS.join(' ')}
+            {data.title}
           </h2>
           <p className="divisions-split-subtitle" ref={subtitleRef}>
             {/* Explicit space before the break: mobile hides the <br>, and JSX
                 strips the newline around it, so without this the two halves
                 would run together as "משלימים,היוצרים". */}
-            אלקטרה אפיקים מרכזת תחתיה מגוון תחומי פעילות משלימים,{' '}
-            <br />
-            היוצרים מעטפת מלאה לכל אתגר במעגל החיים
+            {subtitleLines.map((line, i) => (
+              <Fragment key={i}>
+                {line}
+                {i < subtitleLines.length - 1 && (
+                  <>
+                    {' '}
+                    <br />
+                  </>
+                )}
+              </Fragment>
+            ))}
           </p>
         </div>
         <div className="divisions-split-content-stack">

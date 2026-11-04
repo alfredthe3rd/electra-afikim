@@ -4,15 +4,14 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-const NAV_ITEMS = [
-  { href: '/', label: 'דף הבית' },
-  { href: '/about', label: 'אודות' },
-  { href: '/divisions', label: 'חטיבות' },
-  { href: '/social-responsibility', label: 'אחריות חברתית' },
-  { href: '/contact', label: 'צרו קשר' },
-]
+import { mediaAlt, mediaUrl } from '@/lib/media'
+import type { SiteSetting } from '@/payload-types'
 
-export function SiteHeader() {
+export function SiteHeader({ settings }: { settings: SiteSetting }) {
+  const { brand, contactDetails, header } = settings
+  const NAV_ITEMS = header.nav ?? []
+  const logoAlt = mediaAlt(brand.logo)
+  const logoUrl = mediaUrl(brand.logo)
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
 
@@ -46,13 +45,13 @@ export function SiteHeader() {
       <header className="site-header">
         <div className="site-header-inner">
           <Link className="site-header-logo" href="/">
-            <img alt="אלקטרה אפיקים" src="/main-logo-electra.png" />
+            <img alt={logoAlt} src={logoUrl} />
           </Link>
 
           {/* Desktop nav — hidden on mobile in favor of the drawer */}
           <nav className="site-nav">
             {NAV_ITEMS.map((item) => (
-              <Link href={item.href} key={item.href}>
+              <Link href={item.href} key={item.id}>
                 {item.label}
               </Link>
             ))}
@@ -83,7 +82,7 @@ export function SiteHeader() {
         <div className="mobile-menu-overlay" onClick={closeMenu} />
         <aside className="mobile-menu-panel" data-lenis-prevent>
           <div className="mobile-menu-top">
-            <img alt="אלקטרה אפיקים" src="/main-logo-electra.png" />
+            <img alt={logoAlt} src={logoUrl} />
             <button aria-label="סגירת תפריט" onClick={closeMenu} type="button">
               <span />
               <span />
@@ -92,7 +91,7 @@ export function SiteHeader() {
 
           <nav className="mobile-menu-nav">
             {NAV_ITEMS.map((item) => (
-              <Link href={item.href} key={item.href} onClick={closeMenu} tabIndex={menuOpen ? 0 : -1}>
+              <Link href={item.href} key={item.id} onClick={closeMenu} tabIndex={menuOpen ? 0 : -1}>
                 {item.label}
               </Link>
             ))}
@@ -101,18 +100,18 @@ export function SiteHeader() {
           <div className="mobile-menu-actions">
             <Link
               className="mobile-menu-cta mobile-menu-cta-fill"
-              href="/contact"
+              href={header.mobileCtaHref}
               onClick={closeMenu}
               tabIndex={menuOpen ? 0 : -1}
             >
-              צרו קשר
+              {header.mobileCtaLabel}
             </Link>
             <a
               className="mobile-menu-cta mobile-menu-cta-outline"
-              href="tel:*6686"
+              href={contactDetails.dialHref}
               tabIndex={menuOpen ? 0 : -1}
             >
-              חייגו 6686*
+              {contactDetails.dialCtaLabel}
             </a>
           </div>
         </aside>

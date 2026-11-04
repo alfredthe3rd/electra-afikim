@@ -4,6 +4,9 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { type CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
 
+import { splitLines } from '@/lib/media'
+import type { About } from '@/payload-types'
+
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect'
 import { useReveal } from '../useReveal'
 
@@ -40,68 +43,24 @@ const H_ROAD_BOTTOM = 1150
 // (not CSS-scaled), so transform px are literal screen px.
 const GAP = 30
 
-type Milestone = {
-  year: string
-  lines: string[]
-  bullets?: boolean
+type Station = {
   x: number
   y: number
   orient: 'v' | 'h'
   icon: 1 | 2 | 3
 }
 
-const MILESTONES: Milestone[] = [
-  { year: '2008', lines: ['זכייה באשכול שומרון והקמת אפיקים'], x: 1137, y: 220, orient: 'v', icon: 1 },
-  {
-    year: '2011',
-    lines: ['רכישת פעילות התחבורה הציבורית Connex', '(Veolia) - אשכולות בני ברק אשדוד וטבריה'],
-    x: 1137,
-    y: 470,
-    orient: 'v',
-    icon: 2,
-  },
-  { year: '2015', lines: ['תחילת הפעלה באשכול אשדוד בין-עירוני'], x: 1137, y: 690, orient: 'v', icon: 3 },
-  {
-    year: '2016',
-    lines: ['תחילת הפעלה באשכולות אשדוד עירוני ופתח תקווה - ראש העין'],
-    x: 1137,
-    y: 910,
-    orient: 'v',
-    icon: 1,
-  },
-  {
-    year: '2021',
-    lines: ['רכישת השליטה ע"י קבוצת אלקטרה', 'מיזוג פעילות "אגד תעבורה"'],
-    bullets: true,
-    x: 1370,
-    y: 1125,
-    orient: 'h',
-    icon: 2,
-  },
-  {
-    year: '2024',
-    lines: [
-      'ייבוא אוטובוסים (Yutong)',
-      'זכייה במכרז קו רכבת קלה חיפה-נצרת',
-      'פתיחת המכללה למקצועות התחבורה',
-      'חידוש צי הרכב ורכש של כ- 475 אוטובוסים',
-    ],
-    bullets: true,
-    x: 1960,
-    y: 1125,
-    orient: 'h',
-    icon: 3,
-  },
-  {
-    year: '2025',
-    lines: ['פיתוח אפליקציה RideEazy', 'חידוש צי הרכב ורכש כ- 227 אוטובוסים'],
-    bullets: true,
-    x: 2480,
-    y: 1125,
-    orient: 'h',
-    icon: 1,
-  },
-  { year: '2026', lines: ['רכש 150 אוטובוסים לחידוש צי הרכב'], x: 2900, y: 1125, orient: 'h', icon: 2 },
+// Where each milestone sits on the road artwork. The text comes from the CMS;
+// the count is fixed to these eight stations (minRows/maxRows on the field).
+const STATIONS: Station[] = [
+  { x: 1137, y: 220, orient: 'v', icon: 1 },
+  { x: 1137, y: 470, orient: 'v', icon: 2 },
+  { x: 1137, y: 690, orient: 'v', icon: 3 },
+  { x: 1137, y: 910, orient: 'v', icon: 1 },
+  { x: 1370, y: 1125, orient: 'h', icon: 2 },
+  { x: 1960, y: 1125, orient: 'h', icon: 3 },
+  { x: 2480, y: 1125, orient: 'h', icon: 1 },
+  { x: 2900, y: 1125, orient: 'h', icon: 2 },
 ]
 
 const pct = (v: number, total: number) => `${(v / total) * 100}%`
@@ -110,7 +69,7 @@ const iconSrc = (n: number) => `/about%20page/story%20last%20section/icon%20${n}
 // Pins sit on the OPPOSITE side of the road from the text, with a GAP px gap.
 // Vertical road: text on the left, pin on the right. Horizontal road: text
 // below, pin above.
-const pinStyle = (m: Milestone): CSSProperties =>
+const pinStyle = (m: Station): CSSProperties =>
   m.orient === 'v'
     ? { left: pct(V_ROAD_RIGHT, ROAD_W), top: pct(m.y, ROAD_H), transform: `translate(${GAP}px, -50%)` }
     : {
@@ -119,7 +78,7 @@ const pinStyle = (m: Milestone): CSSProperties =>
         transform: `translate(-50%, calc(-100% - ${GAP}px))`,
       }
 
-const itemStyle = (m: Milestone): CSSProperties =>
+const itemStyle = (m: Station): CSSProperties =>
   m.orient === 'v'
     ? {
         left: pct(V_ROAD_LEFT, ROAD_W),
@@ -128,7 +87,15 @@ const itemStyle = (m: Milestone): CSSProperties =>
       }
     : { left: pct(m.x, ROAD_W), top: pct(H_ROAD_BOTTOM, ROAD_H), transform: `translate(-84%, ${GAP}px)` }
 
-export function AboutStory() {
+export function AboutStory({ data }: { data: About['story'] }) {
+  const MILESTONES = data.milestones.slice(0, STATIONS.length).map((milestone, i) => ({
+    ...STATIONS[i],
+    bullets: milestone.bullets,
+    id: milestone.id ?? String(i),
+    lines: splitLines(milestone.lines),
+    year: milestone.year,
+  }))
+
   const { ref: headRef, visible } = useReveal<HTMLDivElement>()
   const viewportRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -270,8 +237,8 @@ export function AboutStory() {
   return (
     <section className="about-story">
       <div className={`about-story-head${visible ? ' is-visible' : ''}`} ref={headRef}>
-        <h2 className="about-story-title">הסיפור שלנו</h2>
-        <p className="about-story-subtitle">אבני הדרך בהתפתחות הקבוצה</p>
+        <h2 className="about-story-title">{data.title}</h2>
+        <p className="about-story-subtitle">{data.subtitle}</p>
       </div>
 
       <div className="about-story-viewport" ref={viewportRef}>
@@ -283,7 +250,7 @@ export function AboutStory() {
           />
 
           {MILESTONES.map((m) => (
-            <Fragment key={m.year}>
+            <Fragment key={m.id}>
               <div className="about-story-pin-wrap" style={pinStyle(m)}>
                 <img alt="" className="about-story-pin" src={iconSrc(m.icon)} />
               </div>
@@ -318,7 +285,7 @@ export function AboutStory() {
           mount, so server and client HTML match; CSS picks which one shows. */}
       <ol className="about-story-mobile" ref={mobileRef}>
         {MILESTONES.map((m) => (
-          <li className="about-story-m-item" key={m.year}>
+          <li className="about-story-m-item" key={m.id}>
             <img alt="" className="about-story-m-icon" src={iconSrc(m.icon)} />
             <div className="about-story-m-body">
               <div className="about-story-m-year">{m.year}</div>

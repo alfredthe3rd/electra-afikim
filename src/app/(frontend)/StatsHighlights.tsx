@@ -4,38 +4,23 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useEffect, useRef, useState } from 'react'
 
+import type { Home } from '@/payload-types'
+
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 
 gsap.registerPlugin(ScrollTrigger)
-
-type Stat = {
-  num: number
-  suffix: string
-  textOverlay: string
-  legendText: string
-}
-
-const STATS: Stat[] = [
-  { legendText: 'אוטובוסים בצי הרכבים', num: 1200, suffix: '', textOverlay: 'אוטובוסים' },
-  { legendText: 'נוסעים בשנה', num: 52, suffix: 'M', textOverlay: 'נוסעים' },
-  { legendText: 'עובדים ומקצוענים', num: 2200, suffix: '', textOverlay: 'עובדים' },
-  { legendText: 'חטיבות', num: 7, suffix: '', textOverlay: 'חטיבות' },
-]
 
 const LEGEND_FADE_WINDOW = 0.12
 
 const formatNumber = (value: number): string => Math.round(value).toLocaleString('en-US')
 
-export function StatsHighlights() {
+export function StatsHighlights({ data }: { data: Home['stats'] }) {
+  const STATS = data.items
   const sectionRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
 
-  const legendRefs = [
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-  ]
+  // A ref per legend item, sized by the data: the editor can add or remove stats.
+  const legendRefs = useRef<(HTMLDivElement | null)[]>([])
 
   // Mobile drops the pinned horizontal track entirely and lays the four stats
   // out two-per-row, so the whole ScrollTrigger below is desktop-only. State,
@@ -59,11 +44,9 @@ export function StatsHighlights() {
     const track = trackRef.current
 
     const ctx = gsap.context(() => {
-      gsap.set(legendRefs[0].current, { opacity: 1, y: 0 })
-      gsap.set(
-        legendRefs.slice(1).map((ref) => ref.current),
-        { opacity: 0, y: 20 },
-      )
+      const legends = legendRefs.current.slice(0, STATS.length)
+      gsap.set(legends[0], { opacity: 1, y: 0 })
+      gsap.set(legends.slice(1), { opacity: 0, y: 20 })
 
       const lastStep = STATS.length - 1
       const activeAt = STATS.map((_stat, i) => i / lastStep)
@@ -79,10 +62,10 @@ export function StatsHighlights() {
           const distance = track.scrollWidth - window.innerWidth
           gsap.set(track, { x: -progress * distance })
 
-          legendRefs.forEach((ref, i) => {
+          legends.forEach((legend, i) => {
             if (i === 0) return
             const localT = Math.max(0, Math.min((progress - activeAt[i]) / LEGEND_FADE_WINDOW, 1))
-            gsap.set(ref.current, { opacity: localT, y: (1 - localT) * 20 })
+            gsap.set(legend, { opacity: localT, y: (1 - localT) * 20 })
           })
         },
         pin: true,
@@ -98,25 +81,29 @@ export function StatsHighlights() {
   return (
     <section className="stats-section" ref={sectionRef}>
       <header className="stats-header">
-        <h2 className="stats-header-title">יתרון הגודל. עומק הניסיון. הראייה קדימה</h2>
-        <p className="stats-header-subtitle">
-          חברת התחבורה הגדולה בישראל, והשלישית בגודלה בתחום התחבורה הציבורית
-        </p>
+        <h2 className="stats-header-title">{data.title}</h2>
+        <p className="stats-header-subtitle">{data.subtitle}</p>
       </header>
 
       <div className="stats-track" ref={trackRef}>
         {STATS.map((stat) => (
-          <div className="stats-track-item" key={stat.legendText}>
-            <div className="stats-hero-number">{formatNumber(stat.num) + stat.suffix}</div>
-            <div className="stats-hero-overlay">{stat.textOverlay}</div>
+          <div className="stats-track-item" key={stat.id}>
+            <div className="stats-hero-number">{formatNumber(stat.number) + (stat.suffix ?? '')}</div>
+            <div className="stats-hero-overlay">{stat.overlayText}</div>
           </div>
         ))}
       </div>
 
       <div className="stats-legend">
         {STATS.map((stat, i) => (
-          <div className="stats-legend-item" key={stat.legendText} ref={legendRefs[i]}>
-            <span className="stats-legend-number">{formatNumber(stat.num) + stat.suffix}</span>
+          <div
+            className="stats-legend-item"
+            key={stat.id}
+            ref={(el) => {
+              legendRefs.current[i] = el
+            }}
+          >
+            <span className="stats-legend-number">{formatNumber(stat.number) + (stat.suffix ?? '')}</span>
             <span className="stats-legend-text">{stat.legendText}</span>
           </div>
         ))}

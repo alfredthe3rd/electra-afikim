@@ -4,44 +4,19 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Fragment, useEffect, useRef } from 'react'
 
+import { mediaUrl, splitWords } from '@/lib/media'
+import type { About } from '@/payload-types'
+
 import { useReveal } from '../useReveal'
 
+type Member = NonNullable<About['team']['topRow']>[number]
+
 gsap.registerPlugin(ScrollTrigger)
-
-type Member = {
-  name: string
-  role: string
-  file: string
-}
-
-// DOM order is right-to-left in RTL, so the first item renders rightmost.
-// Ordered to match the Figma: top row starts (rightmost) with טל כהן (מנכ"ל),
-// bottom row starts (rightmost) with שרון שלמה קרואני.
-const TOP_ROW: Member[] = [
-  { name: 'טל כהן', role: 'מנכ"ל', file: 'טל-כהן-4.webp' },
-  { name: 'יהודה הכהן', role: 'מנכ"ל חטיבת התחבורה ציבורית', file: 'יהודה-כהן.webp' },
-  { name: 'שי יצחקוב', role: 'סמנכ"ל כספים', file: 'שי-יצחקוב-1.webp' },
-  { name: 'שי מלכה', role: 'Customer success & innovation', file: 'shaimalka.webp' },
-  { name: 'יניב שונים', role: 'סמנכ"ל טכנולוגיות ומערכות מידע', file: 'YanivShonim-1.jpg' },
-]
-
-const BOTTOM_ROW: Member[] = [
-  { name: 'עו"ד שרון שלמה קרואני', role: 'יועצת משפטית', file: 'שרון שלמה.png' },
-  { name: 'ערן מונרוב', role: 'סמנכ"ל משאבי אנוש', file: 'ערן-מונרוב-1.webp' },
-  { name: 'איציק הדר', role: 'סמנכ"ל נכסים ותשתיות', file: 'איציק-הדר-1.webp' },
-  { name: 'רועי אברהמי', role: 'סמנכ"ל אחזקה ובטיחות', file: 'רועי-אברהמי-1.webp' },
-  { name: 'אשר שיטרית', role: 'סמנכ"ל תכנון ובקרה', file: 'Asher_Shitrit.webp' },
-  { name: 'יוסי בוחבוט', role: 'סמנכ"ל לוגיסטיקה ורכש', file: 'יוסי-בוחבוט-1.webp' },
-]
-
-const TITLE_WORDS = 'צוות ההנהלה'.split(' ')
-
-const photoSrc = (file: string) => `/about%20page/team%20img/${encodeURIComponent(file)}`
 
 function TeamMember({ member }: { member: Member }) {
   return (
     <div className="about-team-member">
-      <img alt={member.name} className="about-team-photo" src={photoSrc(member.file)} />
+      <img alt={member.name} className="about-team-photo" src={mediaUrl(member.photo)} />
       <div className="about-team-text">
         <p className="about-team-name">{member.name}</p>
         <p className="about-team-role">{member.role}</p>
@@ -50,7 +25,8 @@ function TeamMember({ member }: { member: Member }) {
   )
 }
 
-export function AboutTeam() {
+export function AboutTeam({ data }: { data: About['team'] }) {
+  const TITLE_WORDS = splitWords(data.title)
   const { ref: sectionRef, visible } = useReveal<HTMLElement>()
   const gridRef = useRef<HTMLDivElement>(null)
 
@@ -92,13 +68,13 @@ export function AboutTeam() {
       </h2>
       <div className="about-team-rows" ref={gridRef}>
         <div className="about-team-row">
-          {TOP_ROW.map((member) => (
-            <TeamMember key={member.file} member={member} />
+          {(data.topRow ?? []).map((member) => (
+            <TeamMember key={member.id} member={member} />
           ))}
         </div>
         <div className="about-team-row">
-          {BOTTOM_ROW.map((member) => (
-            <TeamMember key={member.file} member={member} />
+          {(data.bottomRow ?? []).map((member) => (
+            <TeamMember key={member.id} member={member} />
           ))}
         </div>
       </div>

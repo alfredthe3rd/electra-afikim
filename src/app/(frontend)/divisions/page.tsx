@@ -2,6 +2,9 @@ import Link from 'next/link'
 import { getPayload } from 'payload'
 import { Fragment } from 'react'
 
+import { getGlobal } from '@/lib/content'
+import { mediaUrl } from '@/lib/media'
+import { pageMetadata } from '@/lib/seo'
 import config from '@/payload.config'
 import type { Division, Media } from '@/payload-types'
 
@@ -22,7 +25,13 @@ const COLS = 3
  */
 export const dynamic = 'force-dynamic'
 
+export async function generateMetadata() {
+  const lobby = await getGlobal('lobby')
+  return pageMetadata(lobby.meta, '/divisions', { title: lobby.page.title })
+}
+
 export default async function DivisionsLobbyPage() {
+  const { page } = await getGlobal('lobby')
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
 
@@ -68,7 +77,7 @@ export default async function DivisionsLobbyPage() {
         )}
         {division.slug && (
           <Link className="division-cta" href={`/divisions/${division.slug}`}>
-            למידע מורחב
+            {page.ctaLabel}
           </Link>
         )}
       </article>
@@ -87,17 +96,14 @@ export default async function DivisionsLobbyPage() {
           loop
           muted
           playsInline
-          src="/lobby-hero.mp4"
+          src={mediaUrl(page.video) ?? '/lobby-hero.mp4'}
         />
       </section>
 
       {/* אזור 2 - כותרות */}
       <section className="divisions-lobby-titles">
-        <h1 className="divisions-lobby-title">פתרונות מקיפים לכל צורכי התחבורה</h1>
-        <p className="divisions-lobby-subtitle">
-          קבוצת אלקטרה אפיקים פועלת במגוון תחומים משלימים,
-          היוצרים יחד מעטפת מלאה.
-        </p>
+        <h1 className="divisions-lobby-title">{page.title}</h1>
+        <p className="divisions-lobby-subtitle">{page.subtitle}</p>
       </section>
 
       {/* אזור 3 - רשת החטיבות */}
@@ -154,9 +160,9 @@ export default async function DivisionsLobbyPage() {
         <div className="ticker-track">
           {Array.from({ length: 4 }).map((_, i) => (
             <span className="ticker-segment" key={i}>
-              <span className="ticker-highlight">מערכת אחת.</span>
+              <span className="ticker-highlight">{page.tickerHighlight}</span>
               {' '}
-              <span className="ticker-muted">שפה אחת. סטנדרט אחד.</span>
+              <span className="ticker-muted">{page.tickerMuted}</span>
               {' '}
             </span>
           ))}

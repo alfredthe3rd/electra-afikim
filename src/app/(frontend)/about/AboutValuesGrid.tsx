@@ -4,27 +4,16 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Fragment, useEffect, useRef } from 'react'
 
+import { splitWords } from '@/lib/media'
+import type { About } from '@/payload-types'
+
 import { useReveal } from '../useReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
-type ValueItem = {
-  number: string
-  title: string
-}
-
-const VALUES_GRID: ValueItem[] = [
-  { number: '01', title: 'מקצוענות ואחריות' },
-  { number: '02', title: 'מצוינות תפעולית' },
-  { number: '03', title: 'בטיחות ללא פשרות' },
-  { number: '04', title: 'חדשנות מתמדת' },
-  { number: '05', title: 'שותפות ארוכת טווח' },
-  { number: '06', title: 'מחויבות לציבור ולסביבה' },
-]
-
-const TITLE_WORDS = 'ערכים שמניעים אותנו'.split(' ')
-
-export function AboutValuesGrid() {
+export function AboutValuesGrid({ data }: { data: About['values'] }) {
+  const VALUES_GRID = data.items ?? []
+  const TITLE_WORDS = splitWords(data.title)
   const { ref: sectionRef, visible } = useReveal<HTMLElement>()
   const gridRef = useRef<HTMLDivElement>(null)
 
@@ -73,7 +62,7 @@ export function AboutValuesGrid() {
       </h2>
       <div className="about-values-grid" ref={gridRef}>
         {VALUES_GRID.map((item) => (
-          <div className="about-values-item" key={item.number}>
+          <div className="about-values-item" key={item.id}>
             <span className="about-values-number">{item.number}</span>
             <h3 className="about-values-item-title">{item.title}</h3>
           </div>

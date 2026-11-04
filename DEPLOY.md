@@ -63,6 +63,47 @@ git pull
 docker compose up -d --build
 ```
 
+## העלאת לוח הבקרה (פעם אחת בלבד)
+
+העדכון הראשון שכולל את לוח הבקרה מריץ migration שיוצר את הטבלאות החדשות וממלא אותן בתוכן הקיים. הוא רק מוסיף: הוא לא מוחק ולא משנה חטיבות או מדיה קיימות.
+
+**הסדר חשוב.** במסד בשרת יש שורה בשם `dev` בטבלת `payload_migrations`, שנשארה ממצב פיתוח. אם היא קיימת כשהקוד החדש עולה, Payload עוצר על שאלה שאין מי שיענה עליה, והאתר נתקע בלי לענות לאף בקשה.
+
+```bash
+cd ~/files
+
+# 1. מקום פנוי בדיסק
+df -h /
+
+# 2. גיבוי
+docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" -Fc "$POSTGRES_DB"' > ~/before-cms.dump
+tar czf ~/before-cms-media.tgz media
+ls -la ~/before-cms.dump ~/before-cms-media.tgz
+
+# 3. הסרת הסימון, ובדיקה שהוא באמת ירד (צריך לחזור 0)
+docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DELETE FROM payload_migrations WHERE batch = -1" -c "SELECT count(*) FROM payload_migrations WHERE batch = -1"'
+
+# 4. עדכון הקוד
+git pull
+docker compose up -d --build
+
+# 5. הבקשה הראשונה מריצה את ה-migration (כמה שניות)
+curl -sS -o /dev/null -w "%{http_code} %{time_total}s
+" -m 120 http://127.0.0.1:3000/
+docker compose logs --tail=30 app
+```
+
+### אם משהו השתבש
+
+```bash
+git log --oneline -2                 # לזהות את הגרסה הקודמת
+git checkout <הגרסה הקודמת>
+docker compose down
+docker compose up -d db
+docker compose exec -T db sh -c 'pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists --no-owner --no-privileges' < ~/before-cms.dump
+docker compose up -d --build
+```
+
 ## פקודות שימושיות
 
 | מה | פקודה |
@@ -74,6 +115,7 @@ docker compose up -d --build
 
 ## הערות
 
-- **migrations:** הסכמה הגיעה עם הגיבוי מ-Neon, ולכן לא צריך migrations בהתקנה הראשונה. לפני שינוי מבנה ב-collections צריך להוסיף אותן (`npx payload migrate:create`).
+- **migrations:** כל שינוי מבנה ב-collections או ב-globals חייב migration: `npx payload migrate:create <שם>`, ואז להריץ מקומית `npx payload migrate`. ה-`push` כבוי גם בפיתוח. בשרת ה-migrations רצות אוטומטית בבקשה הראשונה אחרי עדכון.
+- **תוכן:** כל הטקסטים, התמונות, הקישורים והסרטונים מנוהלים בפאנל (`src/globals`). אל תחזירו תוכן לקוד. התוכן ההתחלתי נמצא ב-`src/migrations/seed` ורץ פעם אחת בלבד.
 - **BLOB_READ_WRITE_TOKEN** לא מוגדר בשרת בכוונה. בלעדיו Payload שומר קבצים מקומית.
 - **Vercel** נשאר פעיל עד שהשרת עובד, אבל שימו לב: תוכן שיוזן שם אחרי ההעברה לא יגיע לשרת.

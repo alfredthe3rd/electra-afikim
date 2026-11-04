@@ -4,31 +4,20 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Fragment, useEffect, useRef } from 'react'
 
+import { mediaUrl, splitWords } from '@/lib/media'
+import type { About } from '@/payload-types'
+
 import { useReveal } from '../useReveal'
+
+type IconItem = NonNullable<About['icons']['items']>[number]
 
 gsap.registerPlugin(ScrollTrigger)
 
-type IconItem = {
-  file: string
-  label: string
-}
-
-const ICONS: IconItem[] = [
-  { file: 'הפעלת תחבורה ציבורית.svg', label: 'הפעלת תחבורה ציבורית' },
-  { file: 'מערכי היסעים מתקדמים.svg', label: 'מערכי היסעים מתקדמים' },
-  { file: 'ניהול ותפעול רכבות קלות.svg', label: 'ניהול ותפעול רכבות קלות' },
-  { file: 'יבוא אוטובוסים וטכנולוגיות.svg', label: 'יבוא אוטובוסים וטכנולוגיות' },
-  { file: 'תחזוקה ותשתיות.svg', label: 'תחזוקה ותשתיות' },
-  { file: 'הכשרה והסמכה.svg', label: 'הכשרה והסמכה' },
-  { file: 'הסעות פרטיות.svg', label: 'הסעות פרטיות' },
-]
-
 const COLS = 4
-const iconSrc = (file: string) => `/about%20page/icons%20section%203/${encodeURIComponent(file)}`
 
-const TITLE_WORDS = 'קורת גג אחת - מערכת הוליסטית אחת'.split(' ')
-
-export function AboutIconsGrid() {
+export function AboutIconsGrid({ data }: { data: About['icons'] }) {
+  const ICONS = data.items ?? []
+  const TITLE_WORDS = splitWords(data.title)
   const { ref: sectionRef, visible } = useReveal<HTMLElement>()
   const gridRef = useRef<HTMLDivElement>(null)
 
@@ -102,11 +91,11 @@ export function AboutIconsGrid() {
             {row.map((icon, ci) => (
               <div
                 className="about-icon-item"
-                key={icon ? icon.file : `empty-${ri}-${ci}`}
+                key={icon ? icon.id : `empty-${ri}-${ci}`}
               >
                 {icon && (
                   <>
-                    <img alt="" className="about-icon-img" src={iconSrc(icon.file)} />
+                    <img alt="" className="about-icon-img" src={mediaUrl(icon.icon)} />
                     <p className="about-icon-label">{icon.label}</p>
                   </>
                 )}
@@ -136,11 +125,11 @@ export function AboutIconsGrid() {
             {row.map((icon, ci) => (
               <div
                 className="about-icon-item"
-                key={icon ? icon.file : `m-empty-${ri}-${ci}`}
+                key={icon ? icon.id : `m-empty-${ri}-${ci}`}
               >
                 {icon && (
                   <>
-                    <img alt="" className="about-icon-img" src={iconSrc(icon.file)} />
+                    <img alt="" className="about-icon-img" src={mediaUrl(icon.icon)} />
                     <p className="about-icon-label">{icon.label}</p>
                   </>
                 )}

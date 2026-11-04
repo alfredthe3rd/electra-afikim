@@ -5,6 +5,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import lottie from 'lottie-web'
 import { useEffect, useRef, useState } from 'react'
 
+import type { Home } from '@/payload-types'
+
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -19,7 +21,13 @@ const TITLES_START = 0.66
 const CUE_EXIT_START = 0.88
 const CUE_EXIT_RISE = 60
 
-export function Hero() {
+type Props = {
+  data: Home['hero']
+  logoAlt: string
+  logoUrl?: string
+}
+
+export function Hero({ data, logoAlt, logoUrl }: Props) {
   const sectionRef = useRef<HTMLDivElement>(null)
   const lottieRef = useRef<HTMLDivElement>(null)
   const logoRef = useRef<HTMLImageElement>(null)
@@ -203,7 +211,7 @@ export function Hero() {
   return (
     <section className="hero" ref={sectionRef}>
       <div className="hero-lottie" ref={lottieRef} />
-      <img alt="אלקטרה אפיקים" className="hero-logo" ref={logoRef} src="/main-logo-electra.png" />
+      <img alt={logoAlt} className="hero-logo" ref={logoRef} src={logoUrl} />
       <div className="hero-end-titles">
         {/* The break is explicit rather than left to wrapping so both layers
             split at the same word at every width — the fill layer is absolutely
@@ -211,23 +219,23 @@ export function Hero() {
             misregister the clip-path wipe. */}
         <h1 className="hero-end-title" ref={titleRef}>
           <span className="hero-end-title-text hero-end-title-base">
-            מעצמת התחבורה
+            {data.titleLine1}
             <br />
-            של ישראל
+            {data.titleLine2}
           </span>
           <span
             aria-hidden="true"
             className="hero-end-title-text hero-end-title-fill"
             ref={titleFillRef}
           >
-            מעצמת התחבורה
+            {data.titleLine1}
             <br />
-            של ישראל
+            {data.titleLine2}
           </span>
         </h1>
         <div className="hero-end-subtitle-mask">
           <h2 className="hero-end-subtitle" ref={subtitleRef}>
-            מניעים אותך ואת התחבורה בישראל - קדימה
+            {data.subtitle}
           </h2>
         </div>
       </div>
@@ -236,7 +244,7 @@ export function Hero() {
           bottom of the hero. Rises away as the hero sequence completes. */}
       <div className="hero-scroll-cue" ref={scrollCueRef}>
         <div aria-hidden="true" className="hero-scroll-cue-arrow" ref={cueArrowRef} />
-        <span className="hero-scroll-cue-label">גללו מטה</span>
+        <span className="hero-scroll-cue-label">{data.scrollCueLabel}</span>
       </div>
     </section>
   )

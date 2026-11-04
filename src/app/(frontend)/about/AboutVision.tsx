@@ -4,47 +4,19 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Fragment, useEffect, useRef, useState } from 'react'
 
+import { mediaUrl, splitLines, splitWords } from '@/lib/media'
+import type { About } from '@/payload-types'
+
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect'
 import { useReveal } from '../useReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
-type Value = {
-  id: number
-  title: string
-  text: string
-}
-
-const VALUES: Value[] = [
-  {
-    id: 1,
-    title: 'מצוינות תפעולית וכלכלית',
-    text: 'הפעלה איכותית ברמת ביצוע ושירותיות גבוהה, תוך מימוש כלים כלכליים בכל מרכיבי העשייה',
-  },
-  {
-    id: 2,
-    title: 'העובד במרכז',
-    text: 'חיזוק המקצועיות והשירותיות של המשאב האנושי בחברה',
-  },
-  {
-    id: 3,
-    title: 'פיתוח עסקי',
-    text: 'צמיחה, הרחבת פעילות, הגדלת נתח השוק וכניסה לתחומים חדשים',
-  },
-  {
-    id: 4,
-    title: 'בטיחות',
-    text: 'שיפור הבטיחות בכל מרכיבי העשייה',
-  },
-]
-
-const STEP_COUNT = VALUES.length
-
-const TITLE_WORDS = 'החזון שלנו'.split(' ')
-const SUBTITLE_LINE1 = 'אלקטרה אפיקים מובילה בתחום התחבורה,'
-const SUBTITLE_LINE2 = 'צומחת, חדשנית, מצוינת תפעולית וכלכלית'
-
-export function AboutVision() {
+export function AboutVision({ data }: { data: About['vision'] }) {
+  const VALUES = data.cards
+  const STEP_COUNT = VALUES.length
+  const TITLE_WORDS = splitWords(data.title)
+  const subtitleLines = splitLines(data.subtitle)
   const { ref: topRef, visible } = useReveal<HTMLDivElement>()
   const pinRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<(HTMLDivElement | null)[]>([])
@@ -125,9 +97,12 @@ export function AboutVision() {
           ))}
         </h2>
         <p className="about-vision-subtitle">
-          {SUBTITLE_LINE1}
-          <br />
-          {SUBTITLE_LINE2}
+          {subtitleLines.map((line, i) => (
+            <Fragment key={i}>
+              {line}
+              {i < subtitleLines.length - 1 && <br />}
+            </Fragment>
+          ))}
         </p>
       </div>
 
@@ -153,7 +128,7 @@ export function AboutVision() {
             loop
             muted
             playsInline
-            src="/about%20page/buss%20section%204.mp4"
+            src={mediaUrl(data.video) ?? '/about%20page/buss%20section%204.mp4'}
           />
         </div>
       </div>

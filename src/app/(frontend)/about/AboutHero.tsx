@@ -4,59 +4,18 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Fragment, useRef } from 'react'
 
+import { mediaUrl, splitWords } from '@/lib/media'
+import type { About } from '@/payload-types'
+
 import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const TITLE_WORDS = 'חוד החנית של ענף התחבורה בישראל'.split(' ')
-
-const SUBTITLE_WORDS =
-  'אלקטרה אפיקים מהווה כיום את חוד החנית של ענף התחבורה בישראל. החברה, שהחלה את דרכה בשנת 2008 עם זכייה באשכול שומרון, עברה קפיצת מדרגה אסטרטגית בשנת 2021 עם רכישת השליטה על ידי קבוצת אלקטרה ומיזוג פעילות "אגד תעבורה".'.split(
-    ' ',
-  )
-
-type Step = {
-  id: number
-  title?: string
-  text: string
-}
-
-const STEPS: Step[] = [
-  {
-    id: 0,
-    title: 'יבוא',
-    text: 'כחברה המפעילה כ-280 קווי שירות ומסיעה כ-52 מיליון נוסעים בשנה, אנו מהווים עורק חיים מרכזי במשק הישראלי. הפעילות שלנו מתאפיינת בניהול מבוסס נתונים, הקפדה על דיוק במבצעי ושיפור מתמיד של חוויית הנוסע.',
-  },
-  {
-    id: 1,
-    title: 'הפעלה',
-    text: 'הפעלה וניהול של מערכי תחבורה ציבורית בפריסה ארצית, תוך עמידה בסטנדרטים מתקדמים של שירות ובטיחות.',
-  },
-  {
-    id: 2,
-    title: 'תחזוקה',
-    text: 'מערכי תחזוקה מתקדמים, מוסכים ותשתיות טעינה - המבטיחים רציפות תפעולית וזמינות גבוהה לציי הרכב.',
-  },
-  {
-    id: 3,
-    title: 'הכשרה והסמכה',
-    text: 'הכשרת דור העתיד של אנשי התחבורה בישראל, במכללה ייעודית לפיתוח מקצועי ואיכות השירות.',
-  },
-  {
-    id: 4,
-    title: 'תשתיות',
-    text: 'פיתוח ותחזוקה של תשתיות תחבורה מתקדמות, כחלק ממחויבותנו לצמיחה ארוכת טווח של ענף התחבורה.',
-  },
-  {
-    id: 5,
-    title: 'יבוא',
-    text: 'ייבוא ושילוב של אוטובוסים ופתרונות תחבורה חדשניים, בהתאמה לדרישות הרגולציה ולצרכי השוק הישראלי.',
-  },
-]
-
-const STEP_COUNT = STEPS.length
-
-export function AboutHero() {
+export function AboutHero({ data }: { data: About['hero'] }) {
+  const TITLE_WORDS = splitWords(data.title)
+  const SUBTITLE_WORDS = splitWords(data.subtitle)
+  const STEPS = data.steps
+  const STEP_COUNT = STEPS.length
   const containerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const circleLayerRef = useRef<HTMLDivElement>(null)
@@ -159,7 +118,7 @@ export function AboutHero() {
         loop
         muted
         playsInline
-        src="/about%20page/about%20hero%20movie.mp4"
+        src={mediaUrl(data.video) ?? '/about%20page/about%20hero%20movie.mp4'}
       />
       <div className="about-hero-overlay" />
 

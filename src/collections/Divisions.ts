@@ -42,6 +42,7 @@ export const Divisions: CollectionConfig = {
    */
   orderable: true,
   admin: {
+    group: 'תוכן האתר',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug'],
   },

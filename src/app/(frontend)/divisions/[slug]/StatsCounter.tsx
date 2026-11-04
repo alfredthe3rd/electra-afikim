@@ -15,6 +15,7 @@ export type StatItem = {
 }
 
 type Props = {
+  heading: string
   items: StatItem[]
 }
 
@@ -36,7 +37,7 @@ const getInitialDisplay = (raw: string): string => {
   return parsed ? `0${parsed.suffix}` : raw
 }
 
-export function StatsCounter({ items }: Props) {
+export function StatsCounter({ heading, items }: Props) {
   const gridRef = useRef<HTMLDivElement>(null)
   const numberRefs = useRef<(HTMLDivElement | null)[]>([])
 
@@ -74,7 +75,7 @@ export function StatsCounter({ items }: Props) {
 
   return (
     <section className="stats">
-      <h2 className="stats-heading">הפעילות שלנו במספרים</h2>
+      <h2 className="stats-heading">{heading}</h2>
       <div className="stats-grid" ref={gridRef}>
         {items.map((item, index) => (
           <div className="stats-item" key={item.id}>

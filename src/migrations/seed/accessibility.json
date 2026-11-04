@@ -1,0 +1,1313 @@
+{
+ "bottom": {
+  "root": {
+   "children": [
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "נגישות אתר האינטרנט של החברה",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "heading",
+     "version": 1,
+     "tag": "h2"
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "באתר מופעל תפריט נגישות של חברת UserWay, המאפשר לגולשים להתאים את תצוגת האתר ואופן השימוש בו לצורכיהם. התפריט נפתח באמצעות סמל הנגישות המופיע בכל עמודי האתר, ומאפשר בין היתר:",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "הגדלת הטקסט ושינוי הריווח בין אותיות ושורות.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 1
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "התאמת ניגודיות הצבעים ורוויית הצבע.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 2
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "הדגשת קישורים וכותרות.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 3
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "עצירת אנימציות ואלמנטים נעים בדף.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 4
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "מעבר לגופן קריא ונוח יותר לקריאה.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 5
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "הגדלת סמן העכבר ושימוש במדריך קריאה.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 6
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "הקראת תוכן העמוד.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 7
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "list",
+     "version": 1,
+     "listType": "bullet",
+     "start": 1,
+     "tag": "ul"
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "*תפריט הנגישות זמין במגוון שפות שונות.",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "קישורים שימושיים",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "heading",
+     "version": 1,
+     "tag": "h2"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "children": [
+          {
+           "detail": 0,
+           "format": 0,
+           "mode": "normal",
+           "style": "",
+           "text": "אתר נציבות שוויון זכויות לאנשים עם מוגבלות",
+           "type": "text",
+           "version": 1
+          }
+         ],
+         "direction": null,
+         "format": "",
+         "indent": 0,
+         "type": "link",
+         "version": 3,
+         "fields": {
+          "linkType": "custom",
+          "newTab": true,
+          "url": "https://www.gov.il/he/departments/moj_disability_rights"
+         },
+         "id": "6ae987383409b07adcf29190"
+        },
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": ".",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 1
+      },
+      {
+       "children": [
+        {
+         "children": [
+          {
+           "detail": 0,
+           "format": 0,
+           "mode": "normal",
+           "style": "",
+           "text": "אנשים עם מוגבלות נוסעים בתחבורה הציבורית – הסבר",
+           "type": "text",
+           "version": 1
+          }
+         ],
+         "direction": null,
+         "format": "",
+         "indent": 0,
+         "type": "link",
+         "version": 3,
+         "fields": {
+          "linkType": "custom",
+          "newTab": true,
+          "url": "https://www.molsa.gov.il/News/Documents/%D7%90%D7%A0%D7%A9%D7%99%D7%9D%20%D7%A2%D7%9D%20%D7%9E%D7%95%D7%92%D7%91%D7%9C%D7%95%D7%99%D7%95%D7%AA%20-%20%D7%91%D7%AA%D7%97%D7%91%D7%95%D7%A8%D7%94%20%D7%94%D7%A6%D7%99%D7%91%D7%95%D7%A8%D7%99%D7%AA.pdf"
+         },
+         "id": "6ae987383409b07adcf29191"
+        },
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": ".",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 2
+      },
+      {
+       "children": [
+        {
+         "children": [
+          {
+           "detail": 0,
+           "format": 0,
+           "mode": "normal",
+           "style": "",
+           "text": "אתר \"נגיש\".",
+           "type": "text",
+           "version": 1
+          }
+         ],
+         "direction": null,
+         "format": "",
+         "indent": 0,
+         "type": "link",
+         "version": 3,
+         "fields": {
+          "linkType": "custom",
+          "newTab": true,
+          "url": "https://www.nagish.org.il/"
+         },
+         "id": "6ae987383409b07adcf29192"
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 3
+      },
+      {
+       "children": [
+        {
+         "children": [
+          {
+           "detail": 0,
+           "format": 0,
+           "mode": "normal",
+           "style": "",
+           "text": "נגישות אתרים – הנגשת הרשת לאנשים עם מוגבלות",
+           "type": "text",
+           "version": 1
+          }
+         ],
+         "direction": null,
+         "format": "",
+         "indent": 0,
+         "type": "link",
+         "version": 3,
+         "fields": {
+          "linkType": "custom",
+          "newTab": true,
+          "url": "https://www.isoc.org.il/freedom-of-internet/accessibility"
+         },
+         "id": "6ae987383409b07adcf29193"
+        },
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": ".",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 4
+      },
+      {
+       "children": [
+        {
+         "children": [
+          {
+           "detail": 0,
+           "format": 0,
+           "mode": "normal",
+           "style": "",
+           "text": "אתר נגישות ישראל",
+           "type": "text",
+           "version": 1
+          }
+         ],
+         "direction": null,
+         "format": "",
+         "indent": 0,
+         "type": "link",
+         "version": 3,
+         "fields": {
+          "linkType": "custom",
+          "newTab": true,
+          "url": "https://www.aisrael.org/"
+         },
+         "id": "6ae987383409b07adcf29194"
+        },
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": ".",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 5
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "list",
+     "version": 1,
+     "listType": "bullet",
+     "start": 1,
+     "tag": "ul"
+    }
+   ],
+   "direction": null,
+   "format": "",
+   "indent": 0,
+   "type": "root",
+   "version": 1
+  }
+ },
+ "top": {
+  "root": {
+   "children": [
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "אנו בחברת אלקטרה אפיקים בע\"מ פועלים בכל עת על מנת לקדם את נושא הנגישות בחברה ובפעילותה. החברה מייחסת חשיבות רבה להנגשת השירותים והמבנים, כך שיוכלו לשרת באופן מיטבי אנשים עם מוגבלויות. הדבר בא לידי ביטוי בחזון החברה ובמטרותיה.",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "החברה מעניקה הזדמנות שווה והוגנת לאנשים בעלי מוגבלויות ומאפשרת להם ליהנות מכלל השירותים שהחברה מציעה. אנחנו פועלים להנגיש את האתרים שלנו לכלל האוכלוסייה לרבות אנשים עם צרכים מיוחדים וזאת מתוך מטרה לסייע להם לשפר את איכות החיים ולאפשר את שילובם בחברה בדרך של כבוד, שוויון ועצמאות. ההתאמות מבוצעות בכפוף להוראות החוקים והתקנות הרלוונטיים ובסיוע של מורשי נגישות ויועצים מקצועיים.",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "נגישות באוטובוסים של החברה",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "heading",
+     "version": 1,
+     "tag": "h2"
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "כל האוטובוסים העירוניים של החברה נגישים לאנשים עם מוגבלות בשמיעה וראייה, והם כוללים:",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "מערכות כריזה חיצונית (עבור הנוסעים הממתינים בתחנה) ופנימית (עבור הנוסעים באוטובוס).",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 1
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "צג מידע נגיש.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 2
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "לחצנים לעצירת האוטובוס.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 3
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "מאחזי יד.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 4
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "מקומות מיוחדים לאנשים עם מוגבלות.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 5
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "שילוט מספר הקו ויעדו.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 6
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "list",
+     "version": 1,
+     "listType": "bullet",
+     "start": 1,
+     "tag": "ul"
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "כל אלו מספקים מידע על מסלול הנסיעה והתחנות של לאורך מסלולי הקווים.",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "אוטובוסים אלה נגישים גם לאנשים עם מוגבלות פיזית המתניידים באמצעות כיסא גלגלים. ניתן להעלות כיסא גלגלים ו/או קולנועית באוטובוס עירוני באמצעות רמפת הנכים הממוקמת בדלת האחריות, ובתנאי שכיסא הגלגלים ו/או הקולנועית עונים על כלל הקריטריונים המפורטים להלן:",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "רוחב שלא יעלה על 75 ס\"מ (ברוטו).",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 1
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "משקל שלא יעלה על 130 ק\"ג.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 2
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "אורך שלא יעלה על 120 ס\"מ (ברוטו).",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 3
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "list",
+     "version": 1,
+     "listType": "bullet",
+     "start": 1,
+     "tag": "ul"
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "אוטובוסים אלו מסומנים בסמל הנגישות הבינלאומי בחזית האוטובוס ובדופן הימני.",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "מידע על קווים נגישים",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "heading",
+     "version": 1,
+     "tag": "h2"
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "ניתן לקבל מידע על הקווים הנגישים בחברה במספר דרכים:",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "באתר האינטרנט של החברה.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 1
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "מנציגי השירות של החברה במחלקת פניות הציבור בטלפון ",
+         "type": "text",
+         "version": 1
+        },
+        {
+         "children": [
+          {
+           "detail": 0,
+           "format": 0,
+           "mode": "normal",
+           "style": "",
+           "text": "6686*",
+           "type": "text",
+           "version": 1
+          }
+         ],
+         "direction": null,
+         "format": "",
+         "indent": 0,
+         "type": "link",
+         "version": 3,
+         "fields": {
+          "linkType": "custom",
+          "newTab": false,
+          "url": "tel:*6686"
+         },
+         "id": "6ae987383409b07adcf29195"
+        },
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": ".",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 2
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "list",
+     "version": 1,
+     "listType": "bullet",
+     "start": 1,
+     "tag": "ul"
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "נגישות בהתאם לדין",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "heading",
+     "version": 1,
+     "tag": "h2"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "כלב שירות/נחיה – ניתן לעלות לאוטובוס עם כלב המוגדר ככלב שירות או נחיה, וזאת כאשר הכלב ללא זמם (רסן) אך קשור ברצועה. מאמן לכלב הנמצא בתהליך הכשרה להיות כלב נחייה, רשאי לעלות לאוטובוס עם הכלב, ללא עלות, והכל כאשר הכלב קשור ברצועה ובתנאי שהמאמן מחזיק בתעודה בתוקף של מרכז הכשרה והדרכה והכלב מסומן באמצעות אפודה המזהה את ייעודו ואת מרכז ההכשרה וההדרכה שאליו הוא משתייך.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 1
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "עיוורים – עיוורים זכאים לפטור מלא מתשלום דמי נסיעה בכל קווי החברה באמצעות כרטיס רב-קו הטעון בפרופיל עיוור בהתאם לתקנון הרב-קו.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 2
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "מלווה לעיוור – מלווה לעיוור זכאי להנחה בשיעור של 50% בכרטיס בודד בכל קווי החברה.",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 3
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "list",
+     "version": 1,
+     "listType": "bullet",
+     "start": 1,
+     "tag": "ul"
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "הסדרי נגישות במתקני החברה",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "heading",
+     "version": 1,
+     "tag": "h2"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "תחנה מרכזית – התחנה המרכזית, כהגדרתה על פי החוק, המופעלת ע\"י החברה, מונגשת לאנשים עם מוגבלויות והכל על פי אישור חתום של מורשה לנגישות לשירות/למבנים, תשתיות וסביבה (מתו\"ס).",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 1
+      },
+      {
+       "children": [
+        {
+         "detail": 0,
+         "format": 0,
+         "mode": "normal",
+         "style": "",
+         "text": "הסדרי נגישות בעמדות השירות של החברה – עמדות הרב-קו, מחלקת פניות הציבור ואופן הפנייה אליהם, עמדות המודיעין, מכונות למתן שירות אוטומטי, מחלקות אבדות ומציאות וקופות הכרטיסים הינן נגישות, בין היתר, בהיבטים המפורטים להלן:",
+         "type": "text",
+         "version": 1
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 2
+      },
+      {
+       "children": [
+        {
+         "children": [
+          {
+           "children": [
+            {
+             "detail": 0,
+             "format": 0,
+             "mode": "normal",
+             "style": "",
+             "text": "מתן שירות פרונטאלי של נציגי החברה.",
+             "type": "text",
+             "version": 1
+            }
+           ],
+           "direction": null,
+           "format": "",
+           "indent": 1,
+           "type": "listitem",
+           "version": 1,
+           "value": 1
+          },
+          {
+           "children": [
+            {
+             "detail": 0,
+             "format": 0,
+             "mode": "normal",
+             "style": "",
+             "text": "אפשרות לקבלת שירות בישיבה ובעמידה.",
+             "type": "text",
+             "version": 1
+            }
+           ],
+           "direction": null,
+           "format": "",
+           "indent": 1,
+           "type": "listitem",
+           "version": 1,
+           "value": 2
+          },
+          {
+           "children": [
+            {
+             "detail": 0,
+             "format": 0,
+             "mode": "normal",
+             "style": "",
+             "text": "ערכות \"לולאות השראה\" לאנשים עם לקות שמיעה",
+             "type": "text",
+             "version": 1
+            }
+           ],
+           "direction": null,
+           "format": "",
+           "indent": 1,
+           "type": "listitem",
+           "version": 1,
+           "value": 3
+          },
+          {
+           "children": [
+            {
+             "detail": 0,
+             "format": 0,
+             "mode": "normal",
+             "style": "",
+             "text": "פינות ישיבה.",
+             "type": "text",
+             "version": 1
+            }
+           ],
+           "direction": null,
+           "format": "",
+           "indent": 1,
+           "type": "listitem",
+           "version": 1,
+           "value": 4
+          },
+          {
+           "children": [
+            {
+             "detail": 0,
+             "format": 0,
+             "mode": "normal",
+             "style": "",
+             "text": "חדרי נוחיות מונגשים.",
+             "type": "text",
+             "version": 1
+            }
+           ],
+           "direction": null,
+           "format": "",
+           "indent": 1,
+           "type": "listitem",
+           "version": 1,
+           "value": 5
+          },
+          {
+           "children": [
+            {
+             "detail": 0,
+             "format": 0,
+             "mode": "normal",
+             "style": "",
+             "text": "שילוט נגיש.",
+             "type": "text",
+             "version": 1
+            }
+           ],
+           "direction": null,
+           "format": "",
+           "indent": 1,
+           "type": "listitem",
+           "version": 1,
+           "value": 6
+          }
+         ],
+         "direction": null,
+         "format": "",
+         "indent": 0,
+         "type": "list",
+         "version": 1,
+         "listType": "number",
+         "start": 1,
+         "tag": "ol"
+        }
+       ],
+       "direction": null,
+       "format": "",
+       "indent": 0,
+       "type": "listitem",
+       "version": 1,
+       "value": 3
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "list",
+     "version": 1,
+     "listType": "bullet",
+     "start": 1,
+     "tag": "ul"
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "*ניתן לקבל מידע נוסף בנוגע לנגישות מרכזי השירות ועמדות ההנפקה של החברה בעמודת \"מרכזי השירות ועמדות הנפקה\" באתר האינטרנט.",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "שליחת פניות לרכזי הנגישות של החברה",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "heading",
+     "version": 1,
+     "tag": "h2"
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "לכל שאלה, הבהרה, הצעת ייעול, תלונה ו/או לכל נושא אחר הנוגע לנגישות, הינכם מוזמנים לפנות אל רכזי הנגישות של החברה, מר יצחק הדר ומר שי סעדון אשר יעשו ככל שביכולתם על מנת להעניק לכם את התשובה המיטבית וזאת לא יאוחר מ-48 שעות ממועד הפניה.",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "על מנת לסייע לנו להשיב לכם במהרה, אנא ציינו פרטי מידע מפורטים ומדויקים ככל האפשר על מנת שבירור המקרה יהיה יסודי ומקיף.",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    },
+    {
+     "children": [
+      {
+       "detail": 0,
+       "format": 0,
+       "mode": "normal",
+       "style": "",
+       "text": "לפניות לרכז הנגישות יש לפנות בהתאם לפרטים שלהלן:",
+       "type": "text",
+       "version": 1
+      }
+     ],
+     "direction": null,
+     "format": "",
+     "indent": 0,
+     "type": "paragraph",
+     "version": 1,
+     "textFormat": 0,
+     "textStyle": ""
+    }
+   ],
+   "direction": null,
+   "format": "",
+   "indent": 0,
+   "type": "root",
+   "version": 1
+  }
+ }
+}

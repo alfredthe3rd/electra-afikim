@@ -3598,3 +3598,19 @@ html.menu-open {
 .about-story-desc--bullets li {
   margin-bottom: 0.3em;
 }
+
+/* Closing block at the bottom of a division page ("מבט קדימה"), when the editor fills it in. */
+.division-closing {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  text-align: center;
+}
+
+.division-closing-text {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(16px, 1.15vw, 19px);
+  line-height: 1.7;
+  white-space: pre-line;
+}

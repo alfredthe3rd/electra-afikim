@@ -4,38 +4,29 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Fragment, useEffect, useRef } from 'react'
 
+import { mediaAlt, mediaUrl, splitWords } from '@/lib/media'
+import type { Home } from '@/payload-types'
+
 import { useReveal } from './useReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
 type PartnerLogo = {
-  file: string
   alt: string
+  id: string
+  src?: string
 }
 
-const PARTNER_LOGOS: PartnerLogo[] = [
-  { alt: 'אלקטרה', file: 'אלקטרה.png' },
-  { alt: 'אשדוד', file: 'אשדוד.png' },
-  { alt: 'יוטונג', file: 'יוטונג.png' },
-  { alt: 'מדינת ישראל', file: 'מדינת ישראל.png' },
-  { alt: 'מוביט', file: 'מוביט.png' },
-  { alt: 'מעלה אדומים', file: 'מעלה אדומים.png' },
-  { alt: 'משרד הביטחון', file: 'משרד בטחון.png' },
-  { alt: 'משרד התחבורה', file: 'משרד תחבורה.png' },
-  { alt: 'פורום תחב״צ', file: 'פורום תחבצ.png' },
-  { alt: 'פתח תקווה', file: 'פ״ת.png' },
-  { alt: 'ראש העין', file: 'ראש העין.png' },
-  { alt: 'רפאל', file: 'רפאל.png' },
-  { alt: 'התעשייה האווירית', file: 'תעשייה אויירית.png' },
-]
-
 const COLS = 5
-const logoSrc = (file: string) => `/logos to home/${encodeURIComponent(file)}`
 
-const TITLE_LINE1 = 'גאים לעבוד בשותפות עם הגופים'.split(' ')
-const TITLE_LINE2 = 'שמובילים את התחבורה בישראל'.split(' ')
-
-export function PartnersGrid() {
+export function PartnersGrid({ data }: { data: Home['partners'] }) {
+  const PARTNER_LOGOS: PartnerLogo[] = (data.logos ?? []).map((row, i) => ({
+    alt: mediaAlt(row.logo),
+    id: row.id ?? String(i),
+    src: mediaUrl(row.logo),
+  }))
+  const TITLE_LINE1 = splitWords(data.titleLine1)
+  const TITLE_LINE2 = splitWords(data.titleLine2)
   const { ref: sectionRef, visible } = useReveal<HTMLElement>()
   const gridRef = useRef<HTMLDivElement>(null)
 
@@ -129,10 +120,10 @@ export function PartnersGrid() {
             {row.map((logo, ci) => (
               <div
                 className="partners-logo-item"
-                key={logo ? logo.file : `empty-${ri}-${ci}`}
+                key={logo ? logo.id : `empty-${ri}-${ci}`}
               >
                 {logo && (
-                  <img alt={logo.alt} className="partners-logo-img" src={logoSrc(logo.file)} />
+                  <img alt={logo.alt} className="partners-logo-img" src={logo.src} />
                 )}
               </div>
             ))}
@@ -160,10 +151,10 @@ export function PartnersGrid() {
             {row.map((logo, ci) => (
               <div
                 className="partners-logo-item"
-                key={logo ? logo.file : `m-empty-${ri}-${ci}`}
+                key={logo ? logo.id : `m-empty-${ri}-${ci}`}
               >
                 {logo && (
-                  <img alt={logo.alt} className="partners-logo-img" src={logoSrc(logo.file)} />
+                  <img alt={logo.alt} className="partners-logo-img" src={logo.src} />
                 )}
               </div>
             ))}

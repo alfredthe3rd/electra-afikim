@@ -1,41 +1,31 @@
 import Link from 'next/link'
-import { getPayload } from 'payload'
+import { Fragment } from 'react'
 
-import config from '@/payload.config'
-
-const QUICK_LINKS = [
-  { href: '/', label: 'בית' },
-  { href: '/about', label: 'אודות' },
-  { href: '/divisions', label: 'תחומי פעילות' },
-  { href: '/social-responsibility', label: 'אחריות חברתית' },
-]
-
-const SOCIAL_LINKS = [
-  { href: '#', icon: '/facebook-icon.svg', label: 'פייסבוק' },
-  { href: '#', icon: '/instagram-icon.svg', label: 'אינסטגרם' },
-  { href: '#', icon: '/youtube-icon.svg', label: 'יוטיוב' },
-]
+import { getCms, getGlobal } from '@/lib/content'
+import { mediaAlt, mediaUrl } from '@/lib/media'
 
 export async function SiteFooter() {
-  const payloadConfig = await config
-  const payload = await getPayload({ config: payloadConfig })
+  const [payload, settings] = await Promise.all([getCms(), getGlobal('site-settings')])
+  const { brand, contactDetails, footer } = settings
 
   const { docs: divisions } = await payload.find({
     collection: 'divisions',
+    depth: 0,
     limit: 100,
-    sort: 'title',
+    // Same order as the lobby: the one the editor sets by dragging in the admin.
+    sort: '_order',
   })
 
   return (
     <footer className="site-footer">
-      <img alt="" className="site-footer-graphic" src="/tree-footer.png" />
+      <img alt="" className="site-footer-graphic" src={mediaUrl(footer.graphic)} />
 
       <div className="site-footer-columns">
         <div className="site-footer-column site-footer-nav">
-          <h3>ניווט מהיר</h3>
+          <h3>{footer.navHeading}</h3>
           <ul>
-            {QUICK_LINKS.map((item) => (
-              <li key={item.href}>
+            {(footer.nav ?? []).map((item) => (
+              <li key={item.id}>
                 <Link href={item.href}>{item.label}</Link>
               </li>
             ))}
@@ -43,7 +33,7 @@ export async function SiteFooter() {
         </div>
 
         <div className="site-footer-column site-footer-divisions">
-          <h3>תחומי פעילות</h3>
+          <h3>{footer.divisionsHeading}</h3>
           <ul>
             {divisions.map(
               (division) =>
@@ -57,17 +47,17 @@ export async function SiteFooter() {
         </div>
 
         <div className="site-footer-column site-footer-contact">
-          <h3>פרטי התקשרות</h3>
-          <p>6686*</p>
-          <p>הערבה 1 בניין SIV גבעת שמואל</p>
+          <h3>{footer.contactHeading}</h3>
+          <p>{contactDetails.phoneLabel}</p>
+          <p>{contactDetails.address}</p>
         </div>
 
         <div className="site-footer-column site-footer-branding">
-          <img alt="אלקטרה אפיקים" className="site-footer-logo" src="/main-logo-electra.png" />
+          <img alt={mediaAlt(brand.logo)} className="site-footer-logo" src={mediaUrl(brand.logo)} />
           <div className="site-footer-social">
-            {SOCIAL_LINKS.map((item) => (
-              <a aria-label={item.label} href={item.href} key={item.label}>
-                <img alt="" src={item.icon} />
+            {(footer.social ?? []).map((item) => (
+              <a aria-label={item.label} href={item.url} key={item.id}>
+                <img alt="" src={mediaUrl(item.icon)} />
               </a>
             ))}
           </div>
@@ -78,19 +68,24 @@ export async function SiteFooter() {
           the legal links land on the right and the credit on the left. */}
       <div className="site-footer-bottom">
         <div className="site-footer-legal">
-          <Link href="/privacy-policy">מדיניות פרטיות</Link>
-          <span aria-hidden="true">|</span>
-          <Link href="/accessibility">הצהרת נגישות</Link>
+          {(footer.legal ?? []).map((item, i) => (
+            <Fragment key={item.id}>
+              {i > 0 && <span aria-hidden="true">|</span>}
+              <Link href={item.href}>{item.label}</Link>
+            </Fragment>
+          ))}
         </div>
 
-        <a
-          className="site-footer-credit"
-          href="https://sivan-group.net/"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          קבוצת סיון – מיתוג I שיווק בדיגיטל I בניית אתרים
-        </a>
+        {footer.creditText && (
+          <a
+            className="site-footer-credit"
+            href={footer.creditUrl ?? undefined}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {footer.creditText}
+          </a>
+        )}
       </div>
     </footer>
   )

@@ -5,18 +5,16 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
 import { Fragment, useEffect, useRef } from 'react'
 
+import { splitWords } from '@/lib/media'
+import type { Home } from '@/payload-types'
+
 import { useReveal } from './useReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const TITLE_WORDS = 'שותפים אסטרטגיים בפתרונות תחבורה מתקדמים'.split(' ')
-
-const PARAGRAPH_WORDS =
-  'קבוצת אלקטרה אפיקים היא קבוצת התחבורה המובילה בישראל, הפועלת כקורת גג אחת למכלול רחב של פתרונות תחבורה מתקדמים. הקבוצה משלבת תכנון, הפעלה, טכנולוגיה, תשתיות, הכשרה, תחזוקה וחדשנות - כדי לייצר מערכות תחבורה חכמות, בטוחות ויעילות.'.split(
-    ' ',
-  )
-
-export function AboutTeaser() {
+export function AboutTeaser({ data }: { data: Home['about'] }) {
+  const TITLE_WORDS = splitWords(data.title)
+  const PARAGRAPH_WORDS = splitWords(data.text)
   const { ref: sectionRef, visible } = useReveal<HTMLElement>()
   const textRef = useRef<HTMLParagraphElement>(null)
 
@@ -210,8 +208,8 @@ export function AboutTeaser() {
             </span>
           ))}
         </p>
-        <Link className="division-cta about-teaser-cta" href="/about">
-          אודות אלקטרה אפיקים
+        <Link className="division-cta about-teaser-cta" href={data.ctaHref}>
+          {data.ctaLabel}
         </Link>
       </div>
     </section>

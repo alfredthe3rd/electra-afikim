@@ -104,6 +104,21 @@ docker compose exec -T db sh -c 'pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB
 docker compose up -d --build
 ```
 
+## מייל מטופס צור קשר (Mailrelay)
+
+הטופס שומר כל פנייה בפאנל ("פניות מהאתר") גם בלי מייל. כדי שגם יישלח מייל, להוסיף ל-`.env` בשרת את פרטי ה-SMTP מחשבון Mailrelay:
+
+```bash
+SMTP_HOST=     # שרת ה-SMTP מהגדרות החשבון ב-Mailrelay
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=     # כתובת מדומיין שאומת ב-Mailrelay
+SMTP_FROM_NAME=אתר אלקטרה אפיקים
+```
+
+ואז `docker compose up -d` (בלי `--build`, רק המשתנים השתנו). לבדוק בשליחה אמיתית מהאתר, ובפאנל לוודא שהפנייה מסומנת "נשלח". הנמענים נקבעים בפאנל ב"הגדרות פניות", לא ב-`.env`.
+
 ## פקודות שימושיות
 
 | מה | פקודה |

@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { he } from '@payloadcms/translations/languages/he'
@@ -10,9 +11,11 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { ContactSubmissions } from './collections/ContactSubmissions'
 import { Divisions } from './collections/Divisions'
 import { About } from './globals/About'
 import { Contact } from './globals/Contact'
+import { ContactInbox } from './globals/ContactInbox'
 import { Home } from './globals/Home'
 import { Accessibility, Privacy } from './globals/Legal'
 import { Lobby } from './globals/Lobby'
@@ -22,6 +25,24 @@ import { migrations } from './migrations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+// Outgoing mail for the contact form. Without SMTP_HOST, Payload falls back to
+// printing each email to the server log, which is what local development uses.
+const smtpPort = Number(process.env.SMTP_PORT || 587)
+const email = process.env.SMTP_HOST
+  ? nodemailerAdapter({
+      defaultFromAddress: process.env.SMTP_FROM || process.env.SMTP_USER || '',
+      defaultFromName: process.env.SMTP_FROM_NAME || 'אתר אלקטרה אפיקים',
+      transportOptions: {
+        host: process.env.SMTP_HOST,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: process.env.SMTP_USER
+          ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+          : undefined,
+      },
+    })
+  : undefined
 
 const SEO_LABELS: Record<string, string> = {
   description: 'תיאור למנועי חיפוש',
@@ -48,8 +69,19 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Divisions],
-  globals: [SiteSettings, Home, About, Lobby, Social, Contact, Accessibility, Privacy],
+  collections: [Users, Media, Divisions, ContactSubmissions],
+  globals: [
+    SiteSettings,
+    Home,
+    About,
+    Lobby,
+    Social,
+    Contact,
+    Accessibility,
+    Privacy,
+    ContactInbox,
+  ],
+  email,
   editor: lexicalEditor(),
   i18n: {
     fallbackLanguage: 'he',

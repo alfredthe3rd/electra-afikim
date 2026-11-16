@@ -1,5 +1,6 @@
 import * as migration_20261103_065455_baseline from './20261103_065455_baseline';
 import * as migration_20261103_070346_cms_globals from './20261103_070346_cms_globals';
+import * as migration_20261105_110855_contact_form from './20261105_110855_contact_form';
 
 export const migrations = [
   {
@@ -10,6 +11,11 @@ export const migrations = [
   {
     up: migration_20261103_070346_cms_globals.up,
     down: migration_20261103_070346_cms_globals.down,
-    name: '20261103_070346_cms_globals'
+    name: '20261103_070346_cms_globals',
+  },
+  {
+    up: migration_20261105_110855_contact_form.up,
+    down: migration_20261105_110855_contact_form.down,
+    name: '20261105_110855_contact_form',
   },
 ];

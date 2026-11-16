@@ -15,9 +15,10 @@ export async function generateMetadata() {
 }
 
 export default async function ContactPage() {
-  const [{ form, page }, { contactDetails }] = await Promise.all([
+  const [{ form, page }, { contactDetails }, { errorLabel }] = await Promise.all([
     getGlobal('contact'),
     getGlobal('site-settings'),
+    getGlobal('contact-inbox'),
   ])
   const subtitleLines = splitLines(page.subtitle)
 
@@ -61,7 +62,7 @@ export default async function ContactPage() {
             <p className="contact-info-item">{contactDetails.address}</p>
           </div>
 
-          <ContactForm labels={form} />
+          <ContactForm errorLabel={errorLabel} labels={form} />
         </div>
       </div>
     </section>

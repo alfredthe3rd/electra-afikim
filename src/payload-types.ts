@@ -70,6 +70,7 @@ export interface Config {
     users: User;
     media: Media;
     divisions: Division;
+    'contact-submissions': ContactSubmission;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -80,6 +81,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     divisions: DivisionsSelect<false> | DivisionsSelect<true>;
+    'contact-submissions': ContactSubmissionsSelect<false> | ContactSubmissionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -98,6 +100,7 @@ export interface Config {
     contact: Contact;
     accessibility: Accessibility;
     privacy: Privacy;
+    'contact-inbox': ContactInbox;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
@@ -108,6 +111,7 @@ export interface Config {
     contact: ContactSelect<false> | ContactSelect<true>;
     accessibility: AccessibilitySelect<false> | AccessibilitySelect<true>;
     privacy: PrivacySelect<false> | PrivacySelect<true>;
+    'contact-inbox': ContactInboxSelect<false> | ContactInboxSelect<true>;
   };
   locale: null;
   widgets: {
@@ -248,6 +252,24 @@ export interface Division {
   createdAt: string;
 }
 /**
+ * כל הפניות שנשלחו מטופס צור קשר. לאן נשלח המייל נקבע ב"הגדרות פניות".
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-submissions".
+ */
+export interface ContactSubmission {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  message?: string | null;
+  handled?: boolean | null;
+  emailStatus?: ('sent' | 'failed' | 'no-recipients' | 'no-smtp') | null;
+  emailError?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -282,6 +304,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'divisions';
         value: number | Division;
+      } | null)
+    | ({
+        relationTo: 'contact-submissions';
+        value: number | ContactSubmission;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -406,6 +432,21 @@ export interface DivisionsSelect<T extends boolean = true> {
         image?: T;
         noindex?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-submissions_select".
+ */
+export interface ContactSubmissionsSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
+  email?: T;
+  message?: T;
+  handled?: T;
+  emailStatus?: T;
+  emailError?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -961,6 +1002,24 @@ export interface Privacy {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-inbox".
+ */
+export interface ContactInbox {
+  id: number;
+  /**
+   * כתובת דוא"ל אחת בכל שורה. כל פנייה מהטופס נשלחת לכל הכתובות.
+   */
+  recipients: string;
+  /**
+   * שם הפונה יתווסף בסוף הנושא.
+   */
+  emailSubject: string;
+  errorLabel: string;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -1401,6 +1460,18 @@ export interface PrivacySelect<T extends boolean = true> {
         image?: T;
         noindex?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-inbox_select".
+ */
+export interface ContactInboxSelect<T extends boolean = true> {
+  recipients?: T;
+  emailSubject?: T;
+  errorLabel?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

@@ -14,6 +14,14 @@ services:
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:?PAYLOAD_SECRET is missing from .env}
+      # Contact form email. Empty SMTP_HOST = no email is sent; submissions are
+      # still saved in the admin panel under "פניות מהאתר".
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-}
     # Only reachable from the server itself; the reverse proxy forwards to it.
     ports:
       - '127.0.0.1:3000:3000'

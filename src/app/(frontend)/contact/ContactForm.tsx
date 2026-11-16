@@ -4,21 +4,50 @@ import { FormEvent, useState } from 'react'
 
 import type { Contact } from '@/payload-types'
 
-export function ContactForm({ labels }: { labels: Contact['form'] }) {
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle')
+import { submitContact } from './actions'
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+export function ContactForm({
+  errorLabel,
+  labels,
+}: {
+  errorLabel: string
+  labels: Contact['form']
+}) {
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const form = e.currentTarget
     setStatus('sending')
-    // TODO: wire up to API
-    setTimeout(() => setStatus('sent'), 1000)
+    try {
+      const result = await submitContact(new FormData(form))
+      if (result.ok) {
+        form.reset()
+        setStatus('sent')
+      } else {
+        setStatus('error')
+      }
+    } catch {
+      setStatus('error')
+    }
   }
 
   return (
     <form className="contact-form" onSubmit={handleSubmit}>
+      {/* Honeypot: hidden from people and screen readers, filled by bots. */}
+      <input
+        aria-hidden="true"
+        autoComplete="off"
+        className="contact-honeypot"
+        name="website"
+        tabIndex={-1}
+        type="text"
+      />
       <div className="contact-form-row">
         <input
           className="contact-input"
+          aria-label={labels.namePlaceholder}
+          maxLength={100}
           name="name"
           placeholder={labels.namePlaceholder}
           required
@@ -26,6 +55,8 @@ export function ContactForm({ labels }: { labels: Contact['form'] }) {
         />
         <input
           className="contact-input"
+          aria-label={labels.phonePlaceholder}
+          maxLength={30}
           name="phone"
           placeholder={labels.phonePlaceholder}
           required
@@ -33,6 +64,8 @@ export function ContactForm({ labels }: { labels: Contact['form'] }) {
         />
         <input
           className="contact-input"
+          aria-label={labels.emailPlaceholder}
+          maxLength={254}
           name="email"
           placeholder={labels.emailPlaceholder}
           required
@@ -41,6 +74,8 @@ export function ContactForm({ labels }: { labels: Contact['form'] }) {
       </div>
       <textarea
         className="contact-input contact-textarea"
+        aria-label={labels.messagePlaceholder}
+        maxLength={5000}
         name="message"
         placeholder={labels.messagePlaceholder}
         rows={4}
@@ -52,6 +87,11 @@ export function ContactForm({ labels }: { labels: Contact['form'] }) {
             ? labels.sentLabel
             : labels.submitLabel}
       </button>
+      {status === 'error' && (
+        <p className="contact-form-error" role="alert">
+          {errorLabel}
+        </p>
+      )}
     </form>
   )
 }

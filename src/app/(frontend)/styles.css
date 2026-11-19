@@ -3322,23 +3322,23 @@ html.menu-open {
 }
 
 .about-team-photo {
-  /* 231×231 square per the Figma. Source photos are 3:4 portraits, so cover
-     crops ~25% of their height — anchored to the top edge the crop comes
-     entirely from the bottom (chest), never the head. */
+  /* 3:4 portrait, not the Figma's 231×231 square (client request, 11.2026):
+     most source photos are 150×200 portraits with tight headroom, so the square
+     crop left heads filling the frame, while the designer-made square photos
+     showed small heads. At 3:4 the portraits show whole, and the few square
+     sources lose only their sides, which brings every head to a similar size. */
   width: 231px;
-  height: 231px;
+  height: auto;
+  aspect-ratio: 3 / 4;
   border-radius: 23.671px;
   object-fit: cover;
   object-position: center top;
   border: 1px solid transparent;
   transition: border-color 0.3s ease;
 
-  /* Fills the column; aspect-ratio keeps the square (and therefore the same
-     top-anchored crop) that the fixed 231×231 gave on desktop. */
+  /* Fills the column at the same 3:4 as desktop. */
   @media (max-width: 768px) {
     width: 100%;
-    height: auto;
-    aspect-ratio: 1;
     border-radius: 14px;
   }
 }

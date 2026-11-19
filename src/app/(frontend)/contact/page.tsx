@@ -15,7 +15,7 @@ export async function generateMetadata() {
 }
 
 export default async function ContactPage() {
-  const [{ form, page }, { contactDetails }, { errorLabel }] = await Promise.all([
+  const [{ form, page }, { contactDetails }, { errorLabel, publicEmail }] = await Promise.all([
     getGlobal('contact'),
     getGlobal('site-settings'),
     getGlobal('contact-inbox'),
@@ -59,6 +59,11 @@ export default async function ContactPage() {
         <div className="contact-bottom">
           <div className="contact-info-card">
             <p className="contact-info-item">{contactDetails.phoneLabel}</p>
+            {publicEmail && (
+              <p className="contact-info-item">
+                <a href={`mailto:${publicEmail}`}>{publicEmail}</a>
+              </p>
+            )}
             <p className="contact-info-item">{contactDetails.address}</p>
           </div>
 

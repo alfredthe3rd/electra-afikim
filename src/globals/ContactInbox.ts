@@ -25,6 +25,12 @@ export const ContactInbox: GlobalConfig = {
         return bad ? `כתובת לא תקינה: ${bad}` : true
       },
     },
+    {
+      name: 'publicEmail',
+      type: 'email',
+      label: 'כתובת דוא"ל להצגה באתר',
+      admin: { description: 'מוצגת בעמוד צור קשר מתחת לטלפון. להשאיר ריק כדי להסתיר.' },
+    },
     text('emailSubject', 'נושא המייל', 'שם הפונה יתווסף בסוף הנושא.'),
     text('errorLabel', 'הודעה לגולש כשהשליחה נכשלה'),
   ],

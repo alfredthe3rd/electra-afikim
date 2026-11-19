@@ -1011,6 +1011,10 @@ export interface ContactInbox {
    */
   recipients: string;
   /**
+   * מוצגת בעמוד צור קשר מתחת לטלפון. להשאיר ריק כדי להסתיר.
+   */
+  publicEmail?: string | null;
+  /**
    * שם הפונה יתווסף בסוף הנושא.
    */
   emailSubject: string;
@@ -1470,6 +1474,7 @@ export interface PrivacySelect<T extends boolean = true> {
  */
 export interface ContactInboxSelect<T extends boolean = true> {
   recipients?: T;
+  publicEmail?: T;
   emailSubject?: T;
   errorLabel?: T;
   updatedAt?: T;

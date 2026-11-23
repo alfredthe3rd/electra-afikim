@@ -1,7 +1,10 @@
+import Link from 'next/link'
+
 import { getGlobal } from '@/lib/content'
 import { mediaUrl, splitLines } from '@/lib/media'
 import { pageMetadata } from '@/lib/seo'
 
+import { cardHasPage } from './cardPages'
 import { SocialAnimations } from './SocialAnimations'
 import { SocialCarousel } from './SocialCarousel'
 
@@ -51,6 +54,14 @@ export default async function SocialResponsibilityPage() {
                   <li key={i}>{line}</li>
                 ))}
               </ul>
+              {cardHasPage(card) && (
+                <Link
+                  className="division-cta social-card-more"
+                  href={`/social-responsibility/${card.slug}`}
+                >
+                  {card.moreLabel || 'קראו עוד'}
+                </Link>
+              )}
             </article>
           ))}
         </div>

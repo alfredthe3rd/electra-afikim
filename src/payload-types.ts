@@ -827,6 +827,32 @@ export interface Social {
            * כל שורה כאן מוצגת כשורה נפרדת באתר.
            */
           list: string;
+          /**
+           * כשיש כאן תוכן, מופיע בקובייה כפתור שמוביל לדף עם התוכן הזה. כשהשדה ריק, אין כפתור.
+           */
+          details?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          /**
+           * באנגלית, בלי רווחים. למשל: environment
+           */
+          slug?: string | null;
+          /**
+           * ברירת מחדל: קראו עוד
+           */
+          moreLabel?: string | null;
           id?: string | null;
         }[]
       | null;
@@ -1334,6 +1360,9 @@ export interface SocialSelect<T extends boolean = true> {
               title?: T;
               text?: T;
               list?: T;
+              details?: T;
+              slug?: T;
+              moreLabel?: T;
               id?: T;
             };
       };

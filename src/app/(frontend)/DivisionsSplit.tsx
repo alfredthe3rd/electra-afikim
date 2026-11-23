@@ -26,6 +26,7 @@ export function DivisionsSplit({ data }: { data: Home['divisions'] }) {
   const subtitleRef = useRef<HTMLParagraphElement>(null)
   const slidesRef = useRef<(HTMLDivElement | null)[]>([])
   const videosRef = useRef<(HTMLDivElement | null)[]>([])
+  const desktopVideosRef = useRef<(HTMLVideoElement | null)[]>([])
   const mobileVideosRef = useRef<(HTMLVideoElement | null)[]>([])
 
   // Mobile replaces the pinned 50/50 split with a plain vertical stack
@@ -87,6 +88,30 @@ export function DivisionsSplit({ data }: { data: Home['divisions'] }) {
       gsap.set(videoContainers[i], { y: '100%' })
     }
 
+    // Only the division on screen plays, and only while the section is in
+    // view; the next one is told to buffer so it isn't black as it slides in.
+    // Seven autoplaying videos used to stream in parallel from first paint and
+    // starve every other request — nav clicks hung for ~15s on the live site.
+    const videos = desktopVideosRef.current.filter(Boolean) as HTMLVideoElement[]
+    let active = 0
+    let inView = false
+    const syncVideos = () => {
+      videos.forEach((video, i) => {
+        if (inView && i === active + 1 && video.preload !== 'auto') video.preload = 'auto'
+        if (inView && i === active) {
+          if (video.preload !== 'auto') video.preload = 'auto'
+          video.play().catch(() => {})
+        } else if (!video.paused) {
+          video.pause()
+        }
+      })
+    }
+    const viewObserver = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting
+      syncVideos()
+    })
+    viewObserver.observe(sectionRef.current)
+
     const ctx = gsap.context(() => {
       const tl = gsap.timeline()
 
@@ -110,6 +135,13 @@ export function DivisionsSplit({ data }: { data: Home['divisions'] }) {
         animation: tl,
         anticipatePin: 1,
         end: `+=${STEP_COUNT * 50}%`,
+        onUpdate: (self) => {
+          const next = Math.round(self.progress * (STEP_COUNT - 1))
+          if (next !== active) {
+            active = next
+            syncVideos()
+          }
+        },
         pin: true,
         pinSpacing: true,
         scrub: 0.3,
@@ -124,7 +156,11 @@ export function DivisionsSplit({ data }: { data: Home['divisions'] }) {
       })
     }, sectionRef)
 
-    return () => ctx.revert()
+    return () => {
+      viewObserver.disconnect()
+      videos.forEach((video) => video.pause())
+      ctx.revert()
+    }
   }, [isMobile])
 
   return (
@@ -173,11 +209,12 @@ export function DivisionsSplit({ data }: { data: Home['divisions'] }) {
               ref={(el) => { videosRef.current[i] = el }}
             >
               <video
-                autoPlay
                 className="divisions-split-video"
                 loop
                 muted
                 playsInline
+                preload="none"
+                ref={(el) => { desktopVideosRef.current[i] = el }}
                 src={step.video}
               />
             </div>

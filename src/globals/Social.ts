@@ -1,7 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
 import { GROUP, VERSIONS } from './shared'
-import { href, image, LINES_HINT, list, text, textarea, video } from './fields'
+import { href, image, LINES_HINT, list, optionalText, text, textarea, video } from './fields'
 
 export const Social: GlobalConfig = {
   slug: 'social',
@@ -30,6 +30,17 @@ export const Social: GlobalConfig = {
               text('title', 'כותרת'),
               textarea('text', 'טקסט'),
               textarea('list', 'רשימה', LINES_HINT),
+              {
+                name: 'details',
+                type: 'richText',
+                label: 'תוכן הדף המורחב',
+                admin: {
+                  description:
+                    'כשיש כאן תוכן, מופיע בקובייה כפתור שמוביל לדף עם התוכן הזה. כשהשדה ריק, אין כפתור.',
+                },
+              },
+              optionalText('slug', 'כתובת הדף המורחב', 'באנגלית, בלי רווחים. למשל: environment'),
+              optionalText('moreLabel', 'טקסט כפתור ההרחבה', 'ברירת מחדל: קראו עוד'),
             ]),
           ],
         },

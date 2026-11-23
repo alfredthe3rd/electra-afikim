@@ -2,6 +2,7 @@ import * as migration_20261103_065455_baseline from './20261103_065455_baseline'
 import * as migration_20261103_070346_cms_globals from './20261103_070346_cms_globals';
 import * as migration_20261105_110855_contact_form from './20261105_110855_contact_form';
 import * as migration_20261119_085256_contact_public_email from './20261119_085256_contact_public_email';
+import * as migration_20261123_072158_social_card_pages from './20261123_072158_social_card_pages';
 
 export const migrations = [
   {
@@ -22,6 +23,11 @@ export const migrations = [
   {
     up: migration_20261119_085256_contact_public_email.up,
     down: migration_20261119_085256_contact_public_email.down,
-    name: '20261119_085256_contact_public_email'
+    name: '20261119_085256_contact_public_email',
+  },
+  {
+    up: migration_20261123_072158_social_card_pages.up,
+    down: migration_20261123_072158_social_card_pages.down,
+    name: '20261123_072158_social_card_pages'
   },
 ];

@@ -4,6 +4,8 @@
 //   3/4/6/7 — the logos on the rail / import / college slides were rotated;
 //        each slide gets the logo that matches its text
 //   4  — college slide: the designer's college video instead of the bus fleet
+//   5  — service-center slide: the designer's video, focused on the top so the
+//        sign isn't cropped off
 //   8  — partners: add עיריית יבנה
 //   16 / 18 — new banner images for the Motors and college pages
 //
@@ -59,6 +61,7 @@ const iTransit = find('תחבורה ציבורית')
 const iRail = find('רכבת קלה')
 const iImport = find('ייבוא')
 const iCollege = find('הכשרת')
+const iService = find('מערכי תחזוקה')
 
 const media = await payload.find({ collection: 'media', limit: 500, depth: 0 })
 console.log('Logo candidates:')
@@ -68,6 +71,7 @@ for (const m of media.docs.filter((d) => slides.some((s) => idOf(s.logo) === d.i
 
 const taglineLogo = await upload('afikim-logo-tagline.png', 'אלקטרה אפיקים - פשוט להגיע')
 const collegeVideo = await upload('college-home.mp4', 'סרטון המכללה - דף הבית')
+const serviceVideo = await upload('service-center.mp4', 'סרטון מרכז השירות - דף הבית')
 const yavne = await upload('yavne.png', 'עיריית יבנה')
 const motorsBanner = await upload('motors-banner.jpeg', 'אלקטרה מוטורס - באנר')
 const collegeBanner = await upload('college-banner.jpeg', 'המכללה למקצועות התחבורה - באנר')
@@ -77,11 +81,13 @@ const collegeBanner = await upload('college-banner.jpeg', 'המכללה למקצ
 const motorsLogo = idOf(slides[iRail].logo)
 const collegeLogo = idOf(slides[iImport].logo)
 const nofitLogo = idOf(slides[iCollege].logo)
-const plan = new Map<number, { logo?: number; video?: number }>([
+type Change = { logo?: number; video?: number; videoFocus?: 'bottom' | 'center' | 'top' }
+const plan = new Map<number, Change>([
   [iTransit, { logo: taglineLogo }],
   [iRail, { logo: nofitLogo }],
   [iImport, { logo: motorsLogo }],
   [iCollege, { logo: collegeLogo, video: collegeVideo }],
+  [iService, { video: serviceVideo, videoFocus: 'top' }],
 ])
 // Already applied? (the college slide then holds the college video)
 const applied = idOf(slides[iCollege].video) === collegeVideo
@@ -93,13 +99,14 @@ const nextSlides = slides.map((s, i) => {
     logo: change?.logo ?? idOf(s.logo),
     text: s.text,
     video: change?.video ?? (s.video ? idOf(s.video) : null),
+    videoFocus: change?.videoFocus ?? s.videoFocus ?? 'center',
   }
 })
 console.log(applied ? 'Slides already fixed.' : 'Slides after:')
 if (!applied) {
   nextSlides.forEach((s, i) => {
     const name = media.docs.find((m) => m.id === s.logo)?.filename ?? `#${s.logo}`
-    console.log(`  ${i + 1}. ${name} | ${s.text.slice(0, 40)}${plan.get(i)?.video ? ' | + college video' : ''}`)
+    console.log(`  ${i + 1}. ${name} | ${s.text.slice(0, 40)}${plan.get(i)?.video ? ` | + video #${plan.get(i)?.video}` : ''}${plan.get(i)?.videoFocus ? ` focus ${plan.get(i)?.videoFocus}` : ''}`)
   })
 }
 

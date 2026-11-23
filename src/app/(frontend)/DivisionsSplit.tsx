@@ -17,6 +17,9 @@ export function DivisionsSplit({ data }: { data: Home['divisions'] }) {
     logo: mediaUrl(slide.logo),
     text: slide.text,
     video: mediaUrl(slide.video) ?? slide.defaultVideo ?? undefined,
+    // Which part of the video survives the frame's crop (16:10 on mobile cuts
+    // ~19% off the top and bottom of a square source).
+    videoPosition: `center ${slide.videoFocus ?? 'center'}`,
   }))
   const STEP_COUNT = STEPS.length
   const subtitleLines = splitLines(data.subtitle)
@@ -216,6 +219,7 @@ export function DivisionsSplit({ data }: { data: Home['divisions'] }) {
                 preload="none"
                 ref={(el) => { desktopVideosRef.current[i] = el }}
                 src={step.video}
+                style={{ objectPosition: step.videoPosition }}
               />
             </div>
           ))}
@@ -239,6 +243,7 @@ export function DivisionsSplit({ data }: { data: Home['divisions'] }) {
                 preload="none"
                 ref={(el) => { mobileVideosRef.current[i] = el }}
                 src={step.video}
+                style={{ objectPosition: step.videoPosition }}
               />
             </div>
             <img alt="" className="divisions-mobile-logo" src={step.logo} />

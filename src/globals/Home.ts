@@ -52,6 +52,21 @@ export const Home: GlobalConfig = {
                 image('logo', 'לוגו'),
                 textarea('text', 'טקסט'),
                 { ...video('video', 'סרטון'), validate: slideVideo },
+                {
+                  name: 'videoFocus',
+                  type: 'select',
+                  label: 'מיקוד הסרטון',
+                  defaultValue: 'center',
+                  options: [
+                    { label: 'מרכז', value: 'center' },
+                    { label: 'למעלה', value: 'top' },
+                    { label: 'למטה', value: 'bottom' },
+                  ],
+                  admin: {
+                    description:
+                      'החלק בסרטון שנשאר גלוי כשהמסגרת חותכת אותו (במיוחד במובייל). למשל "למעלה" כשיש שלט או לוגו בראש הסרטון.',
+                  },
+                },
                 // The file this row shipped with, used until a video is uploaded.
                 { name: 'defaultVideo', type: 'text', admin: { hidden: true } },
               ],

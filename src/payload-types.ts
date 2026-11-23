@@ -624,6 +624,10 @@ export interface Home {
        * אופציונלי. כל עוד השדה ריק מוצג הסרטון הקיים. מומלץ קובץ MP4 דחוס, עד כ-20MB, כדי לא להאט את האתר.
        */
       video?: (number | null) | Media;
+      /**
+       * החלק בסרטון שנשאר גלוי כשהמסגרת חותכת אותו (במיוחד במובייל). למשל "למעלה" כשיש שלט או לוגו בראש הסרטון.
+       */
+      videoFocus?: ('center' | 'top' | 'bottom') | null;
       defaultVideo?: string | null;
       id?: string | null;
     }[];
@@ -1157,6 +1161,7 @@ export interface HomeSelect<T extends boolean = true> {
               logo?: T;
               text?: T;
               video?: T;
+              videoFocus?: T;
               defaultVideo?: T;
               id?: T;
             };

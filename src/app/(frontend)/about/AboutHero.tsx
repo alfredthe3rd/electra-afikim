@@ -11,6 +11,43 @@ import { useIsomorphicLayoutEffect } from '../useIsomorphicLayoutEffect'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// Where each labelled segment of `circle about section 2.svg` sits, in degrees
+// clockwise from 12 o'clock (the centre of its lettering, measured from the
+// SVG paths). If the ring artwork changes, re-measure these.
+const SEGMENT_ANGLES: [string, number][] = [
+  ['הפעלה', 1],
+  ['יבוא', 59],
+  ['תשתיות', 122],
+  ['הכשרה', 209],
+  ['תחזוקה', 299],
+]
+
+// Timeline time the wheel rests on each step between turns.
+const HOLD = 0.6
+
+/** The ring rotation that brings each step's segment to the top. Always
+ *  turning clockwise (each value larger than the one before), so the wheel
+ *  never jerks backwards. A title with no segment just advances 60°. */
+function ringRotations(titles: string[]): number[] {
+  const result: number[] = []
+  for (const title of titles) {
+    const angle = SEGMENT_ANGLES.find(([name]) => title.trim().startsWith(name))?.[1]
+    const prev = result.at(-1)
+    if (angle === undefined) {
+      result.push(prev === undefined ? 0 : prev + 60)
+      continue
+    }
+    let rotation = -angle
+    if (prev === undefined) {
+      result.push(rotation)
+      continue
+    }
+    while (rotation <= prev) rotation += 360
+    result.push(rotation)
+  }
+  return result
+}
+
 export function AboutHero({ data }: { data: About['hero'] }) {
   const TITLE_WORDS = splitWords(data.title)
   const SUBTITLE_WORDS = splitWords(data.subtitle)
@@ -69,8 +106,20 @@ export function AboutHero({ data }: { data: About['hero'] }) {
         0.35,
       )
 
-      // Phase 2 — the stepped story (same pacing as the old circle section).
+      // Phase 2 — the stepped story. The ring no longer spins freely: it
+      // turns in steps, so that whenever the reader rests on a step the
+      // ring's segment for that step sits at 12 o'clock (client, 25.11.2026).
+      // Holds between the turns give the reader a resting point.
+      const rotations = ringRotations(STEPS.map((step) => step.title ?? ''))
+      tl.fromTo(
+        ringRef.current,
+        { rotation: rotations[0] - 60 },
+        { duration: 0.9, ease: 'sine.out', rotation: rotations[0] },
+        0.35,
+      )
+      tl.to({}, { duration: HOLD })
       for (let i = 0; i < STEP_COUNT - 1; i++) {
+        tl.addLabel(`step${i}`)
         tl.to(items[i], { opacity: 0, y: -20, duration: 0.5, ease: 'power2.in' }, `step${i}`)
         tl.fromTo(
           items[i + 1],
@@ -78,16 +127,13 @@ export function AboutHero({ data }: { data: About['hero'] }) {
           { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' },
           `step${i}+=0.25`,
         )
+        tl.to(
+          ringRef.current,
+          { duration: 0.75, ease: 'power2.inOut', rotation: rotations[i + 1] },
+          `step${i}`,
+        )
+        tl.to({}, { duration: HOLD })
       }
-
-      // Continuous "steering wheel" turn from the moment the circle enters,
-      // independent of the stepped content crossfade above.
-      tl.fromTo(
-        ringRef.current,
-        { rotation: 0 },
-        { duration: tl.duration() - 0.35, ease: 'none', rotation: 360 },
-        0.35,
-      )
 
       // NOTE: no `snap` here. ScrollTrigger's snap sets the scroll position
       // directly, which fights Lenis smooth-scroll (both try to own the scroll)
@@ -96,7 +142,7 @@ export function AboutHero({ data }: { data: About['hero'] }) {
       ScrollTrigger.create({
         animation: tl,
         anticipatePin: 1,
-        end: `+=${100 + STEP_COUNT * 50}%`,
+        end: `+=${100 + STEP_COUNT * 70}%`,
         pin: true,
         pinSpacing: true,
         // 0.5 (was 0.3): a slightly longer catch-up smooths the handoff and

@@ -589,6 +589,8 @@ svg {
   font-weight: 400;
   text-align: right;
   font-size: 1.2vw;
+  /* Same rhythm as .divisions-split-subtitle (client, 25.11.2026) */
+  line-height: 1.4em;
 }
 
 .divisions-split-right {
@@ -1732,14 +1734,14 @@ svg {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  width: min(920px, 100%);
-  height: 96px;
+  width: min(1180px, calc(100% - 4vw));
+  height: 112px;
   padding: 8px 2vw 6px 2vw;
 
   /* Mobile: inset the pill 10px from each edge instead of running full-bleed */
   @media (max-width: 768px) {
     width: calc(100% - 20px);
-    /* The 96px pill is a desktop request; mobile keeps its original size. */
+    /* The 112px pill is a desktop request (client, 25.11); mobile keeps its original size. */
     height: 83px;
   }
   background: rgba(255, 255, 255, 0.2);
@@ -1755,7 +1757,7 @@ svg {
   flex-shrink: 0;
 
   img {
-    height: 52px;
+    height: 64px;
     width: auto;
 
     @media (max-width: 768px) {
@@ -1767,11 +1769,12 @@ svg {
 .site-nav {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: clamp(20px, 2.4vw, 40px);
   flex-wrap: wrap;
 
   a {
-    font-size: clamp(14px, 1.35vw, 19px);
+    font-size: clamp(16px, 1.5vw, 22px);
+    font-weight: 500;
     color: var(--brand-2);
     text-decoration: none;
   }
@@ -2583,8 +2586,8 @@ html.menu-open {
   max-width: 1200px;
   margin-inline: auto;
   min-height: 60vh;
-  /* clears the floating header pill, whose bottom edge is 2vw + 96px */
-  padding: calc(4vw + 123px) 5vw 8vw;
+  /* clears the floating header pill, whose bottom edge is 2vw + 112px */
+  padding: calc(4vw + 139px) 5vw 8vw;
 }
 
 .legal-page-title {
@@ -2807,13 +2810,18 @@ html.menu-open {
      Term 3 — the height guard: the stage is square and vertically centred in
      the 100vh hero, so on a short window a width-only cap isn't enough (at
      1688×772 the 15% circle still overlapped the menu by 49px). The header's
-     bottom edge is exactly `2vw + 96px` (.site-header margin-top +
+     bottom edge is exactly `2vw + 112px` (.site-header margin-top +
      .site-header-inner height), so clearing it by 16px requires
-     height ≤ 100vh − 2×(2vw + 96px + 16px) = 100vh − 4vw − 224px.
+     height ≤ 100vh − 2×(2vw + 112px + 16px) = 100vh − 4vw − 256px.
      Calibrated so the guard is inert at 1440×900 and above — it only engages
      on short windows. */
-  width: min(637.5px, 44.2vw, calc(100vh - 4vw - 224px));
+  width: min(637.5px, 44.2vw, calc(100vh - 4vw - 256px));
   aspect-ratio: 1;
+  /* The step text is sized in cqw of this stage (see .about-circle-title /
+     -text), so it shrinks with the wheel — on a short window the height guard
+     makes the wheel smaller than 44.2vw, and vw-sized text then overflowed
+     the dashed ring (client, 25.11.2026: "יבוא" spilled out). */
+  container-type: inline-size;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2843,7 +2851,7 @@ html.menu-open {
 
 .about-circle-text-stack {
   position: relative;
-  width: 56%;
+  width: 60%;
 
   /* Narrower on mobile, which is counter-intuitive but correct: the text box
      is inscribed in a circle, so trading width for height buys room. The
@@ -2863,7 +2871,7 @@ html.menu-open {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.68vw;
+  gap: 1.07cqw;
   text-align: center;
 
   @media (max-width: 768px) {
@@ -2875,7 +2883,8 @@ html.menu-open {
   margin: 0;
   color: var(--text);
   font-weight: 900;
-  font-size: 2vw;
+  /* = 2vw on a full-size (44.2vw) stage */
+  font-size: max(20px, 4.5cqw);
   line-height: 1.2;
 
   @media (max-width: 768px) {
@@ -2887,7 +2896,9 @@ html.menu-open {
   margin: 0;
   color: var(--text);
   font-weight: 400;
-  font-size: 1vw;
+  /* ≈ 1.1vw on a full-size (44.2vw) stage; 11px floor for short windows,
+     where the wheel shrinks (verify-round-2511 checks the fit) */
+  font-size: max(11px, 2.5cqw);
   line-height: 1.4;
 
   /* 12px is the floor the client signed off on for this text on desktop. */
@@ -2965,6 +2976,13 @@ html.menu-open {
   border-bottom: none;
 }
 
+.about-icon-brand-mark {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
 .about-icon-item {
   position: relative;
   display: flex;
@@ -3027,6 +3045,8 @@ html.menu-open {
   color: var(--text);
   font-weight: 400;
   font-size: 1.2vw;
+  /* a two-line label ("פלטפורמה דיגיטלית להזמנת נסיעות") stays compact */
+  line-height: 1.3em;
   text-align: center;
 
   @media (max-width: 768px) {
@@ -3340,7 +3360,10 @@ html.menu-open {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 36px;
+  /* Row gap = the gap between the two row groups (.about-team-rows), so a
+     wrapped third line sits at the same distance as the second (client,
+     25.11.2026: the spacing between photos wasn't even). */
+  gap: 48px 36px;
 
   /* display:contents dissolves the two row wrappers so all 11 members flow
      into the grid above as one continuous 2-up sequence. Keeping them as grid
@@ -3356,8 +3379,12 @@ html.menu-open {
   flex-direction: column;
   align-items: center;
   gap: 14px;
+  /* Fixed to the photo's width: a long role wraps inside the card instead of
+     widening it and pushing the columns apart. */
+  width: 231px;
 
   @media (max-width: 768px) {
+    width: auto;
     gap: 10px;
   }
 }

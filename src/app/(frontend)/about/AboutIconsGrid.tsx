@@ -15,6 +15,13 @@ gsap.registerPlugin(ScrollTrigger)
 
 const COLS = 4
 
+// A row that doesn't fill up leaves an empty lattice cell; the client asked
+// not to leave it blank (25.11.2026), so it carries the brand symbol (the
+// designer's file) instead of a label.
+function BrandMark() {
+  return <img alt="" className="about-icon-brand-mark" src="/about%20page/brand-mark.png" />
+}
+
 export function AboutIconsGrid({ data }: { data: About['icons'] }) {
   const ICONS = data.items ?? []
   const TITLE_WORDS = splitWords(data.title)
@@ -93,11 +100,13 @@ export function AboutIconsGrid({ data }: { data: About['icons'] }) {
                 className="about-icon-item"
                 key={icon ? icon.id : `empty-${ri}-${ci}`}
               >
-                {icon && (
+                {icon ? (
                   <>
                     <img alt="" className="about-icon-img" src={mediaUrl(icon.icon)} />
                     <p className="about-icon-label">{icon.label}</p>
                   </>
+                ) : (
+                  <BrandMark />
                 )}
               </div>
             ))}
@@ -127,11 +136,13 @@ export function AboutIconsGrid({ data }: { data: About['icons'] }) {
                 className="about-icon-item"
                 key={icon ? icon.id : `m-empty-${ri}-${ci}`}
               >
-                {icon && (
+                {icon ? (
                   <>
                     <img alt="" className="about-icon-img" src={mediaUrl(icon.icon)} />
                     <p className="about-icon-label">{icon.label}</p>
                   </>
+                ) : (
+                  <BrandMark />
                 )}
               </div>
             ))}
